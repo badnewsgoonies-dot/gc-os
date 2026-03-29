@@ -160,12 +160,12 @@ update();
 
 function renderInputs(key){
 const f=FIELDS.find(x=>x.key===key),s=state[key],el=document.getElementById('inputs_'+key);
-let h='';
-if(s.mode==='every'){h='<span>*</span>';}
-else if(s.mode==='specific'){h=`<input type="text" id="val_${key}" value="${s.values||f.min}" onchange="updateSpecific('${key}')" style="width:100px" placeholder="e.g. 1,5,10">`;}
-else if(s.mode==='range'){h=`<input type="number" id="from_${key}" value="${s.from??f.min}" min="${f.min}" max="${f.max}" onchange="updateRange('${key}')"><span>to</span><input type="number" id="to_${key}" value="${s.to??f.max}" min="${f.min}" max="${f.max}" onchange="updateRange('${key}')">`;}
-else if(s.mode==='interval'){h=`<span>every</span><input type="number" id="step_${key}" value="${s.step||2}" min="1" max="${f.max}" onchange="updateInterval('${key}')"><span>from</span><input type="number" id="start_${key}" value="${s.start??f.min}" min="${f.min}" max="${f.max}" onchange="updateInterval('${key}')">`;}
-el.innerHTML=h;
+const n=n=>`min="${f.min}" max="${f.max}"`,c=`onchange="updateField('${key}')"`;
+const m={every:'<span>*</span>',
+specific:`<input type="text" id="val_${key}" value="${s.values||f.min}" ${c} style="width:100px" placeholder="1,5,10">`,
+range:`<input type="number" id="from_${key}" value="${s.from??f.min}" ${n()} ${c}><span>to</span><input type="number" id="to_${key}" value="${s.to??f.max}" ${n()} ${c}>`,
+interval:`<span>every</span><input type="number" id="step_${key}" value="${s.step||2}" min="1" max="${f.max}" ${c}><span>from</span><input type="number" id="start_${key}" value="${s.start??f.min}" ${n()} ${c}>`};
+el.innerHTML=m[s.mode];
 }
 
 function changeMode(key){
