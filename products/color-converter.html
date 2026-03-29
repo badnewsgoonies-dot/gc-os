@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Color Converter - HEX, RGB, HSL, CMYK Color Converter Online</title>
+<meta name="description" content="Free online color converter. Convert between HEX, RGB, HSL, and CMYK color formats instantly. Includes color harmony suggestions, contrast ratio checker, and CSS output.">
+<meta name="keywords" content="color converter, hex to rgb, rgb to hsl, cmyk converter, color picker, contrast checker, wcag, color harmony, online tool">
+<meta name="robots" content="index,follow">
+<meta property="og:title" content="Color Converter - HEX, RGB, HSL, CMYK Color Converter Online">
+<meta property="og:description" content="Free online color converter. Convert between HEX, RGB, HSL, and CMYK instantly with contrast checking and color harmonies.">
+<meta property="og:type" content="website">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect rx='12' width='100' height='100' fill='%230b1020'/><circle cx='40' cy='42' r='22' fill='%23ff5656' opacity='.85'/><circle cx='60' cy='42' r='22' fill='%2356c2ff' opacity='.85'/><circle cx='50' cy='60' r='22' fill='%2356ff8e' opacity='.85'/></svg>">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#0b1020;color:#eef3ff;font-family:'SF Mono','Fira Code','Cascadia Code','Consolas',monospace;min-height:100vh;display:flex;flex-direction:column;align-items:center}
+h1{font-size:1.3rem;padding:1.2rem 0 .3rem;color:#56c2ff;text-align:center;letter-spacing:.5px}
+.sub{font-size:.75rem;color:#6a7a9b;text-align:center;margin-bottom:1rem}
+.wrap{width:100%;max-width:960px;padding:0 1rem 1.5rem;flex:1;display:flex;flex-direction:column;gap:.8rem}
+.panel{background:rgba(13,19,37,.94);border:1px solid #1a2340;border-radius:8px;overflow:hidden}
+.panel-head{display:flex;justify-content:space-between;align-items:center;padding:.5rem .7rem;border-bottom:1px solid #1a2340;font-size:.75rem;color:#6a7a9b}
+.panel-head strong{color:#56c2ff;font-size:.8rem}
+.row{display:flex;gap:.8rem;flex-wrap:wrap}
+.row>.panel{flex:1;min-width:260px}
+.picker-area{display:flex;align-items:center;gap:1rem;padding:1rem;flex-wrap:wrap}
+input[type=color]{width:56px;height:56px;border:2px solid #1a2340;border-radius:8px;cursor:pointer;background:transparent;padding:0}
+input[type=color]::-webkit-color-swatch-wrapper{padding:2px}
+input[type=color]::-webkit-color-swatch{border-radius:5px;border:none}
+.swatch-preview{width:120px;height:80px;border-radius:8px;border:2px solid #1a2340;transition:background .15s}
+.fields{flex:1;display:grid;grid-template-columns:1fr 1fr;gap:.5rem;min-width:200px}
+.field{display:flex;flex-direction:column;gap:.2rem}
+.field label{font-size:.65rem;color:#6a7a9b;text-transform:uppercase;letter-spacing:.5px}
+.field input{background:rgba(13,19,37,.94);border:1px solid #1a2340;border-radius:5px;color:#eef3ff;font-family:inherit;font-size:.78rem;padding:.35rem .5rem;outline:none;transition:border-color .15s;width:100%}
+.field input:focus{border-color:#56c2ff}
+.css-out{padding:.6rem .7rem;display:flex;flex-direction:column;gap:.35rem}
+.css-row{display:flex;align-items:center;gap:.5rem;font-size:.75rem}
+.css-row code{flex:1;background:rgba(0,0,0,.25);padding:.3rem .5rem;border-radius:4px;color:#9be0ff;word-break:break-all}
+button{background:rgba(86,194,255,.12);color:#56c2ff;border:1px solid rgba(86,194,255,.25);border-radius:6px;padding:.3rem .6rem;font-family:inherit;font-size:.65rem;cursor:pointer;transition:all .15s;white-space:nowrap}
+button:hover{background:rgba(86,194,255,.22);border-color:#56c2ff}
+button.copied{background:rgba(86,255,142,.15);color:#56ff8e;border-color:rgba(86,255,142,.4)}
+.harmony-row{display:flex;gap:.5rem;padding:.6rem .7rem;flex-wrap:wrap}
+.harmony-group{display:flex;flex-direction:column;gap:.3rem;flex:1;min-width:120px}
+.harmony-group .lbl{font-size:.65rem;color:#6a7a9b;text-transform:uppercase;letter-spacing:.5px}
+.harmony-swatches{display:flex;gap:4px}
+.harmony-sw{width:36px;height:28px;border-radius:5px;border:1px solid #1a2340;cursor:pointer;transition:transform .15s}
+.harmony-sw:hover{transform:scale(1.15)}
+.contrast-area{padding:.7rem}
+.contrast-inputs{display:flex;gap:.6rem;align-items:flex-end;flex-wrap:wrap;margin-bottom:.6rem}
+.contrast-inputs .field{min-width:130px}
+.contrast-preview{display:flex;align-items:center;gap:1rem;flex-wrap:wrap}
+.contrast-sample{padding:.6rem 1rem;border-radius:6px;font-size:.85rem;font-weight:bold;min-width:160px;text-align:center}
+.contrast-results{display:flex;flex-direction:column;gap:.25rem;font-size:.75rem}
+.badge{display:inline-block;padding:.15rem .45rem;border-radius:4px;font-size:.65rem;font-weight:bold;margin-left:.3rem}
+.badge.pass{background:rgba(86,255,142,.18);color:#56ff8e}
+.badge.fail{background:rgba(255,86,86,.18);color:#ff5656}
+.history-bar{display:flex;gap:6px;padding:.6rem .7rem;flex-wrap:wrap;align-items:center}
+.history-bar .lbl{font-size:.65rem;color:#6a7a9b;margin-right:.3rem}
+.hist-sw{width:32px;height:26px;border-radius:5px;border:1px solid #1a2340;cursor:pointer;transition:transform .15s}
+.hist-sw:hover{transform:scale(1.15)}
+footer{padding:.8rem;text-align:center;font-size:.65rem;color:#3a4a6b}
+@media(max-width:600px){.fields{grid-template-columns:1fr}.row{flex-direction:column}.row>.panel{min-width:0}}
+</style>
+</head>
+<body>
+<h1>Color Converter</h1>
+<p class="sub">HEX / RGB / HSL / CMYK &mdash; real-time conversion, harmonies &amp; contrast</p>
+<div class="wrap">
+
+<div class="panel">
+<div class="panel-head"><strong>Color Picker</strong><span>Pick or type any format</span></div>
+<div class="picker-area">
+<input type="color" id="cpick" value="#56c2ff">
+<div class="swatch-preview" id="swatch"></div>
+<div class="fields">
+<div class="field"><label>HEX</label><input id="fHex" placeholder="#56c2ff" spellcheck="false"></div>
+<div class="field"><label>RGB</label><input id="fRgb" placeholder="86, 194, 255" spellcheck="false"></div>
+<div class="field"><label>HSL</label><input id="fHsl" placeholder="202, 100%, 67%" spellcheck="false"></div>
+<div class="field"><label>CMYK</label><input id="fCmyk" placeholder="66, 24, 0, 0" spellcheck="false"></div>
+</div>
+</div>
+</div>
+
+<div class="row">
+<div class="panel">
+<div class="panel-head"><strong>CSS Output</strong><span>Click to copy</span></div>
+<div class="css-out" id="cssOut"></div>
+</div>
+<div class="panel">
+<div class="panel-head"><strong>Color Harmonies</strong><span>Click swatch to use</span></div>
+<div class="harmony-row" id="harmonies"></div>
+</div>
+</div>
+
+<div class="panel">
+<div class="panel-head"><strong>Contrast Ratio Checker</strong><span>WCAG 2.1</span></div>
+<div class="contrast-area">
+<div class="contrast-inputs">
+<div class="field"><label>Foreground</label><input id="cFg" value="#eef3ff" spellcheck="false"></div>
+<div class="field"><label>Background</label><input id="cBg" value="#0b1020" spellcheck="false"></div>
+<button id="btnUseFg" title="Use current color as foreground">Current &rarr; FG</button>
+<button id="btnUseBg" title="Use current color as background">Current &rarr; BG</button>
+</div>
+<div class="contrast-preview" id="contrastPrev"></div>
+</div>
+</div>
+
+<div class="panel">
+<div class="panel-head"><strong>Color History</strong><span>Last 10 colors</span></div>
+<div class="history-bar" id="historyBar"><span class="lbl">None yet</span></div>
+</div>
+</div>
+<footer>Color Converter &mdash; all processing runs locally in your browser</footer>
+
+<script>
+(function(){
+const $ = s => document.getElementById(s);
+const cpick=$('cpick'),swatch=$('swatch'),fHex=$('fHex'),fRgb=$('fRgb'),fHsl=$('fHsl'),fCmyk=$('fCmyk');
+const cssOut=$('cssOut'),harmonies=$('harmonies'),historyBar=$('historyBar');
+const cFg=$('cFg'),cBg=$('cBg');
+let currentRGB=[86,194,255];
+let history=JSON.parse(localStorage.getItem('cc_hist')||'[]');
+
+/* --- Conversion helpers --- */
+function clamp(v,a,b){return Math.max(a,Math.min(b,v))}
+function hexToRgb(h){h=h.replace('#','');if(h.length===3)h=h[0]+h[0]+h[1]+h[1]+h[2]+h[2];const n=parseInt(h,16);return[(n>>16)&255,(n>>8)&255,n&255]}
+function rgbToHex(r,g,b){return'#'+[r,g,b].map(v=>v.toString(16).padStart(2,'0')).join('')}
+function rgbToHsl(r,g,b){r/=255;g/=255;b/=255;const mx=Math.max(r,g,b),mn=Math.min(r,g,b),d=mx-mn;let h=0,s=0,l=(mx+mn)/2;if(d){s=l>.5?d/(2-mx-mn):d/(mx+mn);switch(mx){case r:h=((g-b)/d+(g<b?6:0))/6;break;case g:h=((b-r)/d+2)/6;break;case b:h=((r-g)/d+4)/6;break};}return[Math.round(h*360),Math.round(s*100),Math.round(l*100)]}
+function hslToRgb(h,s,l){h/=360;s/=100;l/=100;let r,g,b;if(!s){r=g=b=l}else{const hue2rgb=(p,q,t)=>{if(t<0)t+=1;if(t>1)t-=1;if(t<1/6)return p+(q-p)*6*t;if(t<1/2)return q;if(t<2/3)return p+(q-p)*(2/3-t)*6;return p};const q=l<.5?l*(1+s):l+s-l*s,p=2*l-q;r=hue2rgb(p,q,h+1/3);g=hue2rgb(p,q,h);b=hue2rgb(p,q,h-1/3)}return[Math.round(r*255),Math.round(g*255),Math.round(b*255)]}
+function rgbToCmyk(r,g,b){if(!r&&!g&&!b)return[0,0,0,100];const c1=1-r/255,m1=1-g/255,y1=1-b/255,k=Math.min(c1,m1,y1);return[Math.round((c1-k)/(1-k)*100),Math.round((m1-k)/(1-k)*100),Math.round((y1-k)/(1-k)*100),Math.round(k*100)]}
+function cmykToRgb(c,m,y,k){c/=100;m/=100;y/=100;k/=100;return[Math.round(255*(1-c)*(1-k)),Math.round(255*(1-m)*(1-k)),Math.round(255*(1-y)*(1-k))]}
+
+/* --- Luminance & contrast --- */
+function luminance(r,g,b){const a=[r,g,b].map(v=>{v/=255;return v<=.03928?v/12.92:Math.pow((v+.055)/1.055,2.4)});return .2126*a[0]+.7152*a[1]+.0722*a[2]}
+function contrastRatio(rgb1,rgb2){const l1=luminance(...rgb1),l2=luminance(...rgb2);const lighter=Math.max(l1,l2),darker=Math.min(l1,l2);return(lighter+.05)/(darker+.05)}
+
+/* --- Update all from RGB --- */
+function updateAll(rgb,source){
+currentRGB=rgb.map(v=>clamp(Math.round(v),0,255));
+const[r,g,b]=currentRGB;
+const hex=rgbToHex(r,g,b);
+const[h,s,l]=rgbToHsl(r,g,b);
+const[c,m,y,k]=rgbToCmyk(r,g,b);
+
+if(source!=='hex')fHex.value=hex;
+if(source!=='rgb')fRgb.value=`${r}, ${g}, ${b}`;
+if(source!=='hsl')fHsl.value=`${h}, ${s}%, ${l}%`;
+if(source!=='cmyk')fCmyk.value=`${c}, ${m}, ${y}, ${k}`;
+cpick.value=hex;
+swatch.style.background=hex;
+
+renderCSS(hex,r,g,b,h,s,l);
+renderHarmonies(h,s,l);
+updateContrast();
+}
+
+/* --- CSS output --- */
+function renderCSS(hex,r,g,b,h,s,l){
+const rows=[
+['HEX',hex],
+['RGB',`rgb(${r}, ${g}, ${b})`],
+['HSL',`hsl(${h}, ${s}%, ${l}%)`],
+['RGBA',`rgba(${r}, ${g}, ${b}, 1)`]
+];
+cssOut.innerHTML=rows.map(([lbl,val])=>`<div class="css-row"><span style="width:32px;color:#6a7a9b">${lbl}</span><code>${val}</code><button onclick="copyText('${val}',this)">Copy</button></div>`).join('');
+}
+
+/* --- Harmonies --- */
+function harmonyColors(h,s,l){
+return{
+complementary:[[(h+180)%360,s,l]],
+analogous:[[(h+30)%360,s,l],[(h-30+360)%360,s,l]],
+triadic:[[(h+120)%360,s,l],[(h+240)%360,s,l]]
+}}
+function renderHarmonies(h,s,l){
+const groups=harmonyColors(h,s,l);
+harmonies.innerHTML=Object.entries(groups).map(([name,colors])=>{
+const swatches=colors.map(([hh,ss,ll])=>{
+const hex=rgbToHex(...hslToRgb(hh,ss,ll));
+return`<div class="harmony-sw" style="background:${hex}" title="${hex}" onclick="useHarmony('${hex}')"></div>`}).join('');
+return`<div class="harmony-group"><span class="lbl">${name}</span><div class="harmony-swatches"><div class="harmony-sw" style="background:${rgbToHex(...currentRGB)}" title="current"></div>${swatches}</div></div>`}).join('');
+}
+
+/* --- Contrast checker --- */
+function parseHexInput(val){
+val=val.trim().replace('#','');
+if(val.length===3)val=val[0]+val[0]+val[1]+val[1]+val[2]+val[2];
+if(/^[0-9a-f]{6}$/i.test(val))return hexToRgb('#'+val);
+return null;
+}
+function updateContrast(){
+const fg=parseHexInput(cFg.value),bg=parseHexInput(cBg.value);
+const prev=$('contrastPrev');
+if(!fg||!bg){prev.innerHTML='<span style="color:#6a7a9b;font-size:.75rem">Enter valid hex colors</span>';return}
+const ratio=contrastRatio(fg,bg);
+const r=ratio.toFixed(2);
+const aa=ratio>=4.5,aaa=ratio>=7,aaLarge=ratio>=3,aaaLarge=ratio>=4.5;
+const badge=(pass,label)=>`<span class="badge ${pass?'pass':'fail'}">${label}: ${pass?'PASS':'FAIL'}</span>`;
+prev.innerHTML=`<div class="contrast-sample" style="color:${rgbToHex(...fg)};background:${rgbToHex(...bg)}">Sample Text Aa</div><div class="contrast-results"><div><strong style="color:#56c2ff">${r}:1</strong></div><div>${badge(aa,'AA Normal')}${badge(aaa,'AAA Normal')}</div><div>${badge(aaLarge,'AA Large')}${badge(aaaLarge,'AAA Large')}</div></div>`;
+}
+
+/* --- History --- */
+function addHistory(hex){
+hex=hex.toLowerCase();
+history=history.filter(h=>h!==hex);
+history.unshift(hex);
+if(history.length>10)history.pop();
+localStorage.setItem('cc_hist',JSON.stringify(history));
+renderHistory();
+}
+function renderHistory(){
+if(!history.length){historyBar.innerHTML='<span class="lbl">None yet</span>';return}
+historyBar.innerHTML='<span class="lbl">Recent:</span>'+history.map(h=>`<div class="hist-sw" style="background:${h}" title="${h}" onclick="useHistory('${h}')"></div>`).join('');
+}
+
+/* --- Copy --- */
+window.copyText=function(text,btn){
+navigator.clipboard.writeText(text).then(()=>{btn.textContent='Copied!';btn.classList.add('copied');setTimeout(()=>{btn.textContent='Copy';btn.classList.remove('copied')},1200)})};
+
+/* --- Globals for onclick --- */
+window.useHarmony=function(hex){updateAll(hexToRgb(hex),'pick');addHistory(hex)};
+window.useHistory=function(hex){updateAll(hexToRgb(hex),'pick');};
+
+/* --- Event listeners --- */
+cpick.addEventListener('input',()=>{updateAll(hexToRgb(cpick.value),'pick');addHistory(cpick.value)});
+
+fHex.addEventListener('input',()=>{
+const v=fHex.value.trim();if(/^#?[0-9a-f]{3}([0-9a-f]{3})?$/i.test(v)){
+const rgb=hexToRgb(v.startsWith('#')?v:'#'+v);updateAll(rgb,'hex')}});
+fHex.addEventListener('change',()=>addHistory(rgbToHex(...currentRGB)));
+
+fRgb.addEventListener('input',()=>{
+const m=fRgb.value.match(/(\d{1,3})\s*,\s*(\d{1,3})\s*,\s*(\d{1,3})/);
+if(m)updateAll([+m[1],+m[2],+m[3]],'rgb')});
+fRgb.addEventListener('change',()=>addHistory(rgbToHex(...currentRGB)));
+
+fHsl.addEventListener('input',()=>{
+const m=fHsl.value.match(/(\d{1,3})\s*,\s*(\d{1,3})%?\s*,\s*(\d{1,3})%?/);
+if(m)updateAll(hslToRgb(+m[1],+m[2],+m[3]),'hsl')});
+fHsl.addEventListener('change',()=>addHistory(rgbToHex(...currentRGB)));
+
+fCmyk.addEventListener('input',()=>{
+const m=fCmyk.value.match(/(\d{1,3})\s*,\s*(\d{1,3})\s*,\s*(\d{1,3})\s*,\s*(\d{1,3})/);
+if(m)updateAll(cmykToRgb(+m[1],+m[2],+m[3],+m[4]),'cmyk')});
+fCmyk.addEventListener('change',()=>addHistory(rgbToHex(...currentRGB)));
+
+cFg.addEventListener('input',updateContrast);
+cBg.addEventListener('input',updateContrast);
+$('btnUseFg').addEventListener('click',()=>{cFg.value=rgbToHex(...currentRGB);updateContrast()});
+$('btnUseBg').addEventListener('click',()=>{cBg.value=rgbToHex(...currentRGB);updateContrast()});
+
+/* --- Init --- */
+renderHistory();
+updateAll([86,194,255],'pick');
+})();
+</script>
+</body>
+</html>
