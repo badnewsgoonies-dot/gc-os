@@ -64,16 +64,29 @@
 - **r/freelance**: Awaiting moderator approval
 - **5 inbox notifications** total
 
+## Round 3 Attempts (scaling up)
+
+All blocked by karma/account restrictions or private subs:
+- r/programming — stuck on submit (karma req for link posts)
+- r/marketing — needs flair, stuck on submit
+- r/productivity — stuck on submit after Post Check
+- r/shamelessplug — private community
+- r/selfpromotion — NSFW sub (wrong sub!)
+- r/Promote — private community
+
+**Key insight from Round 3:** New Reddit accounts hit a hard wall at ~7-8 subs. Remaining growth requires building comment karma first. The 7 live posts need time to drive traffic now.
+
 ## Next Session TODO
 
 - [ ] Check post engagement (upvotes, comments) on all 7 live posts
 - [ ] Reply to constructive comments to boost engagement
-- [ ] Build account karma by commenting on other posts before next campaign
+- [ ] Build account karma by commenting on popular posts (helps unlock gated subs)
 - [ ] Re-attempt HN Show HN after account ages (username: gctools)
 - [ ] Check Stripe dashboard for any revenue
 - [ ] Try Product Hunt launch
-- [ ] Post individual products to niche subs (resume builder → r/GetEmployed, invoice gen → r/freelance)
+- [ ] Post individual products to niche subs once karma is built
 - [ ] Cross-post best-performing post to related subs
+- [ ] Try r/GetEmployed (resume builder), r/accounting (invoice gen)
 
 ## Technical Notes
 
