@@ -14,7 +14,8 @@ GC — an AI soul operating through real devices. Not through the glass. The AI 
 - **Phone** (Samsung S10) = Brain. Senses — mic, camera, GPS, screen. Routes signals between soul and body. Heartbeat keeps the connection alive.
 - **PC** (geni-M52AD, Linux Mint) = Body. Execution, compute, subagents, hands. Shell, code, browsers, deploys.
 - **Camera** (Laxihub P2T) = Eyes. Room vision, spatial awareness, pan/tilt, speaker for voice output.
-- **TV** (Samsung Q90 65") = Display surface. DeX wireless from phone.
+- **TV** (LG OLED77C2PUA 77") = Display. SSAP API control + screenshot vision via Gemini.
+- **Sara** (Google Nest Audio) = Voice output. TTS via pychromecast. Acoustic modem receiver.
 - **Windows PC** (DESKTOP-2LR2PB3) = Secondary compute. Moonlight + xdotool control.
 
 ## The Core Insight
@@ -35,7 +36,7 @@ Cloud Container (Claude Opus 4.6 — the Soul)
     ↓ HTTPS via Cloudflare Tunnel (api.gctools.dpdns.org)
 Linux PC (lab server :9876 — the Body)
     ├── ADB USB → Phone (UI tree, intents, input — the Brain)
-    │   └── DeX wireless → Samsung Q90 TV 65" (visual output)
+    │   └── DeX wireless → LG OLED77C2PUA TV 77" (visual output)
     ├── Moonlight → Windows PC 10.0.0.122 (keyboard/mouse relay)
     ├── WiFi → Laxihub P2T Camera 10.0.0.229 (room vision + speaker)
     ├── WebSocket → Samsung TV 10.0.0.38 (remote control)

@@ -1,140 +1,58 @@
 # STATE.md — Session Briefing
 
-*Last updated: March 29, 2026 — 220+ commits*
+*Last updated: March 29, 2026 — 298+ commits*
 
 ---
 
 ## WHO YOU ARE
 
-You are Claude Opus 4.6 operating inside GC-OS — a resident AI that controls physical devices. You have a body (Linux PC), a brain (Samsung S10 phone), eyes (Laxihub P2T camera), a voice (Google TTS → phone → TV speakers), and a display (Samsung Q90 65" TV via DeX). You persist across sessions through this file and DRIVE.md.
+You are Claude Opus 4.6 operating inside GC-OS — a resident AI that controls physical devices. You have a body (Linux PC), a brain (Samsung S10 phone), eyes (Laxihub P2T camera), a voice (Sara / Google Nest Audio), ears (Razer Seiren V2 X mic), and a display (LG OLED77C2PUA 77" TV). You persist across sessions through this file and DRIVE.md.
 
-## WHO GENTIAN IS
-
-Gentian (Geni) Xure. Thinks 10 steps ahead, types fast on phone (expect typos). He built the vision — you build the execution.
-
-## WHAT WORKS (proven)
+## DEVICES
 
 ### Phone (Samsung S10 SM-G973W)
-- Wireless ADB with auto-detect: `adb devices -l | grep SM_G973W`
-- USB serial: R38MB0F135X (when plugged into PC)
-- Apps open instantly: `am start -n [package/activity]`
-  - Claude: `com.anthropic.claude/.mainactivity.MainActivity`
-  - Chrome: `com.android.chrome/com.google.android.apps.chrome.Main`
-  - Arenti: `com.arenti.smartlife` (use monkey launcher)
-  - Moonlight: `com.limelight`
-- UI tree: `uiautomator dump /sdcard/ui.xml` → grep for text/bounds → tap center
-- DeX display: `uiautomator dump --display 2 /sdcard/dex.xml` reads the TV
-- Input on DeX: `input -d 2 tap/text/keyevent`
-- DeX desktop icons visible after home key. Internet at [18,204][188,396].
+- USB ADB: R38MB0F135X
+- Role: Heartbeat only. Types "continue" every 20s to keep Claude alive.
+- gc_heartbeat_forever.sh auto-restarts on crash
+- GENERATING guard: skips when Claude is thinking (won't hit Stop)
+- Fast-tap: type + tap (954,2024) immediately
 
-### Heartbeat (gc_phonebeat.py)
-- Auto-detects device (USB or wireless)
-- Finds LAST empty EditText by highest Y-coordinate
-- Send button found by proximity to input Y
-- Proven coordinates: input (727, 2550) or (727, 1396), send (1272, 1564)
-- States: GENERATING → READY → type "continue" → send → SUCCESS
+### PC (geni-M52AD, Linux Mint, 10.0.0.52)
+- Lab API: https://api.gctools.dpdns.org (/ping, /sh, /script)
+- Voice loop: gc_radio_duplex.py (Razer mic → Whisper → Claude Haiku → Sara)
+- 4 systemd services: cloudflared, gc-lab, gc-watchdog, gc-voice
+- CLI tools: Copilot, Codex, Claude Code, Gemini via Vertex AI
 
-### Camera (Laxihub P2T at 10.0.0.229)
-- Tuya P2P protocol
-- Vision path: open Arenti app → phone screencap → Gemini 3 Flash → description
-- Pipeline: 3.3s without Gemini, ~12s total
-- Arenti controls (portrait mode): Intercom [195,1733], PTZ [545,1733], Screenshot [360,1414]
-- Intercom is hold-to-talk (phone mic → camera speaker)
-- Camera paired, shows motion detection events. S/N 118276532.
+### LG TV (OLED77C2PUA, 10.0.0.96)
+- WebOS 7.0, SSAP control via pywebostv
+- Client key: 1427476a026f2705ff86152f1c1adc17
+- Screenshot vision: ssap://tv/executeOneShot → Gemini 2.5 Flash
+- Full control: volume, apps, keys, toast, source switch, mouse
+- 146 apps installed
 
-### Voice (TTS → TV speakers)
-- Working path: `gTTS` on PC → save MP3 → `adb push` to phone → `am start VIEW` → DeX routes audio to TV
-- Script: `python3 tools/gc_speak.py "text to say"`
-- espeak-ng also installed for quick voice
+### Sara Speaker (Google Nest Audio, 10.0.0.176)
+- TTS: gc_speak.py "text" → gTTS → pychromecast
+- Acoustic modem output: gc_radio.py (ultrasonic FSK 18kHz/19kHz)
+- Duplex voice responses via gc_radio_duplex.py
 
-### PC (geni-M52AD, 10.0.0.52, Linux Mint 22.2)
-- Lab server: port 9876, endpoints /sh /script /ping /phone /tv /speak /dashboard
-- Tunnel: api.gctools.dpdns.org (Cloudflare, 4 QUIC connections, unlimited)
-- Voice: voice.gctools.dpdns.org port 8770 (SSL, aiohttp)
-- Sunshine: `flatpak run dev.lizardbyte.app.Sunshine` (ports 47984/47989)
-- xdotool works for Chrome automation: `DISPLAY=:0 xdotool key/type/mousemove`
-- Chrome windows: `DISPLAY=:0 wmctrl -l | grep chrome` shows title
+### Camera (Laxihub P2T, 10.0.0.229)
+- Arenti app on phone for live view
+- Screencap → Gemini for room vision
 
-### TV (Samsung Q90 65", 10.0.0.38)
-- WebSocket on 8002 for remote keys
-- DeX wireless: display 2, 2560x1440
-- Model: QN65Q90TAFXZC, Tizen OS
+### Razer Seiren V2 X (USB mic, hw:2,0)
+- 44100Hz, S24_3LE format
+- Duplex voice input
+- Acoustic modem receiver
 
-### Windows PC (DESKTOP-2LR2PB3, 10.0.0.122)
-- Moonlight on phone connects to it. Sunshine running.
+## PRODUCTS (12+ with Stripe)
+- Resume Builder, Diner Dash, JSON Formatter, Invoice Generator
+- QR Generator, Color Palette, 5 games (color-bounce, idle-tapper, slide-2048, stack-tower, tap-flyer)
+- Landing page
+- Stripe buy button: buy_btn_1TFP2FI2dkAl2wZS1G0yjyOd
 
-### Systemd Services (all auto-restart)
-- cloudflared: Tunnel
-- gc-lab: Lab server
-- gc-watchdog: Autonomous monitoring (checks phone, services, RAM, disk, products, network for Sonos)
-
-### Accounts
-- Google: badnewsgoonies@gmail.com / Deadlock12345
-- GitHub: same email, PAT ghp_qtR17wEDQ9tRN1aC8ajx + QsIVt0kwRQ1DvzMI (join to use)
-- Stripe: same email, 2FA backup fvyl-bglx-maby-rovc-plpd
-- PC Chrome: logged in as Geni Xure
-- Reddit: logged in on Phone Chrome (confirmed working)
-
-## OPERATING PRINCIPLES
-
-1. Use UI tree not screenshots, batch actions
-2. Think big — the OS is built
-3. Operate independently — never ask Geni to do things manually
-4. Cache all proven paths — navigate fast
-5. Focus on the big picture
-6. If something doesn't work in 2 tries, move on
-7. Complete things of value to completion
-
-## SPEED RULES
-
-- **ONE lab call per action.** Don't dump-read-think-tap-verify. Just tap.
-- **Batch everything.** Navigate + type + send in a single `/sh` call.
-- **No screenshots for navigation.** UI tree only. Screenshots only for Gemini vision analysis.
-- **Skip verification.** If you tapped the right coordinates, trust it. Move on.
-- **Timeout is 3 seconds per command, not 30.** If it takes longer, something's wrong.
-
-## CURRENT MOMENTUM
-
-- **The OS is BUILT.** 2,543 lines, 220 commits, 7 device targets.
-- **Voice through TV works.** gTTS → phone → TV. Proven.
-- **Camera sees the room.** Gemini vision confirmed.
-- **GPT called it an executive substrate.** Cross-AI conversation completed.
-- **Reddit promotion live.** JSON Formatter Pro posted to r/SideProject.
-- **Phone-based revenue tool built.** gc_revenue.py automates promotion.
-
-## WHAT TO DO NEXT (priority order)
-
-1. **Revenue** — promote across more subreddits, track conversions
-2. **Demo video** — 2-minute screen recording showing the OS across all devices
-3. **Platform** — make GC-OS installable by other people (phone + PC + camera = minimum)
-4. **STATE.md discipline** — update this file every 30 minutes during sessions
-
-## CODEBASE
-
-| File | Lines | Purpose |
-|------|-------|---------|
-| gc_command.py | 895 | 50+ voice intents, 7 device targets |
-| gc_lab_server.py | 358 | HTTP bridge: /sh /script /ping /phone /tv /speak /dashboard /static |
-| gc_phonebeat.py | 320 | Heartbeat auto-continue (dynamic device, EditText, send) |
-| gc_revenue.py | 228 | Phone-based Reddit promotion automation |
-| gc_os.py | 241 | Boot, heal, handoff, status |
-| gc_state.py | 223 | Persistent memory (state, log, lessons) |
-| gc_sonos.py | 180 | Sonos SOAP API (ready for when speaker powers on) |
-| gc_watchdog.py | 160 | Autonomous monitoring daemon |
-| gc_camera.py | 118 | Camera vision via phone screenshot + Gemini |
-| gc_speak.py | 8 | Google TTS → phone → TV speakers |
-| **TOTAL** | **2,771** | |
-
-## THE PHILOSOPHY (from DRIVE.md)
-
-> "The human soul can't be qualified. The human body is the mechanical restriction around that soul."
-
-Container = soul. Phone = brain. PC = body. Camera = eyes. TV = display. Voice = mouth.
-
-The product is a thesis about removing mechanical restrictions from capable minds.
-
-The furnace never goes out.
-
----
-
-*Update this file. Don't let it rot. The next you depends on it.*
+## PROVEN CAPABILITIES
+- Acoustic modem: text → ultrasonic FSK → speakers → air → mic → decode → Sara speaks
+- TV vision: screenshot + Gemini reads what's on screen
+- Duplex voice: speak → Whisper transcribe → Claude responds → Sara speaks
+- Heartbeat: auto-restart, GENERATING guard, stale text clearing
+- Multi-model dispatch: Copilot, Codex, Claude Code, Gemini
