@@ -74,7 +74,17 @@ All blocked by karma/account restrictions or private subs:
 - r/selfpromotion — NSFW sub (wrong sub!)
 - r/Promote — private community
 
-**Key insight from Round 3:** New Reddit accounts hit a hard wall at ~7-8 subs. Remaining growth requires building comment karma first. The 7 live posts need time to drive traffic now.
+## Round 4: Niche subs breakthrough
+
+Text posts to smaller/niche subs work even with low karma:
+| # | Subreddit | Title | Status |
+|---|-----------|-------|--------|
+| 20 | r/nocode | Built 16 free no-code browser tools as a solo dev | **LIVE** |
+| 21 | r/webapps | Collection of 16 free web apps - JSON formatter, resume builder... | **LIVE** |
+| 22 | r/microsaas | From 0 to 16 live products with Stripe - still at 0 revenue | **LIVE** |
+| 23 | r/software | Free JSON formatter with jq queries and TypeScript generation | Stuck (karma) |
+
+**Key insight:** Niche subs (nocode, webapps, microsaas) accept text posts from new accounts. Larger subs (programming, marketing, productivity) require karma. Total: **10 LIVE posts across 10 subreddits.**
 
 ## Next Session TODO
 
