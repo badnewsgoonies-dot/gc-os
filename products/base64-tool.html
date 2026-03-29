@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Base64 Encode Decode Online - Free Base64 Converter</title>
+<meta name="description" content="Free online Base64 encoder and decoder. Convert text, files, and binary data to and from Base64 instantly. Supports URL-safe Base64, drag-and-drop file upload, and auto-detection.">
+<meta name="keywords" content="base64, encode, decode, converter, online tool, free, url-safe, file encoder">
+<meta name="robots" content="index,follow">
+<meta property="og:title" content="Base64 Encode Decode Online - Free Base64 Converter">
+<meta property="og:description" content="Free online Base64 encoder and decoder. Convert text and files instantly.">
+<meta property="og:type" content="website">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect rx='12' width='100' height='100' fill='%230b1020'/><text x='50' y='68' font-size='48' font-family='monospace' font-weight='bold' text-anchor='middle' fill='%2356c2ff'>B64</text></svg>">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#0b1020;color:#eef3ff;font-family:'SF Mono','Fira Code','Cascadia Code','Consolas',monospace;min-height:100vh;display:flex;flex-direction:column;align-items:center}
+h1{font-size:1.3rem;padding:1.2rem 0 .3rem;color:#56c2ff;text-align:center;letter-spacing:.5px}
+.sub{font-size:.75rem;color:#6a7a9b;text-align:center;margin-bottom:1rem}
+.wrap{width:100%;max-width:1100px;padding:0 1rem;flex:1;display:flex;flex-direction:column}
+.main{display:flex;gap:.8rem;flex:1;min-height:0}
+.panel{flex:1;display:flex;flex-direction:column;background:rgba(13,19,37,.94);border:1px solid #1a2340;border-radius:8px;overflow:hidden}
+.panel-head{display:flex;justify-content:space-between;align-items:center;padding:.5rem .7rem;border-bottom:1px solid #1a2340;font-size:.75rem;color:#6a7a9b}
+.panel-head strong{color:#56c2ff;font-size:.8rem}
+textarea{flex:1;background:transparent;border:none;color:#eef3ff;font-family:inherit;font-size:.85rem;padding:.7rem;resize:none;outline:none;line-height:1.5}
+textarea::placeholder{color:#3a4a6b}
+.controls{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.5rem;padding:0 .2rem;min-width:fit-content}
+button{background:rgba(86,194,255,.12);color:#56c2ff;border:1px solid rgba(86,194,255,.25);border-radius:6px;padding:.45rem .9rem;font-family:inherit;font-size:.75rem;cursor:pointer;transition:all .15s;white-space:nowrap}
+button:hover{background:rgba(86,194,255,.22);border-color:#56c2ff}
+button.primary{background:rgba(86,194,255,.2);font-weight:600}
+.toggle{display:flex;align-items:center;gap:.4rem;font-size:.7rem;color:#6a7a9b;cursor:pointer;user-select:none}
+.toggle input{accent-color:#56c2ff;cursor:pointer}
+.stats{font-size:.65rem;color:#4a5a7b;text-align:center;padding:.1rem 0}
+.drop-zone{border:2px dashed transparent;border-radius:6px;transition:border-color .2s}
+.drop-zone.over{border-color:#56c2ff}
+.status{font-size:.7rem;text-align:center;padding:.5rem 0;color:#6a7a9b;min-height:1.8rem}
+.status.ok{color:#56c2ff}
+.status.err{color:#ff6b8a}
+footer{font-size:.65rem;color:#3a4a6b;padding:.8rem 0;text-align:center}
+@media(max-width:700px){
+ .main{flex-direction:column}
+ .controls{flex-direction:row;flex-wrap:wrap;justify-content:center;padding:.4rem 0}
+ .panel{min-height:30vh}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+<h1>Base64 Encode / Decode</h1>
+<p class="sub">Paste text, drop a file, or click Sample to get started</p>
+<div class="main">
+ <div class="panel drop-zone" id="inPanel">
+  <div class="panel-head"><strong>Input</strong><span id="inStats">0 chars &middot; 0 B</span></div>
+  <textarea id="inp" placeholder="Paste text or drop a file here..." spellcheck="false"></textarea>
+ </div>
+ <div class="controls">
+  <button class="primary" onclick="doEncode()">Encode &rarr;</button>
+  <button class="primary" onclick="doDecode()">&larr; Decode</button>
+  <button onclick="doAuto()">Auto</button>
+  <hr style="border:0;border-top:1px solid #1a2340;width:100%">
+  <label class="toggle"><input type="checkbox" id="urlSafe"> URL-safe</label>
+  <hr style="border:0;border-top:1px solid #1a2340;width:100%">
+  <button onclick="loadSample()">Sample</button>
+  <button onclick="clearAll()">Clear</button>
+  <button onclick="swapPanels()">Swap ⇄</button>
+  <input type="file" id="fileIn" hidden>
+  <button onclick="document.getElementById('fileIn').click()">Upload</button>
+ </div>
+ <div class="panel">
+  <div class="panel-head"><strong>Output</strong><span id="outStats">0 chars &middot; 0 B</span></div>
+  <textarea id="out" placeholder="Result appears here..." spellcheck="false" readonly></textarea>
+  <div style="padding:.3rem .7rem;text-align:right"><button onclick="copyOut()">Copy</button></div>
+ </div>
+</div>
+<div class="status" id="status">&nbsp;</div>
+</div>
+<footer>Base64 Encode/Decode &mdash; all processing happens in your browser</footer>
+<script>
+const $=id=>document.getElementById(id);
+const inp=$('inp'),out=$('out'),status=$('status'),urlSafe=$('urlSafe');
+
+function byteSize(s){return new Blob([s]).size}
+function updateStats(){
+ $('inStats').textContent=`${inp.value.length} chars \u00b7 ${byteSize(inp.value)} B`;
+ $('outStats').textContent=`${out.value.length} chars \u00b7 ${byteSize(out.value)} B`;
+}
+inp.addEventListener('input',updateStats);
+
+function msg(t,type){status.textContent=t;status.className='status '+(type||'')}
+
+function toUrlSafe(s){return s.replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'')}
+function fromUrlSafe(s){let r=s.replace(/-/g,'+').replace(/_/g,'/');while(r.length%4)r+='=';return r}
+
+function encode(text){
+ let b=btoa(unescape(encodeURIComponent(text)));
+ return urlSafe.checked?toUrlSafe(b):b;
+}
+
+function decode(b64){
+ if(urlSafe.checked)b64=fromUrlSafe(b64);
+ return decodeURIComponent(escape(atob(b64)));
+}
+
+function isBase64(s){
+ s=s.trim();
+ if(s.length<4)return false;
+ if(urlSafe.checked)return/^[A-Za-z0-9\-_]+$/.test(s);
+ return/^[A-Za-z0-9+/]+={0,2}$/.test(s)&&s.length%4===0;
+}
+
+function doEncode(){
+ try{out.value=encode(inp.value);msg('Encoded successfully','ok')}
+ catch(e){msg('Encode error: '+e.message,'err')}
+ updateStats();
+}
+function doDecode(){
+ try{out.value=decode(inp.value);msg('Decoded successfully','ok')}
+ catch(e){msg('Decode error: '+e.message,'err')}
+ updateStats();
+}
+function doAuto(){
+ if(isBase64(inp.value.trim())){
+  try{out.value=decode(inp.value.trim());msg('Auto-detected Base64 \u2192 decoded','ok');updateStats();return}catch(e){}
+ }
+ try{out.value=encode(inp.value);msg('Auto-detected text \u2192 encoded','ok')}
+ catch(e){msg('Auto error: '+e.message,'err')}
+ updateStats();
+}
+
+function copyOut(){
+ navigator.clipboard.writeText(out.value).then(()=>msg('Copied to clipboard','ok'),()=>msg('Copy failed','err'));
+}
+function clearAll(){inp.value='';out.value='';msg('Cleared','ok');updateStats()}
+function swapPanels(){let t=inp.value;inp.value=out.value;out.value=t;updateStats();msg('Swapped','ok')}
+function loadSample(){
+ inp.value='Hello, World! 🌍 Base64 encoding converts binary data into ASCII text.\n\nSpecial chars: <script>, "quotes", l\'apostrophe, ñ, ü, 日本語';
+ doEncode();
+}
+
+// File upload
+function handleFile(file){
+ const reader=new FileReader();
+ reader.onload=function(){
+  const u8=new Uint8Array(reader.result);
+  let bin='';for(let i=0;i<u8.length;i++)bin+=String.fromCharCode(u8[i]);
+  let b=btoa(bin);
+  if(urlSafe.checked)b=toUrlSafe(b);
+  out.value=b;
+  inp.value='[File: '+file.name+' ('+file.size+' bytes)]';
+  msg('File encoded: '+file.name+' ('+file.size+' B)','ok');
+  updateStats();
+ };
+ reader.onerror=()=>msg('File read error','err');
+ reader.readAsArrayBuffer(file);
+}
+$('fileIn').addEventListener('change',e=>{if(e.target.files[0])handleFile(e.target.files[0])});
+
+// Drag and drop
+const dz=$('inPanel');
+['dragenter','dragover'].forEach(ev=>dz.addEventListener(ev,e=>{e.preventDefault();dz.classList.add('over')}));
+['dragleave','drop'].forEach(ev=>dz.addEventListener(ev,e=>{e.preventDefault();dz.classList.remove('over')}));
+dz.addEventListener('drop',e=>{if(e.dataTransfer.files[0])handleFile(e.dataTransfer.files[0])});
+
+updateStats();
+</script>
+</body>
+</html>
