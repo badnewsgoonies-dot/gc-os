@@ -113,5 +113,15 @@ Text posts to smaller/niche subs work even with low karma:
 
 ---
 
+## Final Tally — Session 1
+
+**10 live posts across 10 subreddits** promoting 16 web products.
+- 19 total submission attempts
+- 10 successful (52% success rate)
+- Major subs: r/SideProject (374k), r/javascript, r/reactjs, r/InternetIsBeautiful, r/freelance
+- Niche subs: r/buildinpublic, r/alphaandbetausers, r/nocode, r/webapps, r/microsaas
+- Products promoted: JSON Formatter Pro ($6/mo), Landing page (all 16 tools)
+- HN account created (gctools), restricted from Show HN for now
+
 *Campaign started: March 29, 2026*
-*Last updated: March 29, 2026*
+*Last updated: March 29, 2026 — Session 1 complete*
