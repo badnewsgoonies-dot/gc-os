@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Epoch Converter - Unix Timestamp Converter Online</title>
+<meta name="description" content="Free online epoch converter. Convert Unix timestamps to human-readable dates and vice versa. Supports seconds, milliseconds, multiple formats, timezones, and relative time.">
+<meta name="keywords" content="epoch converter, unix timestamp, timestamp converter, epoch to date, date to epoch, unix time, online tool">
+<meta name="robots" content="index,follow">
+<meta property="og:title" content="Epoch Converter - Unix Timestamp Converter Online">
+<meta property="og:description" content="Convert Unix timestamps to dates and dates to timestamps. Supports multiple formats and timezones.">
+<meta property="og:type" content="website">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect rx='12' width='100' height='100' fill='%230b1020'/><text x='50' y='42' font-size='28' text-anchor='middle' fill='%2356c2ff'>%E2%8F%B1</text><text x='50' y='78' font-size='22' font-family='monospace' font-weight='bold' text-anchor='middle' fill='%2356c2ff'>UTC</text></svg>">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#0b1020;color:#eef3ff;font-family:'SF Mono','Fira Code','Cascadia Code','Consolas',monospace;min-height:100vh;display:flex;flex-direction:column;align-items:center}
+h1{font-size:1.3rem;padding:1.2rem 0 .3rem;color:#56c2ff;text-align:center;letter-spacing:.5px}
+.sub{font-size:.75rem;color:#6a7a9b;text-align:center;margin-bottom:1rem}
+.wrap{width:100%;max-width:900px;padding:0 1rem;flex:1;display:flex;flex-direction:column}
+.panel{background:rgba(13,19,37,.94);border:1px solid #1a2340;border-radius:8px;padding:1rem;margin-bottom:.8rem}
+.panel-title{font-size:.8rem;color:#56c2ff;font-weight:600;margin-bottom:.7rem;display:flex;align-items:center;gap:.4rem}
+.live-clock{text-align:center;padding:.6rem 0}
+.epoch-now{font-size:1.8rem;color:#56c2ff;font-weight:700;cursor:pointer;transition:color .15s;letter-spacing:1px}
+.epoch-now:hover{color:#8dd6ff}
+.date-now{font-size:.75rem;color:#6a7a9b;margin-top:.3rem}
+.row{display:flex;gap:.6rem;align-items:center;margin-bottom:.6rem;flex-wrap:wrap}
+input[type="text"],input[type="number"],input[type="datetime-local"],select{
+  background:rgba(10,14,28,.8);border:1px solid #1a2340;border-radius:6px;color:#eef3ff;
+  font-family:inherit;font-size:.82rem;padding:.5rem .7rem;outline:none;transition:border-color .15s;flex:1;min-width:0}
+input:focus,select:focus{border-color:#56c2ff}
+select{cursor:pointer;min-width:120px;flex:unset}
+button{background:rgba(86,194,255,.12);color:#56c2ff;border:1px solid rgba(86,194,255,.25);border-radius:6px;
+  padding:.45rem .8rem;font-family:inherit;font-size:.72rem;cursor:pointer;transition:all .15s;white-space:nowrap}
+button:hover{background:rgba(86,194,255,.22);border-color:#56c2ff}
+button.sm{padding:.3rem .55rem;font-size:.65rem}
+.output-row{display:flex;align-items:center;justify-content:space-between;background:rgba(10,14,28,.6);
+  border-radius:5px;padding:.4rem .7rem;margin-bottom:.4rem;font-size:.78rem;gap:.5rem}
+.output-row .label{color:#6a7a9b;font-size:.68rem;min-width:65px;flex-shrink:0}
+.output-row .value{flex:1;word-break:break-all;color:#eef3ff}
+.output-row .value.accent{color:#56c2ff}
+.toggle-row{display:flex;align-items:center;gap:.6rem;font-size:.72rem;color:#6a7a9b;margin-bottom:.6rem}
+.toggle-row label{cursor:pointer;display:flex;align-items:center;gap:.3rem}
+.toggle-row input[type="checkbox"]{accent-color:#56c2ff;cursor:pointer}
+.ref-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:.4rem}
+.ref-item{display:flex;justify-content:space-between;align-items:center;background:rgba(10,14,28,.6);
+  border-radius:5px;padding:.35rem .6rem;font-size:.72rem;cursor:pointer;transition:background .15s}
+.ref-item:hover{background:rgba(86,194,255,.08)}
+.ref-item .ref-name{color:#6a7a9b}
+.ref-item .ref-val{color:#56c2ff;font-weight:500}
+.copied{position:fixed;top:1rem;right:1rem;background:rgba(86,194,255,.18);color:#56c2ff;border:1px solid rgba(86,194,255,.35);
+  border-radius:6px;padding:.4rem .8rem;font-size:.72rem;font-family:inherit;opacity:0;transition:opacity .25s;pointer-events:none;z-index:99}
+.copied.show{opacity:1}
+.relative{color:#8dd6ff;font-style:italic}
+footer{font-size:.65rem;color:#3a4a6b;padding:.8rem 0;text-align:center}
+@media(max-width:600px){
+  .row{flex-direction:column}
+  select{width:100%}
+  .ref-grid{grid-template-columns:1fr}
+  .epoch-now{font-size:1.3rem}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+<h1>Epoch Converter</h1>
+<p class="sub">Unix timestamp converter &mdash; seconds, milliseconds, all formats</p>
+
+<div class="panel">
+  <div class="live-clock">
+    <div class="epoch-now" id="liveClock" title="Click to copy"></div>
+    <div class="date-now" id="liveDate"></div>
+  </div>
+</div>
+
+<div class="panel">
+  <div class="panel-title">Timestamp &rarr; Date</div>
+  <div class="toggle-row">
+    <label><input type="checkbox" id="msMode" onchange="convertEpoch()"> Milliseconds mode</label>
+    <span>|</span>
+    <label>Timezone:
+      <select id="tzSelect" onchange="convertEpoch();convertDate()"></select>
+    </label>
+  </div>
+  <div class="row">
+    <input type="text" id="epochInput" placeholder="Enter epoch timestamp (e.g. 1711670400)" oninput="convertEpoch()">
+    <button onclick="fillNow()">Now</button>
+  </div>
+  <div id="epochResults"></div>
+</div>
+
+<div class="panel">
+  <div class="panel-title">Date &rarr; Timestamp</div>
+  <div class="row">
+    <input type="datetime-local" id="dateInput" step="1" onchange="convertDate()" oninput="convertDate()">
+    <button onclick="fillDateNow()">Now</button>
+  </div>
+  <div id="dateResults"></div>
+</div>
+
+<div class="panel">
+  <div class="panel-title">Common Epoch References</div>
+  <div class="ref-grid" id="refGrid"></div>
+</div>
+</div>
+
+<div class="copied" id="toast">Copied!</div>
+<footer>Epoch Converter &mdash; all conversions run locally in your browser</footer>
+
+<script>
+const $=s=>document.getElementById(s);
+const tzSel=$('tzSelect');
+const msCheck=$('msMode');
+
+// Populate timezone selector
+(function(){
+  const zones=['UTC','America/New_York','America/Chicago','America/Denver','America/Los_Angeles',
+    'America/Sao_Paulo','Europe/London','Europe/Paris','Europe/Berlin','Europe/Moscow',
+    'Asia/Dubai','Asia/Kolkata','Asia/Shanghai','Asia/Tokyo','Asia/Seoul',
+    'Australia/Sydney','Pacific/Auckland','Pacific/Honolulu'];
+  const local=Intl.DateTimeFormat().resolvedOptions().timeZone;
+  if(!zones.includes(local))zones.unshift(local);
+  zones.forEach(z=>{
+    const o=document.createElement('option');
+    o.value=z;o.textContent=z.replace(/_/g,' ');
+    if(z===local)o.selected=true;
+    tzSel.appendChild(o);
+  });
+})();
+
+// Toast
+function toast(msg){
+  const t=$('toast');t.textContent=msg||'Copied!';
+  t.classList.add('show');setTimeout(()=>t.classList.remove('show'),1200);
+}
+
+// Copy helper
+function copy(text){
+  navigator.clipboard.writeText(text).then(()=>toast()).catch(()=>{});
+}
+
+// Copy button HTML
+function cpBtn(val){
+  return `<button class="sm" onclick="copy('${val.replace(/'/g,"\\'")}')">Copy</button>`;
+}
+
+// Relative time
+function relTime(d){
+  const now=Date.now(),diff=d.getTime()-now;
+  const abs=Math.abs(diff);
+  const s=Math.floor(abs/1000),m=Math.floor(s/60),h=Math.floor(m/60),
+        dy=Math.floor(h/24),mo=Math.floor(dy/30.44),yr=Math.floor(dy/365.25);
+  let str;
+  if(s<5)str='just now';
+  else if(s<60)str=s+' second'+(s!==1?'s':'');
+  else if(m<60)str=m+' minute'+(m!==1?'s':'');
+  else if(h<24)str=h+' hour'+(h!==1?'s':'');
+  else if(dy<31)str=dy+' day'+(dy!==1?'s':'');
+  else if(mo<12)str=mo+' month'+(mo!==1?'s':'');
+  else str=yr+' year'+(yr!==1?'s':'');
+  if(str==='just now')return str;
+  return diff<0?str+' ago':'in '+str;
+}
+
+// Format date in timezone
+function fmt(d,tz){
+  const o={timeZone:tz};
+  const iso=d.toLocaleString('sv-SE',{...o,year:'numeric',month:'2-digit',day:'2-digit',
+    hour:'2-digit',minute:'2-digit',second:'2-digit',hour12:false}).replace(' ','T');
+  const msStr='.'+String(d.getMilliseconds()).padStart(3,'0');
+  const offsetStr=(()=>{
+    const parts=new Intl.DateTimeFormat('en',{timeZone:tz,timeZoneName:'shortOffset'}).formatToParts(d);
+    const tzp=parts.find(p=>p.type==='timeZoneName');
+    return tzp?tzp.value.replace('GMT',''):'';
+  })();
+  const off=offsetStr||'+00:00';
+  const isoFull=iso+msStr+(tz==='UTC'?'Z':off);
+  const rfc=d.toLocaleString('en-US',{...o,weekday:'short',day:'2-digit',month:'short',year:'numeric',
+    hour:'2-digit',minute:'2-digit',second:'2-digit',hour12:false,timeZoneName:'short'});
+  const local=d.toLocaleString('en-US',{...o,dateStyle:'full',timeStyle:'long'});
+  const utc=d.toUTCString();
+  return {iso:isoFull,rfc,local,utc};
+}
+
+// Convert epoch -> date
+function convertEpoch(){
+  const raw=$('epochInput').value.trim();
+  const out=$('epochResults');
+  if(!raw){out.innerHTML='';return;}
+  let val=parseInt(raw,10);
+  if(isNaN(val)){out.innerHTML='<div class="output-row"><span class="value" style="color:#ff6b8a">Invalid timestamp</span></div>';return;}
+  const ms=msCheck.checked?val:val*1000;
+  if(Math.abs(ms)>8.64e15){out.innerHTML='<div class="output-row"><span class="value" style="color:#ff6b8a">Timestamp out of range</span></div>';return;}
+  const d=new Date(ms);
+  const tz=tzSel.value;
+  const f=fmt(d,tz);
+  const rel=relTime(d);
+  const secVal=Math.floor(ms/1000);
+  const msVal=ms;
+  out.innerHTML=`
+    <div class="output-row"><span class="label">ISO 8601</span><span class="value">${f.iso}</span>${cpBtn(f.iso)}</div>
+    <div class="output-row"><span class="label">RFC 2822</span><span class="value">${f.rfc}</span>${cpBtn(f.rfc)}</div>
+    <div class="output-row"><span class="label">Local</span><span class="value">${f.local}</span>${cpBtn(f.local)}</div>
+    <div class="output-row"><span class="label">UTC</span><span class="value">${f.utc}</span>${cpBtn(f.utc)}</div>
+    <div class="output-row"><span class="label">Relative</span><span class="value relative">${rel}</span></div>
+    <div class="output-row"><span class="label">Seconds</span><span class="value accent">${secVal}</span>${cpBtn(secVal)}</div>
+    <div class="output-row"><span class="label">Millis</span><span class="value accent">${msVal}</span>${cpBtn(msVal)}</div>`;
+}
+
+// Convert date -> epoch
+function convertDate(){
+  const raw=$('dateInput').value;
+  const out=$('dateResults');
+  if(!raw){out.innerHTML='';return;}
+  // Build date in selected timezone
+  const tz=tzSel.value;
+  // Parse the datetime-local value and interpret it in the selected timezone
+  const d=localToTz(raw,tz);
+  if(isNaN(d.getTime())){out.innerHTML='<div class="output-row"><span class="value" style="color:#ff6b8a">Invalid date</span></div>';return;}
+  const sec=Math.floor(d.getTime()/1000);
+  const ms=d.getTime();
+  const rel=relTime(d);
+  const f=fmt(d,tz);
+  out.innerHTML=`
+    <div class="output-row"><span class="label">Seconds</span><span class="value accent">${sec}</span>${cpBtn(sec)}</div>
+    <div class="output-row"><span class="label">Millis</span><span class="value accent">${ms}</span>${cpBtn(ms)}</div>
+    <div class="output-row"><span class="label">ISO 8601</span><span class="value">${f.iso}</span>${cpBtn(f.iso)}</div>
+    <div class="output-row"><span class="label">Relative</span><span class="value relative">${rel}</span></div>`;
+}
+
+// Interpret a datetime-local string in a given timezone
+function localToTz(str,tz){
+  // Create a date from the string as if it were in the target timezone
+  // by computing the offset difference
+  const naive=new Date(str);
+  if(isNaN(naive))return naive;
+  // Get what the local time would be in that timezone at a reference point
+  const utcGuess=new Date(str+'Z');
+  const inTz=new Date(utcGuess.toLocaleString('en-US',{timeZone:tz}));
+  const offset=inTz.getTime()-utcGuess.getTime();
+  return new Date(utcGuess.getTime()-offset);
+}
+
+function fillNow(){
+  const v=msCheck.checked?Date.now():Math.floor(Date.now()/1000);
+  $('epochInput').value=v;convertEpoch();
+}
+function fillDateNow(){
+  const now=new Date();
+  const tz=tzSel.value;
+  const s=now.toLocaleString('sv-SE',{timeZone:tz,year:'numeric',month:'2-digit',day:'2-digit',
+    hour:'2-digit',minute:'2-digit',second:'2-digit',hour12:false}).replace(' ','T');
+  $('dateInput').value=s;convertDate();
+}
+
+// Live clock
+function tickClock(){
+  const now=Date.now();
+  const sec=Math.floor(now/1000);
+  const disp=msCheck.checked?now:sec;
+  $('liveClock').textContent=disp;
+  const tz=tzSel.value;
+  const d=new Date(now);
+  $('liveDate').textContent=d.toLocaleString('en-US',{timeZone:tz,dateStyle:'full',timeStyle:'medium'})+' ('+tz.replace(/_/g,' ')+')';
+}
+setInterval(tickClock,1000);tickClock();
+$('liveClock').addEventListener('click',()=>copy($('liveClock').textContent));
+
+// Reference dates
+const refs=[
+  ['Unix Epoch',0],
+  ['Y2K',946684800],
+  ['2025 Start',1735689600],
+  ['2026 Start',1767225600],
+  ['GPS Epoch',315964800],
+  ['32-bit Max',2147483647],
+  ['NTP Epoch',-2208988800],
+  ['J2000.0',946728000]
+];
+(function(){
+  const g=$('refGrid');
+  refs.forEach(([name,val])=>{
+    const el=document.createElement('div');
+    el.className='ref-item';
+    el.title='Click to load';
+    el.innerHTML=`<span class="ref-name">${name}</span><span class="ref-val">${val}</span>`;
+    el.addEventListener('click',()=>{
+      msCheck.checked=false;
+      $('epochInput').value=val;
+      convertEpoch();
+      $('epochInput').scrollIntoView({behavior:'smooth',block:'center'});
+    });
+    g.appendChild(el);
+  });
+})();
+</script>
+</body>
+</html>
