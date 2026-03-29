@@ -34,17 +34,28 @@
 
 ## Results Summary
 
-- **7 posts LIVE** across 7 different subreddits
+- **13 posts LIVE** across 10 subreddits (some subs got 2nd posts for new products)
 - **3 removed/blocked** (r/webdev auto-removed, r/Entrepreneur links banned, r/smallbusiness domain flagged)
 - **4 stuck on submit** (likely karma/account age restrictions for link posts)
 - **3 skipped** (r/resumes bans builders, r/startups flair trap, flair issues)
 - **1 restricted** (HN new account limitation)
-- **5 inbox notifications** within first 10 minutes (2 real comments)
+
+## Round 5: New product promotion posts
+
+| # | Subreddit | Title | Status |
+|---|-----------|-------|--------|
+| 24 | r/SideProject | Built a free regex tester with real-time matching and a cheat sheet | **LIVE** |
+| 25 | r/microsaas | Just shipped 4 new dev tools - regex tester, diff checker, base64, cron builder | **LIVE** |
+| 26 | r/webapps | 4 new free web apps - regex tester, diff checker, base64 tool, cron builder | **LIVE** |
 
 ## URLs Promoted
 
 - **JSON Formatter Pro:** https://json-formatter-lyart.vercel.app
-- **Landing page (all 16 tools):** https://landing-phi-five-66.vercel.app
+- **Regex Tester Pro:** https://regex-tester-rho.vercel.app
+- **Diff Checker:** https://diff-checker.vercel.app
+- **Base64 Tool:** https://base64-tool-beta.vercel.app
+- **Cron Builder:** https://cron-builder-beta.vercel.app
+- **Landing page (20 tools):** https://landing-phi-five-66.vercel.app
 
 ## Key Learnings
 
