@@ -176,9 +176,13 @@ if(state[key].mode==='range'){state[key].from=f.min;state[key].to=f.max;}
 if(state[key].mode==='interval'){state[key].step=2;state[key].start=f.min;}
 renderInputs(key);update();
 }
-function updateSpecific(k){state[k].values=document.getElementById('val_'+k).value;update();}
-function updateRange(k){state[k].from=+document.getElementById('from_'+k).value;state[k].to=+document.getElementById('to_'+k).value;update();}
-function updateInterval(k){state[k].step=+document.getElementById('step_'+k).value;state[k].start=+document.getElementById('start_'+k).value;update();}
+function updateField(k){
+const s=state[k],$=id=>document.getElementById(id);
+if(s.mode==='specific')s.values=$('val_'+k).value;
+if(s.mode==='range'){s.from=+$('from_'+k).value;s.to=+$('to_'+k).value;}
+if(s.mode==='interval'){s.step=+$('step_'+k).value;s.start=+$('start_'+k).value;}
+update();
+}
 
 function buildField(key){
 const s=state[key];
