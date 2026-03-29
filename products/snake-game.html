@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>Snake Game - Classic Snake Game Online Free</title>
+<meta name="description" content="Play the classic Snake game online for free. Eat food, grow longer, and beat your high score. Mobile-friendly with touch controls.">
+<meta name="keywords" content="snake game, classic snake, free online game, browser game, mobile game">
+<meta name="author" content="Snake Game">
+<meta name="robots" content="index, follow">
+<meta property="og:title" content="Snake Game - Classic Snake Game Online Free">
+<meta property="og:description" content="Play the classic Snake game online for free directly in your browser.">
+<meta property="og:type" content="website">
+<meta name="theme-color" content="#0b1020">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='6' fill='%230b1020'/><circle cx='16' cy='16' r='10' fill='%235ee7a0'/><circle cx='13' cy='13' r='2' fill='%230b1020'/></svg>">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{width:100%;height:100%;overflow:hidden;background:#0b1020;color:#eef3ff;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;touch-action:none;user-select:none;-webkit-user-select:none}
+canvas{display:block;position:absolute;top:50%;left:50%;transform:translate(-50%,-50%)}
+#ui{position:absolute;top:0;left:0;width:100%;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;pointer-events:none;z-index:10}
+#hud{position:absolute;top:0;left:0;width:100%;display:flex;justify-content:space-between;padding:12px 16px;font-size:14px;opacity:0;transition:opacity .3s}
+#hud span{background:rgba(11,16,32,.7);padding:4px 10px;border-radius:6px}
+.overlay{display:flex;flex-direction:column;align-items:center;gap:16px;pointer-events:auto}
+.overlay h1{font-size:clamp(28px,6vw,48px);font-weight:700;letter-spacing:-1px}
+.overlay h1 .accent{color:#5ee7a0}
+.overlay p{font-size:clamp(14px,3vw,18px);opacity:.7}
+.overlay .score-display{font-size:clamp(20px,5vw,36px);font-weight:700;color:#ff7b95}
+.overlay .highscore{font-size:clamp(12px,2.5vw,16px);opacity:.5;margin-top:-8px}
+.btn{background:#5ee7a0;color:#0b1020;border:none;padding:14px 36px;border-radius:12px;font-size:clamp(16px,3.5vw,20px);font-weight:700;cursor:pointer;transition:transform .15s,opacity .15s;pointer-events:auto}
+.btn:active{transform:scale(.95);opacity:.85}
+#pause-label{position:absolute;font-size:clamp(24px,5vw,40px);font-weight:700;opacity:0;transition:opacity .2s;pointer-events:none}
+.hidden{display:none!important}
+</style>
+</head>
+<body>
+<canvas id="c"></canvas>
+<div id="ui">
+  <div id="hud"><span id="score-el">Score: 0</span><span id="hi-el">Best: 0</span></div>
+  <div id="start-screen" class="overlay">
+    <h1><span class="accent">Snake</span> Game</h1>
+    <p>Swipe or use arrow keys</p>
+    <button class="btn" id="play-btn">Tap to Play</button>
+  </div>
+  <div id="over-screen" class="overlay hidden">
+    <h1>Game Over</h1>
+    <div class="score-display" id="final-score">0</div>
+    <div class="highscore" id="final-hi">Best: 0</div>
+    <button class="btn" id="retry-btn">Play Again</button>
+  </div>
+  <div id="pause-label">Paused</div>
+</div>
+<script>
+(function(){
+  const canvas=document.getElementById('c'),ctx=canvas.getContext('2d');
+  const hudEl=document.getElementById('hud'),scoreEl=document.getElementById('score-el'),hiEl=document.getElementById('hi-el');
+  const startScreen=document.getElementById('start-screen'),overScreen=document.getElementById('over-screen');
+  const finalScore=document.getElementById('final-score'),finalHi=document.getElementById('final-hi');
+  const pauseLabel=document.getElementById('pause-label');
+
+  const COL={bg:'#0b1020',snake:'#5ee7a0',snakeHead:'#7ffcbd',food:'#ff7b95',wall:'#56c2ff',grid:'#141a30'};
+  const DIR={UP:{x:0,y:-1},DOWN:{x:0,y:1},LEFT:{x:-1,y:0},RIGHT:{x:1,y:0}};
+
+  let cellSize,cols,rows,snake,dir,nextDir,food,score,highScore,state,paused,moveTimer,moveInterval,lastTime,animProgress;
+
+  highScore=parseInt(localStorage.getItem('snake_hi'))||0;
+
+  function resize(){
+    const pad=20;
+    const maxW=window.innerWidth-pad,maxH=window.innerHeight-pad;
+    cellSize=Math.max(16,Math.min(28,Math.floor(Math.min(maxW,maxH)/22)));
+    cols=Math.floor(maxW/cellSize);rows=Math.floor(maxH/cellSize);
+    if(cols<10)cols=10;if(rows<10)rows=10;
+    if(cols%2===0)cols--;if(rows%2===0)rows--;
+    canvas.width=cols*cellSize;canvas.height=rows*cellSize;
+  }
+
+  function init(){
+    resize();
+    const cx=Math.floor(cols/2),cy=Math.floor(rows/2);
+    snake=[{x:cx,y:cy},{x:cx-1,y:cy},{x:cx-2,y:cy}];
+    dir=DIR.RIGHT;nextDir=DIR.RIGHT;
+    score=0;paused=false;moveTimer=0;moveInterval=140;animProgress=0;
+    placeFood();updateHud();
+  }
+
+  function placeFood(){
+    const occupied=new Set(snake.map(s=>s.x+','+s.y));
+    let attempts=0;
+    do{food={x:Math.floor(Math.random()*(cols-2))+1,y:Math.floor(Math.random()*(rows-2))+1};attempts++}
+    while(occupied.has(food.x+','+food.y)&&attempts<1000);
+  }
+
+  function updateHud(){
+    scoreEl.textContent='Score: '+score;
+    hiEl.textContent='Best: '+highScore;
+  }
+
+  function setState(s){
+    state=s;
+    startScreen.classList.toggle('hidden',s!=='start');
+    overScreen.classList.toggle('hidden',s!=='over');
+    hudEl.style.opacity=s==='play'||s==='over'?'1':'0';
+    pauseLabel.style.opacity='0';
+    if(s==='over'){
+      finalScore.textContent=score;
+      if(score>highScore){highScore=score;localStorage.setItem('snake_hi',highScore)}
+      finalHi.textContent='Best: '+highScore;
+      updateHud();
+    }
+  }
+
+  function changeDir(d){
+    if(d.x+dir.x===0&&d.y+dir.y===0)return;
+    nextDir=d;
+  }
+
+  function step(){
+    dir=nextDir;
+    const head={x:snake[0].x+dir.x,y:snake[0].y+dir.y};
+    if(head.x<0||head.x>=cols||head.y<0||head.y>=rows){setState('over');return}
+    for(let i=0;i<snake.length;i++){if(snake[i].x===head.x&&snake[i].y===head.y){setState('over');return}}
+    snake.unshift(head);
+    if(head.x===food.x&&head.y===food.y){
+      score+=10;
+      moveInterval=Math.max(60,140-Math.floor(score/50)*8);
+      updateHud();placeFood();
+    }else{snake.pop()}
+  }
+
+  function drawRoundRect(x,y,w,h,r){
+    ctx.beginPath();ctx.moveTo(x+r,y);ctx.lineTo(x+w-r,y);ctx.quadraticCurveTo(x+w,y,x+w,y+r);
+    ctx.lineTo(x+w,y+h-r);ctx.quadraticCurveTo(x+w,y+h,x+w-r,y+h);ctx.lineTo(x+r,y+h);
+    ctx.quadraticCurveTo(x,y+h,x,y+h-r);ctx.lineTo(x,y+r);ctx.quadraticCurveTo(x,y,x+r,y);ctx.closePath();
+  }
+
+  function draw(){
+    const cs=cellSize,gap=Math.max(1,Math.floor(cs*0.1)),rad=Math.max(2,Math.floor(cs*0.2));
+    ctx.fillStyle=COL.bg;ctx.fillRect(0,0,canvas.width,canvas.height);
+
+    // grid dots
+    ctx.fillStyle=COL.grid;
+    for(let x=0;x<cols;x++)for(let y=0;y<rows;y++){ctx.fillRect(x*cs+cs/2,y*cs+cs/2,1,1)}
+
+    // walls
+    ctx.fillStyle=COL.wall;ctx.globalAlpha=.25;
+    ctx.fillRect(0,0,canvas.width,cs*0.15);
+    ctx.fillRect(0,canvas.height-cs*0.15,canvas.width,cs*0.15);
+    ctx.fillRect(0,0,cs*0.15,canvas.height);
+    ctx.fillRect(canvas.width-cs*0.15,0,cs*0.15,canvas.height);
+    ctx.globalAlpha=1;
+
+    // food with pulse
+    const pulse=1+Math.sin(Date.now()*0.005)*0.12;
+    const fg=gap+((cs-gap*2)*(1-pulse))/2;
+    ctx.fillStyle=COL.food;
+    drawRoundRect(food.x*cs+fg,food.y*cs+fg,(cs-gap*2)*pulse,(cs-gap*2)*pulse,rad);
+    ctx.fill();
+
+    // snake
+    for(let i=snake.length-1;i>=0;i--){
+      const s=snake[i];
+      const alpha=1-i*0.015;
+      ctx.fillStyle=i===0?COL.snakeHead:COL.snake;
+      ctx.globalAlpha=Math.max(0.4,alpha);
+      drawRoundRect(s.x*cs+gap,s.y*cs+gap,cs-gap*2,cs-gap*2,rad);
+      ctx.fill();
+    }
+    ctx.globalAlpha=1;
+
+    // eyes on head
+    if(snake.length){
+      const h=snake[0];
+      const ex=h.x*cs+cs/2,ey=h.y*cs+cs/2;
+      const eOff=cs*0.18;
+      let e1x,e1y,e2x,e2y;
+      if(dir===DIR.RIGHT){e1x=ex+eOff;e1y=ey-eOff;e2x=ex+eOff;e2y=ey+eOff}
+      else if(dir===DIR.LEFT){e1x=ex-eOff;e1y=ey-eOff;e2x=ex-eOff;e2y=ey+eOff}
+      else if(dir===DIR.UP){e1x=ex-eOff;e1y=ey-eOff;e2x=ex+eOff;e2y=ey-eOff}
+      else{e1x=ex-eOff;e1y=ey+eOff;e2x=ex+eOff;e2y=ey+eOff}
+      ctx.fillStyle=COL.bg;
+      ctx.beginPath();ctx.arc(e1x,e1y,cs*0.09,0,Math.PI*2);ctx.fill();
+      ctx.beginPath();ctx.arc(e2x,e2y,cs*0.09,0,Math.PI*2);ctx.fill();
+    }
+  }
+
+  function loop(ts){
+    requestAnimationFrame(loop);
+    if(!lastTime)lastTime=ts;
+    const dt=ts-lastTime;lastTime=ts;
+    if(state!=='play'||paused){draw();return}
+    moveTimer+=dt;
+    if(moveTimer>=moveInterval){moveTimer-=moveInterval;step()}
+    draw();
+  }
+
+  // keyboard
+  document.addEventListener('keydown',function(e){
+    if(state==='start'){setState('play');init();return}
+    if(state==='over'&&(e.key==='Enter'||e.key===' ')){init();setState('play');return}
+    if(state==='play'){
+      switch(e.key){
+        case'ArrowUp':case'w':case'W':changeDir(DIR.UP);e.preventDefault();break;
+        case'ArrowDown':case's':case'S':changeDir(DIR.DOWN);e.preventDefault();break;
+        case'ArrowLeft':case'a':case'A':changeDir(DIR.LEFT);e.preventDefault();break;
+        case'ArrowRight':case'd':case'D':changeDir(DIR.RIGHT);e.preventDefault();break;
+        case' ':case'Escape':paused=!paused;pauseLabel.style.opacity=paused?'1':'0';e.preventDefault();break;
+      }
+    }
+  });
+
+  // touch / swipe
+  let touchX,touchY,touching=false;
+  canvas.addEventListener('touchstart',function(e){
+    e.preventDefault();
+    if(state==='start'){init();setState('play');return}
+    const t=e.touches[0];touchX=t.clientX;touchY=t.clientY;touching=true;
+  },{passive:false});
+
+  canvas.addEventListener('touchmove',function(e){e.preventDefault()},{passive:false});
+
+  canvas.addEventListener('touchend',function(e){
+    e.preventDefault();
+    if(!touching||state!=='play')return;
+    const t=e.changedTouches[0];
+    const dx=t.clientX-touchX,dy=t.clientY-touchY;
+    const dist=Math.sqrt(dx*dx+dy*dy);
+    if(dist<15){paused=!paused;pauseLabel.style.opacity=paused?'1':'0';touching=false;return}
+    if(Math.abs(dx)>Math.abs(dy)){changeDir(dx>0?DIR.RIGHT:DIR.LEFT)}
+    else{changeDir(dy>0?DIR.DOWN:DIR.UP)}
+    touching=false;
+  },{passive:false});
+
+  // buttons
+  document.getElementById('play-btn').addEventListener('click',function(){init();setState('play')});
+  document.getElementById('retry-btn').addEventListener('click',function(){init();setState('play')});
+
+  window.addEventListener('resize',function(){
+    if(state==='play')return;
+    resize();
+  });
+
+  // boot
+  resize();
+  hiEl.textContent='Best: '+highScore;
+  setState('start');
+  requestAnimationFrame(loop);
+})();
+</script>
+</body>
+</html>
