@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>HTML Entity Encoder/Decoder - Escape & Unescape HTML Online</title>
+<meta name="description" content="Free online HTML entity encoder and decoder. Escape and unescape HTML characters, convert to named or numeric entities, and browse a complete HTML entities reference table.">
+<meta name="keywords" content="html entity, encoder, decoder, escape, unescape, html entities, named entities, numeric entities, html special characters">
+<meta name="robots" content="index,follow">
+<meta property="og:title" content="HTML Entity Encoder/Decoder - Escape & Unescape HTML Online">
+<meta property="og:description" content="Encode and decode HTML entities online. Supports named and numeric modes, URL encoding, live preview, and a clickable reference table.">
+<meta property="og:type" content="website">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect rx='12' width='100' height='100' fill='%230b1020'/><text x='50' y='68' font-size='40' font-family='monospace' font-weight='bold' text-anchor='middle' fill='%2356c2ff'>&lt;/&gt;</text></svg>">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#0b1020;color:#eef3ff;font-family:'SF Mono','Fira Code','Cascadia Code','Consolas',monospace;min-height:100vh;display:flex;flex-direction:column;align-items:center}
+h1{font-size:1.3rem;padding:1.2rem 0 .3rem;color:#56c2ff;text-align:center;letter-spacing:.5px}
+.sub{font-size:.75rem;color:#6a7a9b;text-align:center;margin-bottom:1rem}
+.wrap{width:100%;max-width:1100px;padding:0 1rem;flex:1;display:flex;flex-direction:column}
+.main{display:flex;gap:.8rem;flex:1;min-height:0}
+.panel{flex:1;display:flex;flex-direction:column;background:rgba(13,19,37,.94);border:1px solid #1a2340;border-radius:8px;overflow:hidden}
+.panel-head{display:flex;justify-content:space-between;align-items:center;padding:.5rem .7rem;border-bottom:1px solid #1a2340;font-size:.75rem;color:#6a7a9b}
+.panel-head strong{color:#56c2ff;font-size:.8rem}
+textarea{flex:1;background:transparent;border:none;color:#eef3ff;font-family:inherit;font-size:.85rem;padding:.7rem;resize:none;outline:none;line-height:1.5}
+textarea::placeholder{color:#3a4a6b}
+.controls{display:flex;align-items:center;justify-content:center;gap:.5rem;padding:.6rem;flex-wrap:wrap;border-bottom:1px solid #1a2340}
+button{background:rgba(86,194,255,.12);color:#56c2ff;border:1px solid rgba(86,194,255,.25);border-radius:6px;padding:.45rem .9rem;font-family:inherit;font-size:.75rem;cursor:pointer;transition:all .15s;white-space:nowrap}
+button:hover{background:rgba(86,194,255,.22);border-color:#56c2ff}
+button.primary{background:rgba(86,194,255,.2);font-weight:600}
+.toggle{display:flex;align-items:center;gap:.4rem;font-size:.7rem;color:#6a7a9b;cursor:pointer;user-select:none}
+.toggle input{accent-color:#56c2ff;cursor:pointer}
+.stats{font-size:.65rem;color:#4a5a7b;text-align:center;padding:.3rem .7rem}
+.preview-wrap{border-top:1px solid #1a2340}
+.preview-head{padding:.4rem .7rem;font-size:.7rem;color:#6a7a9b;border-bottom:1px solid #1a2340}
+.preview{padding:.5rem .7rem;font-size:.82rem;line-height:1.5;max-height:120px;overflow:auto;color:#c8d0e8;font-family:serif}
+.ref{background:rgba(13,19,37,.94);border:1px solid #1a2340;border-radius:8px;margin-top:.8rem;overflow:hidden}
+.ref-head{padding:.5rem .7rem;font-size:.8rem;color:#56c2ff;font-weight:600;border-bottom:1px solid #1a2340;display:flex;justify-content:space-between;align-items:center}
+.ref-head button{padding:.3rem .6rem;font-size:.65rem}
+.ref-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:1px;background:#1a2340;max-height:220px;overflow:auto}
+.ref-item{background:rgba(13,19,37,.94);padding:.35rem .5rem;display:flex;justify-content:space-between;align-items:center;font-size:.72rem;cursor:pointer;transition:background .12s}
+.ref-item:hover{background:rgba(86,194,255,.08)}
+.ref-char{font-size:1rem;color:#56c2ff;min-width:1.4rem;text-align:center}
+.ref-name{color:#6a7a9b;font-size:.62rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.status{font-size:.7rem;text-align:center;padding:.4rem 0;color:#6a7a9b;min-height:1.6rem}
+.status.ok{color:#56c2ff}
+footer{font-size:.65rem;color:#3a4a6b;padding:.8rem 0;text-align:center}
+@media(max-width:700px){
+ .main{flex-direction:column}
+ .main .panel{min-height:180px}
+ .ref-grid{grid-template-columns:repeat(auto-fill,minmax(110px,1fr));max-height:160px}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+<h1>HTML Entity Encoder</h1>
+<p class="sub">Escape &amp; unescape HTML entities &mdash; named, numeric, or URL-encoded</p>
+
+<div class="controls">
+ <button class="primary" onclick="encode()">Encode &rarr;</button>
+ <button class="primary" onclick="decode()">&larr; Decode</button>
+ <button onclick="copyOutput()">Copy Output</button>
+ <button onclick="clearAll()">Clear</button>
+ <span class="toggle"><label><input type="radio" name="mode" value="named" checked onchange="updateMode()"> Named</label></span>
+ <span class="toggle"><label><input type="radio" name="mode" value="numeric" onchange="updateMode()"> Numeric</label></span>
+ <span class="toggle"><label><input type="checkbox" id="urlToggle" onchange="updateMode()"> URL Encode</label></span>
+</div>
+
+<div class="main">
+ <div class="panel">
+  <div class="panel-head"><strong>Input</strong><span id="inCount">0 chars</span></div>
+  <textarea id="input" placeholder="Paste HTML or text here..." oninput="onInput()"></textarea>
+ </div>
+ <div class="panel">
+  <div class="panel-head"><strong>Output</strong><span id="outCount">0 chars</span></div>
+  <textarea id="output" placeholder="Encoded or decoded result..." readonly></textarea>
+ </div>
+</div>
+
+<div class="preview-wrap" style="background:rgba(13,19,37,.94);border:1px solid #1a2340;border-radius:8px;margin-top:.8rem;overflow:hidden">
+ <div class="preview-head">Live Preview (rendered HTML)</div>
+ <div class="preview" id="preview"></div>
+</div>
+
+<div class="ref">
+ <div class="ref-head">Common HTML Entities <button onclick="toggleRef()">Show/Hide</button></div>
+ <div class="ref-grid" id="refGrid"></div>
+</div>
+
+<div class="status" id="status"></div>
+</div>
+<footer>HTML Entity Encoder &mdash; runs entirely in your browser</footer>
+
+<script>
+const $=id=>document.getElementById(id);
+const inp=$('input'),out=$('output'),preview=$('preview'),status=$('status');
+let entityMode='named',urlMode=false;
+
+const NAMED={
+ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&apos;'
+};
+const NUMERIC={
+ '&':'&#38;','<':'&#60;','>':'&#62;','"':'&#34;',"'":'&#39;'
+};
+const DECODE_MAP={
+ '&amp;':'&','&lt;':'<','&gt;':'>','&quot;':'"','&apos;':"'",
+ '&#38;':'&','&#60;':'<','&#62;':'>','&#34;':'"','&#39;':"'",
+ '&nbsp;':'\u00A0','&copy;':'\u00A9','&reg;':'\u00AE','&trade;':'\u2122',
+ '&mdash;':'\u2014','&ndash;':'\u2013','&laquo;':'\u00AB','&raquo;':'\u00BB',
+ '&euro;':'\u20AC','&pound;':'\u00A3','&yen;':'\u00A5','&cent;':'\u00A2',
+ '&deg;':'\u00B0','&micro;':'\u00B5','&para;':'\u00B6','&sect;':'\u00A7',
+ '&larr;':'\u2190','&uarr;':'\u2191','&rarr;':'\u2192','&darr;':'\u2193',
+ '&hearts;':'\u2665','&diams;':'\u2666','&clubs;':'\u2663','&spades;':'\u2660',
+ '&infin;':'\u221E','&ne;':'\u2260','&le;':'\u2264','&ge;':'\u2265',
+ '&plusmn;':'\u00B1','&times;':'\u00D7','&divide;':'\u00F7','&sum;':'\u2211',
+ '&radic;':'\u221A','&alpha;':'\u03B1','&beta;':'\u03B2','&pi;':'\u03C0'
+};
+
+const REF_ENTITIES=[
+ ['\u00A9','&copy;','Copyright'],['\u00AE','&reg;','Registered'],
+ ['\u2122','&trade;','Trademark'],['\u00A7','&sect;','Section'],
+ ['\u00B6','&para;','Pilcrow'],['\u00B0','&deg;','Degree'],
+ ['\u00B5','&micro;','Micro'],['\u00A0','&nbsp;','Non-break space'],
+ ['\u2014','&mdash;','Em dash'],['\u2013','&ndash;','En dash'],
+ ['\u00AB','&laquo;','Left guillemet'],['\u00BB','&raquo;','Right guillemet'],
+ ['\u2018','&lsquo;','Left single quote'],['\u2019','&rsquo;','Right single quote'],
+ ['\u201C','&ldquo;','Left double quote'],['\u201D','&rdquo;','Right double quote'],
+ ['\u2026','&hellip;','Ellipsis'],['\u2022','&bull;','Bullet'],
+ ['\u20AC','&euro;','Euro'],['\u00A3','&pound;','Pound'],
+ ['\u00A5','&yen;','Yen'],['\u00A2','&cent;','Cent'],
+ ['\u2190','&larr;','Left arrow'],['\u2191','&uarr;','Up arrow'],
+ ['\u2192','&rarr;','Right arrow'],['\u2193','&darr;','Down arrow'],
+ ['\u2194','&harr;','Left-right arrow'],['\u21B5','&crarr;','Carriage return'],
+ ['\u2665','&hearts;','Heart'],['\u2666','&diams;','Diamond'],
+ ['\u2663','&clubs;','Club'],['\u2660','&spades;','Spade'],
+ ['\u221E','&infin;','Infinity'],['\u2260','&ne;','Not equal'],
+ ['\u2264','&le;','Less or equal'],['\u2265','&ge;','Greater or equal'],
+ ['\u00B1','&plusmn;','Plus-minus'],['\u00D7','&times;','Multiply'],
+ ['\u00F7','&divide;','Divide'],['\u2211','&sum;','Summation'],
+ ['\u221A','&radic;','Square root'],['\u0394','&Delta;','Delta'],
+ ['\u03C0','&pi;','Pi'],['\u03B1','&alpha;','Alpha'],
+ ['\u03B2','&beta;','Beta'],['\u03B3','&gamma;','Gamma'],
+ ['&','&amp;','Ampersand'],['<','&lt;','Less than'],
+ ['>','&gt;','Greater than'],['"','&quot;','Double quote']
+];
+
+function buildRef(){
+ const g=$('refGrid');
+ g.innerHTML='';
+ REF_ENTITIES.forEach(([ch,ent,name])=>{
+  const d=document.createElement('div');
+  d.className='ref-item';
+  d.title=name+' '+ent;
+  d.innerHTML='<span class="ref-char">'+escDisp(ch)+'</span><span class="ref-name">'+escHtml(ent)+'</span>';
+  d.onclick=()=>insertEntity(ch,ent);
+  g.appendChild(d);
+ });
+}
+function escHtml(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+function escDisp(c){
+ if(c==='<')return'&lt;';if(c==='>')return'&gt;';if(c==='&')return'&amp;';if(c==='"')return'&quot;';
+ if(c==='\u00A0')return'SP';return c;
+}
+
+function insertEntity(ch,ent){
+ const s=inp.selectionStart,e=inp.selectionEnd,v=inp.value;
+ inp.value=v.slice(0,s)+ch+v.slice(e);
+ inp.selectionStart=inp.selectionEnd=s+ch.length;
+ inp.focus();
+ onInput();
+ showStatus('Inserted '+ent);
+}
+
+function toggleRef(){
+ const g=$('refGrid');
+ g.style.display=g.style.display==='none'?'':'none';
+}
+
+function updateMode(){
+ entityMode=document.querySelector('input[name="mode"]:checked').value;
+ urlMode=$('urlToggle').checked;
+}
+
+function encode(){
+ let text=inp.value;
+ if(!text){showStatus('Nothing to encode');return;}
+ const map=entityMode==='named'?NAMED:NUMERIC;
+ let result='';
+ for(let i=0;i<text.length;i++){
+  const ch=text[i];
+  result+=map[ch]||ch;
+ }
+ if(urlMode)result=encodeURIComponent(result);
+ out.value=result;
+ updateCounts();
+ updatePreview(text);
+ showStatus('Encoded ('+entityMode+(urlMode?' + URL':'')+')');
+}
+
+function decode(){
+ let text=inp.value;
+ if(!text){showStatus('Nothing to decode');return;}
+ if(urlMode){
+  try{text=decodeURIComponent(text);}catch(e){showStatus('URL decode error: '+e.message);return;}
+ }
+ // Decode numeric entities (decimal and hex)
+ text=text.replace(/&#x([0-9a-fA-F]+);/g,(_,h)=>String.fromCodePoint(parseInt(h,16)));
+ text=text.replace(/&#(\d+);/g,(_,d)=>String.fromCodePoint(parseInt(d,10)));
+ // Decode named entities using a helper element
+ const el=document.createElement('textarea');
+ el.innerHTML=text;
+ const result=el.value;
+ out.value=result;
+ updateCounts();
+ updatePreview(result);
+ showStatus('Decoded'+(urlMode?' (URL + entities)':' (entities)'));
+}
+
+function copyOutput(){
+ if(!out.value){showStatus('Nothing to copy');return;}
+ navigator.clipboard.writeText(out.value).then(()=>showStatus('Copied to clipboard')).catch(()=>{
+  out.select();document.execCommand('copy');showStatus('Copied to clipboard');
+ });
+}
+
+function clearAll(){
+ inp.value='';out.value='';preview.innerHTML='';
+ updateCounts();showStatus('Cleared');
+}
+
+function onInput(){updateCounts();}
+
+function updateCounts(){
+ $('inCount').textContent=inp.value.length+' chars';
+ $('outCount').textContent=out.value.length+' chars';
+}
+
+function updatePreview(html){
+ // Sanitize: strip script tags for safety
+ const safe=html.replace(/<script[\s\S]*?<\/script>/gi,'').replace(/on\w+\s*=/gi,'data-x=');
+ preview.innerHTML=safe;
+}
+
+function showStatus(msg){
+ status.textContent=msg;
+ status.className='status ok';
+ clearTimeout(showStatus._t);
+ showStatus._t=setTimeout(()=>{status.textContent='';status.className='status';},2500);
+}
+
+buildRef();
+</script>
+</body>
+</html>

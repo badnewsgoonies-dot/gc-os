@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>SQL Formatter - Format & Beautify SQL Queries Online</title>
+<meta name="description" content="Free online SQL formatter and beautifier. Format, minify, and syntax-highlight SQL queries instantly. Supports SELECT, JOIN, subqueries, and all common SQL dialects.">
+<meta name="keywords" content="sql formatter, sql beautifier, sql format online, sql pretty print, sql minify, sql syntax highlight, format query">
+<meta name="robots" content="index,follow">
+<meta property="og:title" content="SQL Formatter - Format & Beautify SQL Queries Online">
+<meta property="og:description" content="Free online SQL formatter and beautifier. Format, minify, and syntax-highlight SQL queries instantly.">
+<meta property="og:type" content="website">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect rx='12' width='100' height='100' fill='%230b1020'/><text x='50' y='45' font-size='22' font-family='monospace' font-weight='bold' text-anchor='middle' fill='%2356c2ff'>SQL</text><text x='50' y='75' font-size='16' font-family='monospace' text-anchor='middle' fill='%236a7a9b'>{;}</text></svg>">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#0b1020;color:#eef3ff;font-family:'SF Mono','Fira Code','Cascadia Code','Consolas',monospace;min-height:100vh;display:flex;flex-direction:column;align-items:center}
+h1{font-size:1.3rem;padding:1.2rem 0 .3rem;color:#56c2ff;text-align:center;letter-spacing:.5px}
+.sub{font-size:.75rem;color:#6a7a9b;text-align:center;margin-bottom:1rem}
+.wrap{width:100%;max-width:960px;padding:0 1rem 1.5rem;flex:1;display:flex;flex-direction:column;gap:.8rem}
+.panel{background:rgba(13,19,37,.94);border:1px solid #1a2340;border-radius:8px;overflow:hidden}
+.panel-head{display:flex;justify-content:space-between;align-items:center;padding:.5rem .7rem;border-bottom:1px solid #1a2340;font-size:.75rem;color:#6a7a9b;flex-wrap:wrap;gap:.4rem}
+.panel-head strong{color:#56c2ff;font-size:.8rem}
+textarea{width:100%;background:transparent;border:none;color:#eef3ff;font-family:inherit;font-size:.82rem;padding:.7rem;resize:vertical;outline:none;line-height:1.55;min-height:160px;tab-size:4}
+textarea::placeholder{color:#3a4a6b}
+.controls{display:flex;align-items:center;gap:.6rem;padding:.55rem .7rem;flex-wrap:wrap;border-bottom:1px solid #1a2340}
+button{background:rgba(86,194,255,.12);color:#56c2ff;border:1px solid rgba(86,194,255,.25);border-radius:6px;padding:.35rem .7rem;font-family:inherit;font-size:.7rem;cursor:pointer;transition:all .15s;white-space:nowrap}
+button:hover{background:rgba(86,194,255,.22);border-color:#56c2ff}
+button.primary{background:rgba(86,194,255,.2);font-weight:600}
+.toggle{display:flex;align-items:center;gap:.35rem;font-size:.7rem;color:#6a7a9b;cursor:pointer;user-select:none}
+.toggle input{accent-color:#56c2ff;cursor:pointer}
+select{background:rgba(13,19,37,.94);border:1px solid #1a2340;border-radius:5px;color:#eef3ff;font-family:inherit;font-size:.7rem;padding:.3rem .45rem;outline:none;cursor:pointer}
+select:focus{border-color:#56c2ff}
+.output-wrap{position:relative;min-height:160px}
+pre.output{margin:0;padding:.7rem;font-family:inherit;font-size:.82rem;line-height:1.55;white-space:pre-wrap;word-break:break-word;color:#eef3ff;min-height:160px;overflow-x:auto}
+pre.output:empty::before{content:'Formatted SQL will appear here...';color:#3a4a6b;font-style:italic}
+.kw{color:#56c2ff;font-weight:600}
+.str{color:#5cffa0}
+.num{color:#ffd866}
+.cmt{color:#6a7a9b;font-style:italic}
+.fn{color:#c6a0f6}
+.toast{position:fixed;bottom:1.5rem;left:50%;transform:translateX(-50%);background:rgba(86,194,255,.18);color:#56c2ff;border:1px solid rgba(86,194,255,.3);border-radius:6px;padding:.4rem .9rem;font-family:inherit;font-size:.72rem;opacity:0;transition:opacity .25s;pointer-events:none;z-index:9}
+.toast.show{opacity:1}
+footer{padding:.8rem;font-size:.65rem;color:#3a4a6b;text-align:center}
+@media(max-width:600px){
+  .wrap{padding:0 .5rem 1rem}
+  textarea,pre.output{font-size:.75rem;min-height:120px}
+  .controls{gap:.4rem}
+}
+</style>
+</head>
+<body>
+<h1>SQL Formatter</h1>
+<p class="sub">Format, beautify & syntax-highlight SQL queries</p>
+<div class="wrap">
+  <div class="panel">
+    <div class="panel-head"><strong>Input</strong><button onclick="loadSample()">Sample SQL</button></div>
+    <textarea id="input" placeholder="Paste your SQL query here..." spellcheck="false"></textarea>
+  </div>
+  <div class="controls">
+    <button class="primary" onclick="doFormat()">Format</button>
+    <button onclick="doMinify()">Minify</button>
+    <label class="toggle"><input type="checkbox" id="upperToggle" checked onchange="rerun()">Uppercase keywords</label>
+    <label class="toggle" style="margin-left:auto">Indent:
+      <select id="indentSize" onchange="rerun()">
+        <option value="2">2 spaces</option>
+        <option value="4" selected>4 spaces</option>
+        <option value="tab">Tab</option>
+      </select>
+    </label>
+  </div>
+  <div class="panel">
+    <div class="panel-head"><strong>Output</strong><button onclick="copyOutput()">Copy</button></div>
+    <div class="output-wrap"><pre class="output" id="output"></pre></div>
+  </div>
+</div>
+<div class="toast" id="toast"></div>
+<footer>SQL Formatter &mdash; client-side only, nothing leaves your browser</footer>
+<script>
+const KEYWORDS='SELECT,DISTINCT,FROM,WHERE,AND,OR,NOT,IN,EXISTS,BETWEEN,LIKE,IS,NULL,JOIN,INNER JOIN,LEFT JOIN,RIGHT JOIN,FULL JOIN,CROSS JOIN,LEFT OUTER JOIN,RIGHT OUTER JOIN,FULL OUTER JOIN,ON,USING,AS,CASE,WHEN,THEN,ELSE,END,GROUP BY,ORDER BY,HAVING,LIMIT,OFFSET,FETCH,UNION,UNION ALL,INSERT INTO,VALUES,UPDATE,SET,DELETE FROM,DELETE,CREATE TABLE,ALTER TABLE,DROP TABLE,ADD COLUMN,DROP COLUMN,PRIMARY KEY,FOREIGN KEY,REFERENCES,UNIQUE,DEFAULT,CHECK,ASC,DESC,ALL,TOP,INTO,WITH,RECURSIVE,EXCEPT,INTERSECT,OVER,PARTITION BY,BEGIN,COMMIT,ROLLBACK,TRUNCATE,REPLACE,MERGE,RETURNING,ON CONFLICT,DO NOTHING,DO UPDATE'.split(',');
+const FUNS='COUNT,SUM,AVG,MIN,MAX,COALESCE,NULLIF,CAST,CONVERT,UPPER,LOWER,TRIM,SUBSTRING,LENGTH,CONCAT,REPLACE,NOW,CURRENT_TIMESTAMP,CURRENT_DATE,DATE,YEAR,MONTH,DAY,ROW_NUMBER,RANK,DENSE_RANK,NTILE,LAG,LEAD,ROUND,ABS,CEIL,FLOOR,MOD,IF,IIF,IFNULL,NVL,ISNULL,STRING_AGG,GROUP_CONCAT,ARRAY_AGG'.split(',');
+const MAJOR_KW=new Set('SELECT,FROM,WHERE,JOIN,INNER JOIN,LEFT JOIN,RIGHT JOIN,FULL JOIN,CROSS JOIN,LEFT OUTER JOIN,RIGHT OUTER JOIN,FULL OUTER JOIN,GROUP BY,ORDER BY,HAVING,LIMIT,OFFSET,UNION,UNION ALL,EXCEPT,INTERSECT,INSERT INTO,VALUES,UPDATE,SET,DELETE FROM,DELETE,CREATE TABLE,ALTER TABLE,DROP TABLE,WITH,RETURNING,ON CONFLICT,MERGE,TRUNCATE'.split(','));
+const SUB_KW=new Set(['AND','OR','ON','USING','WHEN','THEN','ELSE']);
+
+let lastMode = 'format';
+
+function getIndent(){
+  const v = document.getElementById('indentSize').value;
+  return v === 'tab' ? '\t' : ' '.repeat(Number(v));
+}
+function shouldUpper(){ return document.getElementById('upperToggle').checked; }
+
+function tokenize(sql){
+  const tokens = [];
+  let i = 0;
+  while(i < sql.length){
+    if(/\s/.test(sql[i])){
+      let s = i;
+      while(i < sql.length && /\s/.test(sql[i])) i++;
+      tokens.push({type:'ws', value: sql.slice(s,i)});
+      continue;
+    }
+    if(sql[i] === '-' && sql[i+1] === '-'){
+      let s = i;
+      while(i < sql.length && sql[i] !== '\n') i++;
+      tokens.push({type:'comment', value: sql.slice(s,i)});
+      continue;
+    }
+    if(sql[i] === '/' && sql[i+1] === '*'){
+      let s = i; i += 2;
+      while(i < sql.length && !(sql[i-1] === '*' && sql[i] === '/')) i++;
+      i++;
+      tokens.push({type:'comment', value: sql.slice(s,i)});
+      continue;
+    }
+    if(sql[i] === "'" || sql[i] === '"'){
+      const q = sql[i]; let s = i; i++;
+      while(i < sql.length){
+        if(sql[i] === q){
+          if(sql[i+1] === q){ i += 2; continue; }
+          i++; break;
+        }
+        if(sql[i] === '\\') i++;
+        i++;
+      }
+      tokens.push({type:'string', value: sql.slice(s,i)});
+      continue;
+    }
+    if(/\d/.test(sql[i]) || (sql[i] === '.' && /\d/.test(sql[i+1]||''))){
+      let s = i;
+      while(i < sql.length && /[\d.eE]/.test(sql[i])) i++;
+      tokens.push({type:'number', value: sql.slice(s,i)});
+      continue;
+    }
+    if(sql[i] === '(' || sql[i] === ')'){
+      tokens.push({type:'paren', value: sql[i]}); i++; continue;
+    }
+    if(',;'.includes(sql[i])){
+      tokens.push({type:'punct', value: sql[i]}); i++; continue;
+    }
+    if('<>=!'.includes(sql[i])){
+      let s = i; i++;
+      if(i < sql.length && '=><'.includes(sql[i])) i++;
+      tokens.push({type:'op', value: sql.slice(s,i)});
+      continue;
+    }
+    if('+-*/%'.includes(sql[i])){
+      tokens.push({type:'op', value: sql[i]}); i++; continue;
+    }
+    if(/[a-zA-Z_]/.test(sql[i])){
+      let s = i;
+      while(i < sql.length && /[a-zA-Z0-9_.]/.test(sql[i])) i++;
+      tokens.push({type:'word', value: sql.slice(s,i)});
+      continue;
+    }
+    tokens.push({type:'other', value: sql[i]}); i++;
+  }
+  return tokens;
+}
+
+const kwSet=new Set(KEYWORDS.map(k=>k.toUpperCase()));
+const fnSet=new Set(FUNS.map(f=>f.toUpperCase()));
+const multiKw=KEYWORDS.filter(k=>k.includes(' ')).sort((a,b)=>b.length-a.length);
+
+function classifyTokens(tokens){
+  const result = [];
+  let i = 0;
+  while(i < tokens.length){
+    const t = tokens[i];
+    if(t.type === 'word'){
+      let matched = false;
+      for(const mk of multiKw){
+        const parts = mk.split(' ');
+        let ok = true, j = i, collected = [];
+        for(const p of parts){
+          while(j < tokens.length && tokens[j].type === 'ws') j++;
+          if(j >= tokens.length || tokens[j].type !== 'word' || tokens[j].value.toUpperCase() !== p){
+            ok = false; break;
+          }
+          collected.push(tokens[j]); j++;
+        }
+        if(ok){
+          result.push({type:'keyword', value: collected.map(c=>c.value).join(' '), upper: mk});
+          i = j; matched = true; break;
+        }
+      }
+      if(matched) continue;
+      const up = t.value.toUpperCase();
+      if(kwSet.has(up)){
+        result.push({type:'keyword', value: t.value, upper: up});
+      } else if(fnSet.has(up)){
+        result.push({type:'function', value: t.value, upper: up});
+      } else {
+        result.push({type:'identifier', value: t.value});
+      }
+    } else if(t.type !== 'ws'){
+      result.push(t);
+    }
+    i++;
+  }
+  return result;
+}
+
+function formatSQL(sql){
+  const tokens = classifyTokens(tokenize(sql));
+  const indent = getIndent();
+  const upper = shouldUpper();
+  let out = '';
+  let depth = 0;
+  let lineStart = true;
+  const nl = () => { out += '\n' + indent.repeat(depth); lineStart = true; };
+  const sp = () => { if(!lineStart) out += ' '; };
+
+  for(let i = 0; i < tokens.length; i++){
+    const t = tokens[i];
+    const up = t.upper || '';
+
+    if(t.type === 'keyword'){
+      if(MAJOR_KW.has(up)){
+        if(up === 'SELECT' || up === 'INSERT INTO' || up === 'UPDATE' || up === 'DELETE' ||
+           up === 'DELETE FROM' || up === 'CREATE TABLE' || up === 'ALTER TABLE' ||
+           up === 'DROP TABLE' || up === 'WITH' || up === 'MERGE' || up === 'TRUNCATE'){
+          if(out.trim()) nl();
+          out += upper ? up : t.value;
+        } else if(up === 'UNION' || up === 'UNION ALL' || up === 'EXCEPT' || up === 'INTERSECT'){
+          if(depth > 0){out = out.trimEnd(); depth--; nl(); depth++;}
+          else { out = out.trimEnd(); nl(); }
+          out += upper ? up : t.value;
+        } else {
+          out = out.trimEnd(); nl();
+          out += upper ? up : t.value;
+        }
+      } else if(SUB_KW.has(up)){
+        out = out.trimEnd(); nl();
+        out += indent + (upper ? up : t.value);
+      } else if(up === 'CASE'){
+        sp(); out += upper ? up : t.value; depth++;
+      } else if(up === 'END'){
+        depth = Math.max(0, depth - 1);
+        out = out.trimEnd(); nl();
+        out += upper ? up : t.value;
+      } else {
+        sp(); out += upper ? up : t.value;
+      }
+      lineStart = false;
+    } else if(t.type === 'paren'){
+      if(t.value === '('){
+        let hasKw = false;
+        let pd = 1;
+        for(let j = i + 1; j < tokens.length && pd > 0; j++){
+          if(tokens[j].type === 'paren'){
+            pd += tokens[j].value === '(' ? 1 : -1;
+          }
+          if(pd > 0 && tokens[j].type === 'keyword' && MAJOR_KW.has(tokens[j].upper)){
+            hasKw = true; break;
+          }
+        }
+        if(hasKw){ sp(); out += '('; depth++; }
+        else { out += '('; }
+        lineStart = false;
+      } else {
+        let wasDeep = depth > 0;
+        if(wasDeep){
+          depth--;
+          out = out.trimEnd(); nl();
+        }
+        out += ')'; lineStart = false;
+      }
+    } else if(t.type === 'punct'){
+      if(t.value === ','){
+        out += ','; nl();
+      } else if(t.value === ';'){
+        out += ';'; nl(); nl();
+      }
+      lineStart = false;
+    } else if(t.type === 'comment'){
+      sp(); out += t.value; nl();
+    } else {
+      sp(); out += t.value; lineStart = false;
+    }
+  }
+  return out.trim();
+}
+
+function minifySQL(sql){
+  const tokens = classifyTokens(tokenize(sql));
+  const upper = shouldUpper();
+  let out = '';
+  for(const t of tokens){
+    if(t.type === 'comment') continue;
+    if(t.type === 'keyword'){
+      if(out && !/[\s(]$/.test(out)) out += ' ';
+      out += upper ? t.upper : t.value;
+    } else if(t.type === 'paren'){
+      out += t.value;
+    } else if(t.type === 'punct'){
+      out += t.value;
+      if(t.value === ',') out += ' ';
+    } else {
+      if(out && !/[\s(.]$/.test(out) && !/^[)\s,;.]/.test(t.value)) out += ' ';
+      out += t.value;
+    }
+  }
+  return out.trim();
+}
+
+function highlightSQL(text){
+  const esc=s=>s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  const tokens=tokenize(text);
+  let html='';
+  for(const t of tokens){
+    const v = esc(t.value);
+    if(t.type === 'word'){
+      const up = t.value.toUpperCase();
+      if(kwSet.has(up)) html += '<span class="kw">'+v+'</span>';
+      else if(fnSet.has(up)) html += '<span class="fn">'+v+'</span>';
+      else html += v;
+    } else if(t.type === 'string') html += '<span class="str">'+v+'</span>';
+    else if(t.type === 'number') html += '<span class="num">'+v+'</span>';
+    else if(t.type === 'comment') html += '<span class="cmt">'+v+'</span>';
+    else html += v;
+  }
+  return html;
+}
+
+function doFormat(){
+  lastMode = 'format';
+  const sql = document.getElementById('input').value.trim();
+  if(!sql) return;
+  const formatted = formatSQL(sql);
+  document.getElementById('output').innerHTML = highlightSQL(formatted);
+}
+
+function doMinify(){
+  lastMode = 'minify';
+  const sql = document.getElementById('input').value.trim();
+  if(!sql) return;
+  const minified = minifySQL(sql);
+  document.getElementById('output').innerHTML = highlightSQL(minified);
+}
+
+function rerun(){
+  const sql = document.getElementById('input').value.trim();
+  if(!sql) return;
+  if(lastMode === 'minify') doMinify();
+  else doFormat();
+}
+
+function copyOutput(){
+  const el = document.getElementById('output');
+  const text = el.textContent;
+  if(!text){ toast('Nothing to copy'); return; }
+  navigator.clipboard.writeText(text).then(()=>toast('Copied!')).catch(()=>toast('Copy failed'));
+}
+
+function toast(msg){
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'), 1500);
+}
+
+function loadSample(){
+  document.getElementById('input').value=`-- Monthly revenue report\nSELECT c.customer_id, c.first_name || ' ' || c.last_name AS full_name, c.email, COUNT(DISTINCT o.order_id) AS total_orders, SUM(oi.quantity * oi.unit_price) AS total_revenue, MAX(o.order_date) AS last_order_date FROM customers c INNER JOIN orders o ON o.customer_id = c.customer_id LEFT JOIN order_items oi ON oi.order_id = o.order_id LEFT JOIN products p ON p.product_id = oi.product_id WHERE o.order_date >= '2025-01-01' AND o.status IN ('completed', 'shipped') AND c.country = 'US' AND NOT EXISTS (SELECT 1 FROM blacklisted_customers bc WHERE bc.customer_id = c.customer_id) GROUP BY c.customer_id, c.first_name, c.last_name, c.email HAVING SUM(oi.quantity * oi.unit_price) > 100.00 ORDER BY total_revenue DESC LIMIT 50;`;
+  doFormat();
+}
+</script>
+</body>
+</html>
