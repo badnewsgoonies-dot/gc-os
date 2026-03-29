@@ -1,6 +1,17 @@
 # Google Play Store Launch Plan
 
-## Status: Infrastructure Ready, Account Needed
+## Status: Account Signup In Progress — Needs Manual Completion
+
+### Progress
+- Google Play Console signup started at play.google.com/console/signup
+- Logged in as badnewsgoonies@gmail.com
+- Developer name: "GC Tools"
+- Payments profile: Geni Xure, 95 Laurier Ave, Richmond Hill, ON L4E 4P7
+- Email verified via Google Account
+- Experience text filled (196 chars)
+- Other Google Accounts: No
+- **STUCK**: Form validation errors — "Website" field and "Other accounts" section have issues from ADB automation
+- **ACTION NEEDED**: Geni needs to complete the form manually on phone Chrome (it's already open at play.google.com/console/signup) and pay the $25 fee
 
 ### What's Done
 - **6 games deployed to Vercel** with PWA manifests and icons
