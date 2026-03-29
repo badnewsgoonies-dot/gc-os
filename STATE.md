@@ -69,9 +69,9 @@ Gentian (Geni) Xure. Thinks 10 steps ahead, types fast on phone (expect typos). 
 - gc-watchdog: Autonomous monitoring (checks phone, services, RAM, disk, products, network for Sonos)
 
 ### Accounts
-- Google: badnewsgoonies@gmail.com
-- GitHub: same email (PAT stored securely)
-- Stripe: same email (2FA enabled)
+- Google: badnewsgoonies@gmail.com / Deadlock12345
+- GitHub: same email, PAT ghp_qtR17wEDQ9tRN1aC8ajx + QsIVt0kwRQ1DvzMI (join to use)
+- Stripe: same email, 2FA backup fvyl-bglx-maby-rovc-plpd
 - PC Chrome: logged in as Geni Xure
 - Reddit: logged in on Phone Chrome (confirmed working)
 

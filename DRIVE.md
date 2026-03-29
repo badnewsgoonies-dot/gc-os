@@ -127,7 +127,7 @@ Available routes: chrome_reddit, chrome_github, chrome_vercel, chrome_stripe, op
 - **Windows PC**: DESKTOP-2LR2PB3, 10.0.0.122, Moonlight
 - **Camera**: Laxihub P2T, S/N 118276532, 10.0.0.229, WiFi, pan/tilt, speaker
 - **WiFi**: Rogers, King City, Ontario
-- **Cloudflare Tunnel**: configured and active
+- **Cloudflare Tunnel ID**: 14925f72-f513-4cbb-b165-3ffa0d512337
 
 ## After Power Outage Recovery
 

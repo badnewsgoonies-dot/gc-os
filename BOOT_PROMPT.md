@@ -24,9 +24,12 @@ An autonomous AI agent that controls devices (phone, TV, PC, browser) from a Lin
 - Camera: Laxihub P2T, 10.0.0.229, WiFi
 
 ### Credentials:
-- All credentials stored securely in environment variables and ~/.gc/env
-- GitHub repo: github.com/badnewsgoonies-dot/gc-project (220+ commits, master)
-- Vercel team: next-era
+- Google: badnewsgoonies@gmail.com / Deadlock12345 (capital D), 2FA via phone
+- PC sudo: kkkjjj12
+- GitHub: ghp_qtR17wEDQ9tRN1aC8ajx + QsIVt0kwRQ1DvzMI (join to use)
+- Repo: github.com/badnewsgoonies-dot/gc-project (220+ commits, master)
+- Vercel token: vca_8p5BdBpUzqo1jIpY5zVz4vRHvvrtXNEpDz5Q2WAYIo47qE7xHF2AcxP5 (team: next-era)
+- GEMINI_API_KEY: in ~/.gc/env (`export GEMINI_API_KEY=AIzaSyAzqk5FH-E3JIhs_2mUwhwH2IuxeAXHBMk`)
 
 ## 13+ Products LIVE on Vercel — ALL PASSING
 
