@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Meta Tag Generator - SEO Meta Tags Generator Online Free</title>
+<meta name="description" content="Free online meta tag generator. Create SEO-optimized meta tags, Open Graph tags, Twitter Cards, and robots directives with live preview.">
+<meta name="keywords" content="meta tag generator,seo meta tags,open graph generator,twitter card generator,robots meta,viewport meta">
+<meta name="robots" content="index,follow">
+<meta property="og:title" content="Meta Tag Generator - SEO Meta Tags Generator Online Free">
+<meta property="og:description" content="Generate SEO-optimized meta tags with live preview and Google search result simulation.">
+<meta property="og:type" content="website">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect rx='12' width='100' height='100' fill='%230b1020'/><text x='50' y='68' font-size='38' font-family='monospace' font-weight='bold' text-anchor='middle' fill='%2356c2ff'>&lt;/&gt;</text></svg>">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}body{background:#0b1020;color:#eef3ff;font-family:'SF Mono','Fira Code','Cascadia Code',Consolas,monospace;min-height:100vh;display:flex;flex-direction:column;align-items:center}h1{font-size:1.3rem;padding:1.2rem 0 .3rem;color:#56c2ff;text-align:center;letter-spacing:.5px}.sub{font-size:.75rem;color:#6a7a9b;text-align:center;margin-bottom:1rem}.wrap{width:100%;max-width:960px;padding:0 1rem 1rem;flex:1}.P{background:rgba(13,19,37,.94);border:1px solid #1a2340;border-radius:8px;margin-bottom:.8rem;overflow:hidden}.Ph{display:flex;justify-content:space-between;align-items:center;padding:.5rem .7rem;border-bottom:1px solid #1a2340;font-size:.75rem;color:#6a7a9b;flex-wrap:wrap;gap:.4rem}.Ph strong{color:#56c2ff;font-size:.8rem}.Pb{padding:.6rem .7rem}.row{display:flex;gap:.6rem;margin-bottom:.5rem;flex-wrap:wrap}.F{flex:1;min-width:180px}.F label{display:block;font-size:.68rem;color:#6a7a9b;margin-bottom:.2rem}.F input,.F select,.F textarea{width:100%;background:rgba(6,10,22,.6);border:1px solid #1a2340;border-radius:5px;color:#eef3ff;font-family:inherit;font-size:.78rem;padding:.4rem .5rem;outline:none;transition:border-color .15s}.F input:focus,.F select:focus,.F textarea:focus{border-color:#56c2ff}.F textarea{resize:vertical;min-height:50px;line-height:1.4}.F input::placeholder,.F textarea::placeholder{color:#3a4a6b}.cc{font-size:.62rem;color:#6a7a9b;text-align:right;margin-top:.15rem}.cc.w{color:#f0a040}.cc.o{color:#f05050}.io{display:flex;gap:1rem;align-items:center;flex-wrap:wrap}.tg{display:flex;align-items:center;gap:.3rem;font-size:.72rem;color:#6a7a9b;cursor:pointer;user-select:none}.tg input{accent-color:#56c2ff;cursor:pointer}button{background:rgba(86,194,255,.12);color:#56c2ff;border:1px solid rgba(86,194,255,.25);border-radius:6px;padding:.38rem .75rem;font-family:inherit;font-size:.72rem;cursor:pointer;transition:all .15s;white-space:nowrap}button:hover{background:rgba(86,194,255,.22);border-color:#56c2ff}button.ok{background:rgba(80,200,120,.18);color:#50c878;border-color:rgba(80,200,120,.4)}.gp{background:#1a1a2e;border-radius:8px;padding:.8rem;margin-top:.4rem}.gp-t{font-size:.95rem;color:#8ab4f8;line-height:1.3;cursor:pointer;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.gp-t:hover{text-decoration:underline}.gp-u{font-size:.72rem;color:#bdc1c6;margin:.2rem 0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.gp-d{font-size:.78rem;color:#9aa0a6;line-height:1.4;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}pre.code{background:rgba(6,10,22,.6);border:1px solid #1a2340;border-radius:6px;padding:.6rem;font-size:.72rem;line-height:1.6;overflow-x:auto;white-space:pre-wrap;word-break:break-all;max-height:400px;overflow-y:auto}.ht{color:#f07050}.ha{color:#c792ea}.hv{color:#c3e88d}.he{color:#6a7a9b}.ar{display:flex;gap:.5rem;align-items:flex-end}.ar .F{flex:1}.ar button{align-self:flex-end;margin-bottom:.5rem}footer{font-size:.65rem;color:#3a4a6b;padding:.8rem 0;text-align:center}@media(max-width:600px){.row{flex-direction:column}.F{min-width:0}.ar{flex-direction:column}.ar button{width:100%}}
+</style>
+</head>
+<body>
+<h1>&lt;/&gt; Meta Tag Generator</h1>
+<p class="sub">Generate SEO-optimized meta tags with live preview</p>
+<div class="wrap">
+<div class="P"><div class="Ph"><strong>Analyze Existing URL</strong></div><div class="Pb">
+<div class="ar"><div class="F"><label>URL to analyze</label><input type="url" id="aUrl" placeholder="https://example.com"></div><button onclick="analyze()">Analyze URL</button></div>
+<div id="aSt" style="font-size:.7rem;color:#6a7a9b;margin-top:.3rem"></div>
+</div></div>
+<div class="P"><div class="Ph"><strong>Basic Meta Tags</strong></div><div class="Pb">
+<div class="row"><div class="F"><label>Page Title</label><input type="text" id="mT" placeholder="My Awesome Page" oninput="upd()"><div class="cc" id="tcnt">0 / 60</div></div></div>
+<div class="row"><div class="F"><label>Description</label><textarea id="mD" placeholder="A brief description of the page content..." oninput="upd()"></textarea><div class="cc" id="dcnt">0 / 160</div></div></div>
+<div class="row"><div class="F"><label>Keywords (comma separated)</label><input type="text" id="mK" placeholder="seo, meta tags, generator" oninput="upd()"></div></div>
+<div class="row"><div class="F"><label>Author</label><input type="text" id="mA" placeholder="John Doe" oninput="upd()"></div><div class="F"><label>Canonical URL</label><input type="url" id="mC" placeholder="https://example.com/page" oninput="upd()"></div></div>
+</div></div>
+<div class="P"><div class="Ph"><strong>Open Graph</strong></div><div class="Pb">
+<div class="row"><div class="F"><label>og:title</label><input type="text" id="oT" placeholder="Same as page title if empty" oninput="upd()"></div><div class="F"><label>og:type</label><select id="oTy" onchange="upd()"><option value="website">website</option><option value="article">article</option><option value="product">product</option><option value="profile">profile</option><option value="video.other">video</option><option value="music.song">music</option></select></div></div>
+<div class="row"><div class="F"><label>og:description</label><textarea id="oD" placeholder="Same as description if empty" oninput="upd()"></textarea></div></div>
+<div class="row"><div class="F"><label>og:image URL</label><input type="url" id="oI" placeholder="https://example.com/image.jpg" oninput="upd()"></div><div class="F"><label>og:url</label><input type="url" id="oU" placeholder="https://example.com/page" oninput="upd()"></div></div>
+</div></div>
+<div class="P"><div class="Ph"><strong>Twitter Card</strong></div><div class="Pb">
+<div class="row"><div class="F"><label>Card Type</label><select id="tC" onchange="upd()"><option value="summary">summary</option><option value="summary_large_image">summary_large_image</option></select></div><div class="F"><label>Twitter Title</label><input type="text" id="tT" placeholder="Same as page title if empty" oninput="upd()"></div></div>
+<div class="row"><div class="F"><label>Twitter Description</label><textarea id="tD" placeholder="Same as description if empty" oninput="upd()"></textarea></div></div>
+<div class="row"><div class="F"><label>Twitter Image URL</label><input type="url" id="tI" placeholder="https://example.com/image.jpg" oninput="upd()"></div></div>
+</div></div>
+<div class="P"><div class="Ph"><strong>Robots &amp; Viewport</strong></div><div class="Pb">
+<div class="row"><div class="io">
+<label class="tg"><input type="checkbox" id="rI" checked onchange="upd()"> index</label>
+<label class="tg"><input type="checkbox" id="rF" checked onchange="upd()"> follow</label>
+<span style="color:#1a2340">|</span>
+<label class="tg"><input type="checkbox" id="vW" checked onchange="upd()"> width=device-width</label>
+<label class="tg"><input type="checkbox" id="vS" checked onchange="upd()"> initial-scale=1</label>
+<label class="tg"><input type="checkbox" id="vU" onchange="upd()"> user-scalable=no</label>
+</div></div>
+</div></div>
+<div class="P"><div class="Ph"><strong>Google Search Preview</strong></div><div class="Pb">
+<div class="gp"><div class="gp-t" id="gpT">Page Title</div><div class="gp-u" id="gpU">https://example.com</div><div class="gp-d" id="gpD">Page description will appear here...</div></div>
+</div></div>
+<div class="P"><div class="Ph"><strong>Generated Meta Tags</strong><div style="display:flex;gap:.5rem"><button onclick="copyAll()" id="cpBtn">Copy All Tags</button></div></div><div class="Pb">
+<pre class="code" id="out"></pre>
+</div></div>
+</div>
+<footer>Meta Tag Generator &mdash; No data sent to any server</footer>
+<script>
+const $=id=>document.getElementById(id),V=id=>$(id).value.trim();
+function esc(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')}
+function eH(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}
+function hl(r){let h=eH(r);h=h.replace(/^(&lt;\/?)([\w:-]+)/,'<span class="ht">$1$2</span>');h=h.replace(/([\w:-]+)(=)(&quot;)(.*?)(&quot;)/g,'<span class="ha">$1</span><span class="he">$2</span><span class="hv">$3$4$5</span>');h=h.replace(/(\/?&gt;)$/,'<span class="ht">$1</span>');return h}
+function cw(el,n,mx){el.textContent=n+' / '+mx;el.className='cc'+(n>mx?' o':n>mx*.85?' w':'')}
+function upd(){
+ const t=V('mT'),d=V('mD'),k=V('mK'),a=V('mA'),c=V('mC');
+ const oT=V('oT')||t,oD=V('oD')||d,oI=V('oI'),oTy=V('oTy'),oU=V('oU')||c;
+ const tC=V('tC'),tT=V('tT')||t,tD=V('tD')||d,tI=V('tI')||oI;
+ const ri=$('rI').checked,rf=$('rF').checked;
+ const vw=$('vW').checked,vs=$('vS').checked,vu=$('vU').checked;
+ cw($('tcnt'),t.length,60);cw($('dcnt'),d.length,160);
+ $('gpT').textContent=t||'Page Title';
+ $('gpU').textContent=c||oU||'https://example.com';
+ $('gpD').textContent=d||'Page description will appear here...';
+ const T=[];
+ T.push('<meta charset="UTF-8">');
+ let vp=[];if(vw)vp.push('width=device-width');if(vs)vp.push('initial-scale=1');if(vu)vp.push('user-scalable=no');
+ if(vp.length)T.push('<meta name="viewport" content="'+vp.join(', ')+'">');
+ if(t)T.push('<title>'+esc(t)+'</title>');
+ if(d)T.push('<meta name="description" content="'+esc(d)+'">');
+ if(k)T.push('<meta name="keywords" content="'+esc(k)+'">');
+ if(a)T.push('<meta name="author" content="'+esc(a)+'">');
+ T.push('<meta name="robots" content="'+(ri?'index':'noindex')+', '+(rf?'follow':'nofollow')+'">');
+ if(c)T.push('<link rel="canonical" href="'+esc(c)+'">');
+ T.push('');
+ if(oT)T.push('<meta property="og:title" content="'+esc(oT)+'">');
+ if(oD)T.push('<meta property="og:description" content="'+esc(oD)+'">');
+ T.push('<meta property="og:type" content="'+oTy+'">');
+ if(oU)T.push('<meta property="og:url" content="'+esc(oU)+'">');
+ if(oI)T.push('<meta property="og:image" content="'+esc(oI)+'">');
+ T.push('');
+ T.push('<meta name="twitter:card" content="'+tC+'">');
+ if(tT)T.push('<meta name="twitter:title" content="'+esc(tT)+'">');
+ if(tD)T.push('<meta name="twitter:description" content="'+esc(tD)+'">');
+ if(tI)T.push('<meta name="twitter:image" content="'+esc(tI)+'">');
+ window._raw=T.filter(x=>x!=='').join('\n');
+ $('out').innerHTML=T.map(x=>x===''?'':hl(x)).join('\n');
+}
+function copyAll(){
+ if(!window._raw)return;
+ navigator.clipboard.writeText(window._raw).then(()=>{
+  const b=$('cpBtn');b.textContent='Copied!';b.classList.add('ok');
+  setTimeout(()=>{b.textContent='Copy All Tags';b.classList.remove('ok')},1500);
+ });
+}
+function analyze(){
+ const url=V('aUrl'),st=$('aSt');
+ if(!url){st.textContent='Enter a URL first.';return}
+ st.textContent='Fetching...';st.style.color='#56c2ff';
+ fetch('https://api.allorigins.win/raw?url='+encodeURIComponent(url)).then(r=>{if(!r.ok)throw new Error(r.status);return r.text()}).then(h=>{
+  const p=new DOMParser().parseFromString(h,'text/html');
+  const g=s=>{const e=p.querySelector(s);return e?e.getAttribute('content')||e.textContent||'':''},
+        ga=s=>{const e=p.querySelector(s);return e?e.getAttribute('href')||'':''};
+  $('mT').value=p.querySelector('title')?.textContent||'';
+  $('mD').value=g('meta[name="description"]');
+  $('mK').value=g('meta[name="keywords"]');
+  $('mA').value=g('meta[name="author"]');
+  $('mC').value=ga('link[rel="canonical"]');
+  $('oT').value=g('meta[property="og:title"]');
+  $('oD').value=g('meta[property="og:description"]');
+  $('oI').value=g('meta[property="og:image"]');
+  $('oU').value=g('meta[property="og:url"]');
+  const ot=g('meta[property="og:type"]');if(ot)[...$('oTy').options].some(o=>o.value===ot&&($('oTy').value=ot));
+  const tc=g('meta[name="twitter:card"]');if(tc)[...$('tC').options].some(o=>o.value===tc&&($('tC').value=tc));
+  $('tT').value=g('meta[name="twitter:title"]');
+  $('tD').value=g('meta[name="twitter:description"]');
+  $('tI').value=g('meta[name="twitter:image"]');
+  const rb=g('meta[name="robots"]').toLowerCase();
+  if(rb){$('rI').checked=!rb.includes('noindex');$('rF').checked=!rb.includes('nofollow')}
+  st.textContent='Loaded meta tags from '+url;st.style.color='#50c878';upd();
+ }).catch(e=>{st.textContent='Failed: '+e.message+'. CORS proxy may be blocked.';st.style.color='#f05050'});
+}
+upd();
+</script>
+</body>
+</html>

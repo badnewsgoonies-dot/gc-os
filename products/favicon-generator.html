@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Favicon Generator - Create Favicons from Text, Emoji or Image</title>
+<meta name="description" content="Generate favicons from text, emoji, or uploaded images. Download as ICO, PNG, or copy HTML link tags. Free online favicon creator with live preview.">
+<meta name="keywords" content="favicon generator, favicon creator, ico generator, text favicon, emoji favicon, favicon from image">
+<meta property="og:title" content="Favicon Generator - Create Favicons from Text, Emoji or Image">
+<meta property="og:description" content="Generate favicons from text, emoji, or uploaded images. Download as ICO, PNG, or copy HTML link tags.">
+<meta property="og:type" content="website">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Favicon Generator">
+<meta name="twitter:description" content="Create favicons from text, emoji, or images with live preview and multiple export formats.">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#0b1020;--pn:rgba(13,19,37,.94);--ac:#56c2ff;--tx:#eef3ff;--t2:#8a9bc0;--bd:rgba(86,194,255,.15);--ah:rgba(86,194,255,.12)}
+body{font-family:system-ui,-apple-system,sans-serif;background:var(--bg);color:var(--tx);min-height:100vh;padding:20px}
+h1{font-size:1.6rem;text-align:center;margin:20px 0 6px;font-weight:700}
+.sub{text-align:center;color:var(--t2);font-size:.9rem;margin-bottom:24px}
+.app{max-width:960px;margin:0 auto;display:grid;grid-template-columns:1fr 1fr;gap:20px}
+@media(max-width:700px){.app{grid-template-columns:1fr}}
+.pn{background:var(--pn);border:1px solid var(--bd);border-radius:10px;padding:20px}
+.pn h2{font-size:1rem;color:var(--ac);margin-bottom:14px;font-weight:600}
+label{display:block;font-size:.82rem;color:var(--t2);margin:12px 0 4px}
+label:first-of-type{margin-top:0}
+input[type=text],select{width:100%;padding:8px 10px;background:rgba(255,255,255,.06);border:1px solid var(--bd);border-radius:6px;color:var(--tx);font-size:.9rem;font-family:inherit}
+input[type=text]:focus,select:focus{outline:none;border-color:var(--ac)}
+input[type=color]{width:48px;height:32px;border:1px solid var(--bd);border-radius:6px;background:none;cursor:pointer;padding:2px}
+input[type=range]{width:100%;accent-color:var(--ac);margin-top:4px}
+.cr{display:flex;align-items:center;gap:10px}.cr input[type=text]{flex:1}
+.tabs{display:flex;gap:6px;margin-bottom:16px}
+.tabs button,.bm button{padding:8px;border:1px solid var(--bd);border-radius:6px;background:rgba(255,255,255,.04);color:var(--t2);cursor:pointer;font-size:.82rem;font-family:inherit;transition:.2s}
+.tabs button{flex:1}.tabs button.on,.bm button.on{background:var(--ah);color:var(--ac);border-color:var(--ac)}
+.tabs button:hover,.bm button:hover{background:rgba(86,194,255,.08)}
+.bm{display:flex;gap:6px;margin-bottom:8px}
+.bm button{padding:5px 10px;font-size:.78rem;border-radius:5px}
+.eg{display:grid;grid-template-columns:repeat(8,1fr);gap:4px;max-height:180px;overflow-y:auto;padding:4px}
+.eg button{font-size:1.4rem;padding:4px;border:1px solid transparent;border-radius:6px;background:none;cursor:pointer;transition:.15s}
+.eg button:hover{background:var(--ah);border-color:var(--bd)}
+.eg button.sel{border-color:var(--ac);background:rgba(86,194,255,.15)}
+.ua{border:2px dashed var(--bd);border-radius:8px;padding:30px;text-align:center;cursor:pointer;color:var(--t2);font-size:.85rem;transition:.2s;position:relative}
+.ua:hover{border-color:var(--ac);color:var(--ac)}
+.ua input{position:absolute;inset:0;opacity:0;cursor:pointer}
+.pg{display:flex;flex-wrap:wrap;gap:16px;align-items:flex-end;justify-content:center}
+.pi{text-align:center}.pi canvas{border:1px solid var(--bd);border-radius:4px;image-rendering:pixelated}
+.pi span{display:block;font-size:.7rem;color:var(--t2);margin-top:4px}
+.mp{display:flex;justify-content:center;margin-bottom:20px}.mp canvas{border:1px solid var(--bd);border-radius:8px}
+.acts{display:flex;flex-wrap:wrap;gap:8px;margin-top:16px}
+.acts button{flex:1;min-width:120px;padding:10px;border:none;border-radius:6px;cursor:pointer;font-size:.82rem;font-family:inherit;font-weight:600;transition:.2s}
+.bp{background:var(--ac);color:#0b1020}.bp:hover{background:#7dd4ff}
+.bs{background:var(--ah);color:var(--ac);border:1px solid var(--bd)!important}.bs:hover{background:rgba(86,194,255,.2)}
+.lt{margin-top:14px;background:rgba(0,0,0,.3);border-radius:6px;padding:12px;font-family:monospace;font-size:.75rem;color:var(--t2);white-space:pre-wrap;word-break:break-all;display:none;position:relative}
+.lt .cb{position:absolute;top:6px;right:6px;background:rgba(86,194,255,.15);border:none;color:var(--ac);padding:4px 10px;border-radius:4px;cursor:pointer;font-size:.72rem;font-family:inherit}
+.gr{display:flex;gap:8px;align-items:center;margin-top:8px}.gr input[type=color]{width:40px;height:28px}
+.hd{display:none!important}
+.sv{color:var(--ac);font-size:.8rem;float:right}
+.eg::-webkit-scrollbar{width:6px}.eg::-webkit-scrollbar-track{background:transparent}.eg::-webkit-scrollbar-thumb{background:rgba(86,194,255,.2);border-radius:3px}
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:var(--ac);color:#0b1020;padding:10px 24px;border-radius:8px;font-size:.85rem;font-weight:600;opacity:0;transition:opacity .3s;pointer-events:none;z-index:99}
+.toast.show{opacity:1}
+</style>
+</head>
+<body>
+<h1>Favicon Generator</h1>
+<p class="sub">Create favicons from text, emoji, or images</p>
+<div class="app">
+<div class="pn">
+<h2>Configuration</h2>
+<div class="tabs">
+<button class="on" onclick="setMode('text')">Text</button>
+<button onclick="setMode('emoji')">Emoji</button>
+<button onclick="setMode('image')">Image</button>
+</div>
+<div id="m-text">
+<label>Text (1-2 characters)</label>
+<input type="text" id="i-text" value="Ab" maxlength="2" oninput="render()">
+<label>Text Color</label>
+<div class="cr"><input type="color" id="i-tc" value="#ffffff" oninput="sync(this,'t-tc');render()"><input type="text" id="t-tc" value="#ffffff" oninput="syncH(this,'i-tc');render()"></div>
+<label>Font</label>
+<select id="i-font" onchange="render()">
+<option value="system-ui,sans-serif">Sans-serif</option>
+<option value="Georgia,'Times New Roman',serif">Serif</option>
+<option value="'Courier New',monospace">Monospace</option>
+<option value="'Comic Sans MS','Marker Felt',cursive">Rounded</option>
+</select>
+</div>
+<div id="m-emoji" class="hd">
+<label>Select Emoji</label>
+<div class="eg" id="eg"></div>
+</div>
+<div id="m-image" class="hd">
+<label>Upload Image</label>
+<div class="ua" id="ua">Drop an image or click to upload<input type="file" accept="image/*" id="i-file" onchange="handleFile(this)"></div>
+</div>
+<label>Background</label>
+<div class="bm">
+<button class="on" onclick="setBg('solid')">Solid</button>
+<button onclick="setBg('gradient')">Gradient</button>
+<button onclick="setBg('transparent')">Transparent</button>
+</div>
+<div id="bg-s"><div class="cr"><input type="color" id="i-bg" value="#4a3adb" oninput="sync(this,'t-bg');render()"><input type="text" id="t-bg" value="#4a3adb" oninput="syncH(this,'i-bg');render()"></div></div>
+<div id="bg-g" class="hd"><div class="gr"><input type="color" id="i-g1" value="#4a3adb" oninput="render()"><span style="color:var(--t2);font-size:.8rem">to</span><input type="color" id="i-g2" value="#56c2ff" oninput="render()"><select id="i-gd" onchange="render()" style="width:auto;padding:4px 8px;font-size:.78rem"><option value="tb">Vertical</option><option value="lr">Horizontal</option><option value="d">Diagonal</option></select></div></div>
+<label>Border Radius <span class="sv" id="rv">50%</span></label>
+<input type="range" id="i-rad" min="0" max="50" value="50" oninput="$('rv').textContent=this.value+'%';render()">
+</div>
+<div class="pn">
+<h2>Preview</h2>
+<div class="mp"><canvas id="c-main" width="180" height="180"></canvas></div>
+<div class="pg">
+<div class="pi"><canvas id="c-16" width="16" height="16"></canvas><span>16</span></div>
+<div class="pi"><canvas id="c-32" width="32" height="32"></canvas><span>32</span></div>
+<div class="pi"><canvas id="c-48" width="48" height="48"></canvas><span>48</span></div>
+<div class="pi"><canvas id="c-180" width="64" height="64"></canvas><span>180</span></div>
+<div class="pi"><canvas id="c-512" width="80" height="80"></canvas><span>512</span></div>
+</div>
+<div class="acts">
+<button class="bp" onclick="dlICO()">Download .ico</button>
+<button class="bp" onclick="dlPNG()">Download .png</button>
+<button class="bs" onclick="showTags()">HTML Link Tags</button>
+</div>
+<div class="lt" id="lt"><button class="cb" onclick="cpTags()">Copy</button><code id="lc"></code></div>
+</div>
+</div>
+<div class="toast" id="toast"></div>
+<script>
+const SZ=[16,32,48,180,512],DS={16:16,32:32,48:48,180:64,512:80};
+const EM=['😀','😎','🚀','⭐','🔥','💎','🎯','❤️','💡','🎨','🎸','🎮','📱','💻','🌍','🏠','📧','🔒','⚡','🍕','🎂','🌈','🦄','🐱','🐶','🌺','🍎','🎵','📸','✅','🏆','💰','🎁','🌙','☀️','⛵','🎲','🧩','🔔','📌'];
+let mode='text',bg='solid',selE='😀',uImg=null;
+const $=id=>document.getElementById(id);
+
+function setMode(m){
+  mode=m;
+  document.querySelectorAll('.tabs button').forEach((b,i)=>b.classList.toggle('on',['text','emoji','image'][i]===m));
+  ['text','emoji','image'].forEach(x=>$('m-'+x).classList.toggle('hd',x!==m));
+  render();
+}
+
+function setBg(m){
+  bg=m;
+  document.querySelectorAll('.bm button').forEach((b,i)=>b.classList.toggle('on',['solid','gradient','transparent'][i]===m));
+  $('bg-s').classList.toggle('hd',m!=='solid');
+  $('bg-g').classList.toggle('hd',m!=='gradient');
+  render();
+}
+
+function sync(el,t){$(t).value=el.value}
+function syncH(el,c){if(/^#[0-9a-f]{6}$/i.test(el.value))$(c).value=el.value}
+
+function initEmojis(){
+  const g=$('eg');
+  EM.forEach(e=>{
+    const b=document.createElement('button');b.textContent=e;b.title=e;
+    if(e===selE)b.classList.add('sel');
+    b.onclick=()=>{selE=e;g.querySelectorAll('button').forEach(x=>x.classList.remove('sel'));b.classList.add('sel');render()};
+    g.appendChild(b);
+  });
+}
+
+function handleFile(inp){
+  const f=inp.files[0];if(!f)return;
+  const r=new FileReader();
+  r.onload=ev=>{const img=new Image();img.onload=()=>{uImg=img;$('ua').textContent=f.name;render()};img.src=ev.target.result};
+  r.readAsDataURL(f);
+}
+
+function rr(ctx,x,y,w,h,r){
+  ctx.beginPath();ctx.moveTo(x+r,y);ctx.lineTo(x+w-r,y);ctx.quadraticCurveTo(x+w,y,x+w,y+r);
+  ctx.lineTo(x+w,y+h-r);ctx.quadraticCurveTo(x+w,y+h,x+w-r,y+h);ctx.lineTo(x+r,y+h);
+  ctx.quadraticCurveTo(x,y+h,x,y+h-r);ctx.lineTo(x,y+r);ctx.quadraticCurveTo(x,y,x+r,y);ctx.closePath();
+}
+
+function draw(cvs){
+  const ctx=cvs.getContext('2d'),w=cvs.width,h=cvs.height;
+  ctx.clearRect(0,0,w,h);ctx.save();
+  const rd=parseFloat($('i-rad').value)/100*(w/2);
+  rr(ctx,0,0,w,h,rd);ctx.clip();
+  if(bg==='solid'){ctx.fillStyle=$('i-bg').value;ctx.fillRect(0,0,w,h)}
+  else if(bg==='gradient'){
+    const d=$('i-gd').value;let x1=0,y1=0,x2=0,y2=0;
+    if(d==='tb')y2=h;else if(d==='lr')x2=w;else{x2=w;y2=h}
+    const g=ctx.createLinearGradient(x1,y1,x2,y2);
+    g.addColorStop(0,$('i-g1').value);g.addColorStop(1,$('i-g2').value);
+    ctx.fillStyle=g;ctx.fillRect(0,0,w,h);
+  }
+  if(mode==='text'){
+    const txt=$('i-text').value||'A',font=$('i-font').value;
+    ctx.fillStyle=$('i-tc').value;ctx.textAlign='center';ctx.textBaseline='middle';
+    const fs=txt.length===1?w*.65:w*.45;
+    ctx.font=`bold ${fs}px ${font}`;ctx.fillText(txt,w/2,h/2+fs*.04);
+  }else if(mode==='emoji'){
+    ctx.textAlign='center';ctx.textBaseline='middle';
+    ctx.font=`${w*.7}px system-ui`;ctx.fillText(selE,w/2,h/2+w*.05);
+  }else if(mode==='image'&&uImg){
+    const sc=Math.max(w/uImg.width,h/uImg.height),sw=uImg.width*sc,sh=uImg.height*sc;
+    ctx.drawImage(uImg,(w-sw)/2,(h-sh)/2,sw,sh);
+  }
+  ctx.restore();ctx.save();ctx.globalCompositeOperation='destination-in';
+  ctx.beginPath();rr(ctx,0,0,w,h,rd);ctx.fillStyle='#000';ctx.fill();ctx.restore();
+}
+
+function render(){
+  const m=$('c-main');m.width=180;m.height=180;draw(m);
+  SZ.forEach(s=>{
+    const c=$('c-'+s),ds=DS[s];c.width=ds;c.height=ds;
+    const t=document.createElement('canvas');t.width=s;t.height=s;draw(t);
+    const cx=c.getContext('2d');cx.imageSmoothingEnabled=s<64;cx.drawImage(t,0,0,ds,ds);
+  });
+  $('lt').style.display='none';
+}
+
+function fc(size){const c=document.createElement('canvas');c.width=size;c.height=size;draw(c);return c}
+
+function dlPNG(){
+  const s=parseInt(prompt('Size (16, 32, 48, 180, 512):','32'));
+  if(!SZ.includes(s)){toast('Invalid size');return}
+  const a=document.createElement('a');a.download=`favicon-${s}x${s}.png`;a.href=fc(s).toDataURL('image/png');a.click();toast('PNG downloaded!');
+}
+
+function dlICO(){
+  const imgs=[16,32,48].map(s=>{const c=fc(s),d=c.getContext('2d').getImageData(0,0,s,s);return{w:s,h:s,data:d.data}});
+  const a=document.createElement('a');a.download='favicon.ico';a.href=URL.createObjectURL(mkICO(imgs));a.click();toast('ICO downloaded!');
+}
+
+function mkICO(imgs){
+  let off=6+16*imgs.length;
+  const ents=imgs.map(im=>{
+    const rb=im.w*4,mb=Math.ceil(im.w/32)*4,sz=40+rb*im.h+mb*im.h;
+    const e={w:im.w,h:im.h,data:im.data,off,sz,rb,mb};off+=sz;return e;
+  });
+  const buf=new ArrayBuffer(off),v=new DataView(buf);
+  v.setUint16(0,0,1);v.setUint16(2,1,1);v.setUint16(4,imgs.length,1);
+  ents.forEach((e,i)=>{
+    const o=6+i*16;v.setUint8(o,e.w<256?e.w:0);v.setUint8(o+1,e.h<256?e.h:0);
+    v.setUint8(o+2,0);v.setUint8(o+3,0);v.setUint16(o+4,1,1);v.setUint16(o+6,32,1);
+    v.setUint32(o+8,e.sz,1);v.setUint32(o+12,e.off,1);
+  });
+  ents.forEach(e=>{
+    let p=e.off;
+    v.setUint32(p,40,1);p+=4;v.setInt32(p,e.w,1);p+=4;v.setInt32(p,e.h*2,1);p+=4;
+    v.setUint16(p,1,1);p+=2;v.setUint16(p,32,1);p+=2;v.setUint32(p,0,1);p+=4;
+    v.setUint32(p,e.rb*e.h+e.mb*e.h,1);p+=4;
+    v.setInt32(p,0,1);p+=4;v.setInt32(p,0,1);p+=4;v.setUint32(p,0,1);p+=4;v.setUint32(p,0,1);p+=4;
+    for(let y=e.h-1;y>=0;y--){for(let x=0;x<e.w;x++){
+      const si=(y*e.w+x)*4,di=p+x*4;
+      v.setUint8(di,e.data[si+2]);v.setUint8(di+1,e.data[si+1]);v.setUint8(di+2,e.data[si]);v.setUint8(di+3,e.data[si+3]);
+    }p+=e.rb}
+    for(let y=0;y<e.h;y++)for(let x=0;x<e.mb;x++)v.setUint8(p++,0);
+  });
+  return new Blob([buf],{type:'image/x-icon'});
+}
+
+function showTags(){
+  $('lt').style.display='block';
+  $('lc').textContent='<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">\n<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">\n<link rel="icon" type="image/png" sizes="48x48" href="/favicon-48x48.png">\n<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">\n<link rel="icon" type="image/png" sizes="512x512" href="/favicon-512x512.png">';
+}
+function cpTags(){navigator.clipboard.writeText($('lc').textContent).then(()=>toast('Copied!'))}
+function toast(m){const t=$('toast');t.textContent=m;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2e3)}
+initEmojis();render();
+</script>
+</body>
+</html>
