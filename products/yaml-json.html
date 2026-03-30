@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>YAML to JSON Converter - Convert YAML and JSON Online Free</title>
+<meta name="description" content="Free online YAML to JSON converter. Convert between YAML and JSON formats instantly with real-time preview, error highlighting, and copy support.">
+<meta name="keywords" content="yaml to json, json to yaml, yaml converter, json converter, yaml parser, online tool, free converter">
+<meta name="robots" content="index,follow">
+<meta property="og:title" content="YAML to JSON Converter - Convert YAML and JSON Online Free">
+<meta property="og:description" content="Free online YAML to JSON converter. Convert between YAML and JSON formats instantly with real-time preview.">
+<meta property="og:type" content="website">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect rx='12' width='100' height='100' fill='%230b1020'/><text x='50' y='68' font-size='36' font-family='monospace' font-weight='bold' text-anchor='middle' fill='%2356c2ff'>Y↔J</text></svg>">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#0b1020;color:#eef3ff;font-family:'SF Mono','Fira Code','Cascadia Code','Consolas',monospace;min-height:100vh;display:flex;flex-direction:column;align-items:center}
+h1{font-size:1.3rem;padding:1.2rem 0 .3rem;color:#56c2ff;text-align:center;letter-spacing:.5px}
+.sub{font-size:.75rem;color:#6a7a9b;text-align:center;margin-bottom:1rem}
+.wrap{width:100%;max-width:1200px;padding:0 1rem 1rem;flex:1;display:flex;flex-direction:column}
+.toolbar{display:flex;align-items:center;gap:.6rem;padding:.5rem 0;flex-wrap:wrap;justify-content:center}
+button{background:rgba(86,194,255,.12);color:#56c2ff;border:1px solid rgba(86,194,255,.25);border-radius:6px;padding:.35rem .7rem;font-family:inherit;font-size:.7rem;cursor:pointer;transition:all .15s;white-space:nowrap}
+button:hover{background:rgba(86,194,255,.22);border-color:#56c2ff}
+button.primary{background:rgba(86,194,255,.2);font-weight:600}
+.toggle{display:flex;align-items:center;gap:.35rem;font-size:.7rem;color:#6a7a9b;cursor:pointer;user-select:none}
+.toggle input{accent-color:#56c2ff;cursor:pointer}
+select{background:rgba(13,19,37,.94);border:1px solid #1a2340;border-radius:5px;color:#eef3ff;font-family:inherit;font-size:.7rem;padding:.3rem .4rem;outline:none;cursor:pointer}
+select:focus{border-color:#56c2ff}
+.panels{display:flex;gap:.8rem;flex:1;min-height:0}
+.panel{flex:1;background:rgba(13,19,37,.94);border:1px solid #1a2340;border-radius:8px;display:flex;flex-direction:column;overflow:hidden;min-width:0}
+.panel-head{display:flex;justify-content:space-between;align-items:center;padding:.5rem .7rem;border-bottom:1px solid #1a2340;font-size:.75rem;color:#6a7a9b;gap:.4rem}
+.panel-head strong{color:#56c2ff;font-size:.8rem}
+.editor-wrap{flex:1;position:relative;display:flex;min-height:300px}
+.line-nums{width:36px;padding:.7rem 4px .7rem 0;text-align:right;font-size:.75rem;color:#3a4a6b;line-height:1.5;overflow:hidden;flex-shrink:0;user-select:none;border-right:1px solid #1a2340}
+textarea{flex:1;background:transparent;border:none;color:#eef3ff;font-family:inherit;font-size:.82rem;padding:.7rem .6rem;resize:none;outline:none;line-height:1.5;white-space:pre;overflow-wrap:normal;overflow-x:auto;tab-size:2}
+textarea::placeholder{color:#3a4a6b}
+.error-bar{font-size:.7rem;padding:.4rem .7rem;color:#ff6b8a;background:rgba(255,107,138,.08);border-top:1px solid rgba(255,107,138,.2);display:none;align-items:center;gap:.4rem}
+.error-bar.show{display:flex}
+.error-bar .line-ref{color:#ff6b8a;font-weight:600;flex-shrink:0}
+.status{font-size:.7rem;text-align:center;padding:.3rem 0;color:#6a7a9b;min-height:1.4rem}
+.status.ok{color:#56c2ff}
+footer{font-size:.65rem;color:#3a4a6b;padding:.8rem 0;text-align:center}
+@media(max-width:700px){
+ .panels{flex-direction:column}
+ .editor-wrap{min-height:200px}
+}
+</style>
+</head>
+<body>
+<h1>YAML ↔ JSON Converter</h1>
+<p class="sub">Convert between YAML and JSON formats instantly</p>
+<div class="wrap">
+ <div class="toolbar">
+  <button class="primary" onclick="convertYamlToJson()">YAML → JSON</button>
+  <button class="primary" onclick="convertJsonToYaml()">JSON → YAML</button>
+  <button onclick="loadSample()">Sample Data</button>
+  <label class="toggle"><input type="checkbox" id="liveToggle" checked>Live</label>
+  <label class="toggle"><input type="checkbox" id="minifyToggle">Minify</label>
+  <label class="toggle">Indent <select id="indentSize"><option value="2">2</option><option value="4">4</option></select></label>
+ </div>
+ <div class="panels">
+  <div class="panel">
+   <div class="panel-head"><strong>YAML</strong><button onclick="copyPanel('yaml')">Copy</button></div>
+   <div class="editor-wrap">
+    <div class="line-nums" id="yamlLines">1</div>
+    <textarea id="yaml" placeholder="Paste YAML here..." spellcheck="false"></textarea>
+   </div>
+   <div class="error-bar" id="yamlError"><span class="line-ref"></span><span class="msg"></span></div>
+  </div>
+  <div class="panel">
+   <div class="panel-head"><strong>JSON</strong><button onclick="copyPanel('json')">Copy</button></div>
+   <div class="editor-wrap">
+    <div class="line-nums" id="jsonLines">1</div>
+    <textarea id="json" placeholder="Paste JSON here..." spellcheck="false"></textarea>
+   </div>
+   <div class="error-bar" id="jsonError"><span class="line-ref"></span><span class="msg"></span></div>
+  </div>
+ </div>
+ <div class="status" id="status"></div>
+</div>
+<footer>YAML ↔ JSON Converter — runs entirely in your browser</footer>
+<script>
+const yamlEl=document.getElementById('yaml'),jsonEl=document.getElementById('json'),statusEl=document.getElementById('status');
+const yamlLinesEl=document.getElementById('yamlLines'),jsonLinesEl=document.getElementById('jsonLines');
+const yamlErrEl=document.getElementById('yamlError'),jsonErrEl=document.getElementById('jsonError');
+const liveToggle=document.getElementById('liveToggle'),minifyToggle=document.getElementById('minifyToggle'),indentSel=document.getElementById('indentSize');
+let debounceTimer=null;
+
+function updateLines(ta,linesEl){
+ const n=ta.value.split('\n').length;
+ const nums=[];for(let i=1;i<=n;i++)nums.push(i);
+ linesEl.textContent=nums.join('\n');
+}
+function syncScroll(ta,linesEl){ta.addEventListener('scroll',()=>{linesEl.scrollTop=ta.scrollTop})}
+syncScroll(yamlEl,yamlLinesEl);syncScroll(jsonEl,jsonLinesEl);
+
+function showError(barEl,line,msg){
+ barEl.querySelector('.line-ref').textContent=line?'Line '+line+':':'';
+ barEl.querySelector('.msg').textContent=msg;
+ barEl.classList.add('show');
+}
+function hideError(barEl){barEl.classList.remove('show')}
+function flash(msg,ok){statusEl.textContent=msg;statusEl.className='status'+(ok?' ok':'');clearTimeout(flash.t);flash.t=setTimeout(()=>{statusEl.textContent='';statusEl.className='status'},2500)}
+
+function getIndent(){return parseInt(indentSel.value)}
+function isMinify(){return minifyToggle.checked}
+
+/* ===== Simple YAML Parser ===== */
+function parseYaml(src){
+ const lines=src.split('\n');
+ let i=0;
+ function parseLine(raw){
+  const stripped=raw.replace(/#(?=\s|$).*$/,'');/* strip inline comments */
+  return stripped;
+ }
+ function getIndentLevel(line){
+  const m=line.match(/^( *)/);return m?m[1].length:0;
+ }
+ function parseValue(val){
+  val=val.trim();
+  if(val===''||val==='~'||val==='null')return null;
+  if(val==='true')return true;
+  if(val==='false')return false;
+  if(/^-?\d+$/.test(val))return parseInt(val,10);
+  if(/^-?\d+\.\d+$/.test(val))return parseFloat(val);
+  if(/^-?\d+\.?\d*[eE][+-]?\d+$/.test(val))return parseFloat(val);
+  if((val.startsWith('"')&&val.endsWith('"'))||(val.startsWith("'")&&val.endsWith("'")))
+   return val.slice(1,-1);
+  if(val.startsWith('[')&&val.endsWith(']'))return parseInlineArray(val);
+  if(val.startsWith('{')&&val.endsWith('}'))return parseInlineObj(val);
+  return val;
+ }
+ function parseInlineArray(s){
+  s=s.slice(1,-1).trim();if(!s)return[];
+  return splitComma(s).map(v=>parseValue(v.trim()));
+ }
+ function parseInlineObj(s){
+  s=s.slice(1,-1).trim();if(!s)return{};
+  const obj={};
+  splitComma(s).forEach(pair=>{
+   const idx=pair.indexOf(':');
+   if(idx===-1)return;
+   const k=pair.slice(0,idx).trim().replace(/^["']|["']$/g,'');
+   obj[k]=parseValue(pair.slice(idx+1).trim());
+  });
+  return obj;
+ }
+ function splitComma(s){
+  const parts=[];let depth=0,cur='';
+  for(let c of s){
+   if(c==='['||c==='{')depth++;
+   else if(c===']'||c==='}')depth--;
+   if(c===','&&depth===0){parts.push(cur);cur=''}
+   else cur+=c;
+  }
+  if(cur)parts.push(cur);
+  return parts;
+ }
+ function parseBlock(minIndent){
+  /* peek to decide: mapping or sequence */
+  while(i<lines.length){
+   const raw=lines[i];
+   const stripped=parseLine(raw);
+   if(stripped.trim()===''||stripped.trim().startsWith('#')){i++;continue}
+   const ind=getIndentLevel(stripped);
+   if(ind<minIndent)return undefined;
+   if(stripped.trim().startsWith('- '))return parseSeq(minIndent);
+   if(stripped.trim()==='- ')return parseSeq(minIndent);
+   if(stripped.trim()==='-')return parseSeq(minIndent);
+   return parseMap(minIndent);
+  }
+  return undefined;
+ }
+ function parseMap(minIndent){
+  const obj={};
+  while(i<lines.length){
+   const raw=lines[i];
+   const stripped=parseLine(raw);
+   if(stripped.trim()===''||stripped.trim().startsWith('#')){i++;continue}
+   const ind=getIndentLevel(stripped);
+   if(ind<minIndent)break;
+   if(ind>minIndent)break;/* shouldn't happen at correct parse */
+   const line=stripped.trim();
+   /* check for key: value */
+   const km=line.match(/^([^:]+?)\s*:\s*(.*)$/);
+   if(!km){throw{message:'Expected key-value pair',line:i+1}}
+   const key=km[1].replace(/^["']|["']$/g,'');
+   const valStr=km[2].replace(/#(?=\s|$).*$/,'').trim();
+   if(valStr==='|'||valStr==='|+'||valStr==='|-'||valStr==='>'||valStr==='>-'||valStr==='>+'){
+    /* multiline string */
+    i++;
+    const fold=valStr.startsWith('>');
+    const chomp=valStr.includes('-')?'strip':valStr.includes('+')?'keep':'clip';
+    const strLines=[];
+    let blockIndent=-1;
+    while(i<lines.length){
+     const braw=lines[i];
+     const bind=getIndentLevel(braw);
+     if(blockIndent===-1&&braw.trim()!==''){blockIndent=bind;if(blockIndent<=ind){break}}
+     if(blockIndent>=0&&braw.trim()!==''&&bind<blockIndent)break;
+     strLines.push(braw);
+     i++;
+    }
+    /* process */
+    let text;
+    if(blockIndent===-1)blockIndent=ind+2;
+    const dedented=strLines.map(l=>l.length>=blockIndent?l.slice(blockIndent):l.replace(/^ +/,''));
+    if(fold){
+     text=dedented.join('\n').replace(/([^\n])\n([^\n])/g,'$1 $2');
+    }else{
+     text=dedented.join('\n');
+    }
+    if(chomp==='strip')text=text.replace(/\n+$/,'');
+    else if(chomp==='clip')text=text.replace(/\n+$/,'\n');
+    obj[key]=text;
+    continue;
+   }
+   if(valStr===''){
+    /* nested block */
+    i++;
+    const child=parseBlock(ind+1);
+    obj[key]=child===undefined?null:child;
+    continue;
+   }
+   obj[key]=parseValue(valStr);
+   i++;
+  }
+  return obj;
+ }
+ function parseSeq(minIndent){
+  const arr=[];
+  while(i<lines.length){
+   const raw=lines[i];
+   const stripped=parseLine(raw);
+   if(stripped.trim()===''||stripped.trim().startsWith('#')){i++;continue}
+   const ind=getIndentLevel(stripped);
+   if(ind<minIndent)break;
+   const line=stripped.trim();
+   if(!line.startsWith('-'))break;
+   const after=line.slice(1);
+   if(after.trim()===''||after.trim().startsWith('#')){
+    /* nested block item */
+    i++;
+    const child=parseBlock(ind+2);
+    arr.push(child===undefined?null:child);
+    continue;
+   }
+   /* check if it's "- key: val" (mapping entry) */
+   const mkv=after.trim().match(/^([^:]+?)\s*:\s*(.*)$/);
+   if(mkv){
+    /* it's a mapping as sequence item */
+    const seqInd=ind;
+    /* parse a virtual map at higher indent */
+    const subObj={};
+    const k=mkv[1].replace(/^["']|["']$/g,'');
+    const v=mkv[2].replace(/#(?=\s|$).*$/,'').trim();
+    if(v===''){i++;const child=parseBlock(seqInd+2);subObj[k]=child===undefined?null:child}
+    else{subObj[k]=parseValue(v);i++}
+    /* continue reading sibling keys at indent > seqInd */
+    while(i<lines.length){
+     const r2=lines[i];const s2=parseLine(r2);
+     if(s2.trim()===''||s2.trim().startsWith('#')){i++;continue}
+     const i2=getIndentLevel(s2);
+     if(i2<=seqInd)break;
+     const l2=s2.trim();
+     const km2=l2.match(/^([^:]+?)\s*:\s*(.*)$/);
+     if(!km2)break;
+     const k2=km2[1].replace(/^["']|["']$/g,'');
+     const v2=km2[2].replace(/#(?=\s|$).*$/,'').trim();
+     if(v2===''){i++;const child=parseBlock(i2+1);subObj[k2]=child===undefined?null:child}
+     else{subObj[k2]=parseValue(v2);i++}
+    }
+    arr.push(subObj);
+    continue;
+   }
+   /* simple value */
+   arr.push(parseValue(after.trim()));
+   i++;
+  }
+  return arr;
+ }
+ /* strip document markers */
+ const cleaned=lines.map(l=>l);
+ for(let j=0;j<cleaned.length;j++){
+  if(cleaned[j].trim()==='---'||cleaned[j].trim()==='...'){cleaned[j]=''}
+ }
+ /* reassign */
+ for(let j=0;j<lines.length;j++)lines[j]=cleaned[j];
+ i=0;
+ const result=parseBlock(0);
+ return result===undefined?null:result;
+}
+
+/* ===== JSON to YAML serializer ===== */
+function toYaml(obj,indent,level){
+ indent=indent||2;level=level||0;
+ const pad=' '.repeat(indent*level);
+ if(obj===null)return pad+'null';
+ if(typeof obj==='boolean')return pad+(obj?'true':'false');
+ if(typeof obj==='number')return pad+String(obj);
+ if(typeof obj==='string'){
+  if(obj.includes('\n'))return pad+'|\n'+obj.split('\n').map(l=>pad+' '.repeat(indent)+l).join('\n');
+  if(/^[\w]/.test(obj)&&!/^(true|false|null|yes|no|on|off)$/i.test(obj)&&!/^\d/.test(obj)&&!obj.includes(': ')&&!obj.includes(' #'))
+   return pad+obj;
+  return pad+JSON.stringify(obj);
+ }
+ if(Array.isArray(obj)){
+  if(obj.length===0)return pad+'[]';
+  return obj.map(item=>{
+   if(item===null||typeof item!=='object')
+    return pad+'- '+toYaml(item,indent,0).trim();
+   if(Array.isArray(item))
+    return pad+'- \n'+toYaml(item,indent,level+2).split('\n').map(l=>l).join('\n');
+   /* object item */
+   const entries=Object.entries(item);
+   if(entries.length===0)return pad+'- {}';
+   return entries.map((kv,ki)=>{
+    const vs=toYaml(kv[1],indent,0).trim();
+    const isComplex=typeof kv[1]==='object'&&kv[1]!==null;
+    if(ki===0){
+     if(isComplex)return pad+'- '+kv[0]+':\n'+toYaml(kv[1],indent,level+2);
+     return pad+'- '+kv[0]+': '+vs;
+    }
+    if(isComplex)return pad+' '.repeat(indent)+kv[0]+':\n'+toYaml(kv[1],indent,level+2);
+    return pad+' '.repeat(indent)+kv[0]+': '+vs;
+   }).join('\n');
+  }).join('\n');
+ }
+ if(typeof obj==='object'){
+  const entries=Object.entries(obj);
+  if(entries.length===0)return pad+'{}';
+  return entries.map(([k,v])=>{
+   const isComplex=typeof v==='object'&&v!==null;
+   if(isComplex)return pad+k+':\n'+toYaml(v,indent,level+1);
+   return pad+k+': '+toYaml(v,indent,0).trim();
+  }).join('\n');
+ }
+ return pad+String(obj);
+}
+
+/* ===== Conversion functions ===== */
+function convertYamlToJson(){
+ hideError(yamlErrEl);hideError(jsonErrEl);
+ const src=yamlEl.value.trim();
+ if(!src){jsonEl.value='';updateLines(jsonEl,jsonLinesEl);flash('Nothing to convert');return}
+ try{
+  const obj=parseYaml(src);
+  const indent=isMinify()?0:getIndent();
+  jsonEl.value=JSON.stringify(obj,null,indent||undefined);
+  updateLines(jsonEl,jsonLinesEl);
+  flash('YAML → JSON converted',true);
+ }catch(e){
+  showError(yamlErrEl,e.line||null,e.message||String(e));
+  flash('YAML parse error');
+ }
+}
+function convertJsonToYaml(){
+ hideError(yamlErrEl);hideError(jsonErrEl);
+ const src=jsonEl.value.trim();
+ if(!src){yamlEl.value='';updateLines(yamlEl,yamlLinesEl);flash('Nothing to convert');return}
+ try{
+  const obj=JSON.parse(src);
+  yamlEl.value=toYaml(obj,getIndent());
+  updateLines(yamlEl,yamlLinesEl);
+  flash('JSON → YAML converted',true);
+ }catch(e){
+  let line=null;
+  const m=String(e).match(/position\s+(\d+)/i);
+  if(m){const pos=parseInt(m[1]);line=src.slice(0,pos).split('\n').length}
+  showError(jsonErrEl,line,e.message||String(e));
+  flash('JSON parse error');
+ }
+}
+
+/* ===== Copy ===== */
+function copyPanel(which){
+ const el=which==='yaml'?yamlEl:jsonEl;
+ if(!el.value){flash('Nothing to copy');return}
+ navigator.clipboard.writeText(el.value).then(()=>flash('Copied!',true)).catch(()=>{el.select();document.execCommand('copy');flash('Copied!',true)});
+}
+
+/* ===== Sample data ===== */
+function loadSample(){
+ yamlEl.value=`# Server Configuration
+server:
+  host: localhost
+  port: 8080
+  ssl: true
+
+database:
+  engine: postgresql
+  name: myapp_db
+  credentials:
+    username: admin
+    password: "s3cret!"
+  pool_size: 10
+
+features:
+  - name: authentication
+    enabled: true
+    providers:
+      - github
+      - google
+  - name: notifications
+    enabled: false
+    channels: []
+
+logging:
+  level: info
+  format: json
+  outputs:
+    - stdout
+    - /var/log/app.log
+
+metadata:
+  version: 2.1
+  description: |
+    This is a multi-line
+    description that spans
+    several lines.
+  tags:
+    - production
+    - v2
+  count: null`;
+ updateLines(yamlEl,yamlLinesEl);
+ convertYamlToJson();
+}
+
+/* ===== Live conversion ===== */
+function debounce(fn,ms){return function(){clearTimeout(debounceTimer);debounceTimer=setTimeout(fn,ms)}}
+const liveYaml=debounce(()=>{if(liveToggle.checked&&yamlEl.value.trim())convertYamlToJson()},400);
+const liveJson=debounce(()=>{if(liveToggle.checked&&jsonEl.value.trim())convertJsonToYaml()},400);
+
+yamlEl.addEventListener('input',()=>{updateLines(yamlEl,yamlLinesEl);liveYaml()});
+jsonEl.addEventListener('input',()=>{updateLines(jsonEl,jsonLinesEl);liveJson()});
+minifyToggle.addEventListener('change',()=>{if(yamlEl.value.trim())convertYamlToJson()});
+indentSel.addEventListener('change',()=>{if(yamlEl.value.trim())convertYamlToJson();else if(jsonEl.value.trim())convertJsonToYaml()});
+
+/* Tab key support */
+[yamlEl,jsonEl].forEach(ta=>{
+ ta.addEventListener('keydown',e=>{
+  if(e.key==='Tab'){
+   e.preventDefault();
+   const s=ta.selectionStart,end=ta.selectionEnd;
+   ta.value=ta.value.substring(0,s)+'  '+ta.value.substring(end);
+   ta.selectionStart=ta.selectionEnd=s+2;
+   ta.dispatchEvent(new Event('input'));
+  }
+ });
+});
+
+updateLines(yamlEl,yamlLinesEl);updateLines(jsonEl,jsonLinesEl);
+</script>
+</body>
+</html>

@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>URL Slug Generator - Convert Text to URL-Friendly Slugs</title>
+<meta name="description" content="Free online slug generator. Convert text to URL-friendly slugs, file names, and variable names. Supports transliteration, bulk mode, camelCase, snake_case, kebab-case, and PascalCase.">
+<meta name="keywords" content="slug generator, url slug, kebab-case, camelCase, snake_case, PascalCase, transliteration, url friendly, permalink, seo slug">
+<meta name="robots" content="index,follow">
+<meta property="og:title" content="URL Slug Generator - Convert Text to URL-Friendly Slugs">
+<meta property="og:description" content="Convert text to URL-friendly slugs, file names, and variable names instantly.">
+<meta property="og:type" content="website">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect rx='12' width='100' height='100' fill='%230b1020'/><text x='50' y='68' font-size='42' font-family='monospace' font-weight='bold' text-anchor='middle' fill='%2356c2ff'>/</text></svg>">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#0b1020;color:#eef3ff;font-family:'SF Mono','Fira Code','Cascadia Code','Consolas',monospace;min-height:100vh;display:flex;flex-direction:column;align-items:center}
+h1{font-size:1.3rem;padding:1.2rem 0 .3rem;color:#56c2ff;text-align:center;letter-spacing:.5px}
+.sub{font-size:.75rem;color:#6a7a9b;text-align:center;margin-bottom:1rem}
+.wrap{width:100%;max-width:900px;padding:0 1rem 1rem;flex:1;display:flex;flex-direction:column}
+.panel{background:rgba(13,19,37,.94);border:1px solid #1a2340;border-radius:8px;overflow:hidden}
+.panel-head{display:flex;justify-content:space-between;align-items:center;padding:.5rem .7rem;border-bottom:1px solid #1a2340;font-size:.75rem;color:#6a7a9b;flex-wrap:wrap;gap:.4rem}
+.panel-head strong{color:#56c2ff;font-size:.8rem}
+textarea{width:100%;background:transparent;border:none;color:#eef3ff;font-family:inherit;font-size:.85rem;padding:.7rem;resize:vertical;outline:none;line-height:1.5;min-height:90px}
+textarea::placeholder{color:#3a4a6b}
+.controls{display:flex;align-items:center;gap:.7rem;padding:.6rem .7rem;flex-wrap:wrap;border-bottom:1px solid #1a2340}
+button{background:rgba(86,194,255,.12);color:#56c2ff;border:1px solid rgba(86,194,255,.25);border-radius:6px;padding:.35rem .7rem;font-family:inherit;font-size:.7rem;cursor:pointer;transition:all .15s;white-space:nowrap}
+button:hover{background:rgba(86,194,255,.22);border-color:#56c2ff}
+button.copied{background:rgba(80,200,120,.18);color:#50c878;border-color:rgba(80,200,120,.4)}
+.toggle{display:flex;align-items:center;gap:.35rem;font-size:.7rem;color:#6a7a9b;cursor:pointer;user-select:none}
+.toggle input{accent-color:#56c2ff;cursor:pointer}
+select,.num-input{background:rgba(13,19,37,.94);border:1px solid #1a2340;border-radius:5px;color:#eef3ff;font-family:inherit;font-size:.72rem;padding:.3rem .5rem;outline:none;transition:border-color .15s}
+select:focus,.num-input:focus{border-color:#56c2ff}
+.num-input{width:60px}
+.results{display:flex;flex-direction:column;gap:6px;margin-top:.8rem}
+.out-row{display:flex;align-items:center;gap:.5rem;padding:.55rem .7rem;background:rgba(13,19,37,.94);border:1px solid #1a2340;border-radius:6px}
+.out-row .label{font-size:.7rem;color:#56c2ff;font-weight:600;min-width:80px;flex-shrink:0}
+.out-row .value{flex:1;font-size:.75rem;color:#c0c8e0;word-break:break-all;line-height:1.4;min-height:1em}
+.out-row .value.empty{color:#3a4a6b;font-style:italic}
+.out-row button{flex-shrink:0;padding:.25rem .55rem;font-size:.65rem}
+.url-bar{margin-top:.8rem;padding:.5rem .7rem;background:rgba(13,19,37,.94);border:1px solid #1a2340;border-radius:20px;font-size:.72rem;color:#6a7a9b;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.url-bar span{color:#56c2ff}
+.bulk-area{margin-top:.8rem}
+.bulk-area textarea{min-height:120px}
+.tabs{display:flex;gap:2px;padding:.5rem .7rem 0}
+.tab{padding:.35rem .7rem;font-size:.7rem;border-radius:6px 6px 0 0;cursor:pointer;color:#6a7a9b;background:transparent;border:1px solid transparent;border-bottom:none;transition:all .15s}
+.tab.active{color:#56c2ff;background:rgba(13,19,37,.94);border-color:#1a2340}
+.tab:hover{color:#eef3ff}
+footer{font-size:.65rem;color:#3a4a6b;padding:.8rem 0;text-align:center}
+.stats{font-size:.7rem;color:#6a7a9b;display:flex;gap:1rem}
+@media(max-width:600px){
+ .out-row{flex-wrap:wrap}
+ .out-row .label{min-width:auto}
+ .out-row .value{width:100%;order:3}
+ .controls{gap:.4rem}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+<h1>Slug Generator</h1>
+<p class="sub">Convert text to URL-friendly slugs, file names, and variable names</p>
+
+<div class="tabs">
+ <div class="tab active" data-tab="single">Single</div>
+ <div class="tab" data-tab="bulk">Bulk</div>
+</div>
+
+<div id="singleMode">
+<div class="panel">
+ <div class="panel-head">
+  <strong>Input</strong>
+  <div class="stats"><span id="charCount">0 chars</span><span id="wordCount">0 words</span></div>
+ </div>
+ <textarea id="inp" placeholder="Type or paste text here..." spellcheck="false"></textarea>
+</div>
+
+<div class="controls">
+ <label class="toggle" title="Separator character"><span>Sep:</span>
+  <select id="sepSelect"><option value="-">hyphen (-)</option><option value="_">underscore (_)</option><option value=".">dot (.)</option></select>
+ </label>
+ <label class="toggle"><input type="checkbox" id="lowerToggle" checked> Lowercase</label>
+ <label class="toggle"><input type="checkbox" id="translitToggle" checked> Transliterate</label>
+ <label class="toggle"><span>Max:</span><input type="number" class="num-input" id="maxLen" min="0" max="200" value="0" title="0 = no limit"></label>
+</div>
+
+<div class="url-bar" id="urlBar">https://example.com/<span id="urlSlug">...</span></div>
+
+<div class="results" id="results"></div>
+</div>
+
+<div id="bulkMode" style="display:none">
+<div class="panel">
+ <div class="panel-head"><strong>Input (one per line)</strong></div>
+ <textarea id="bulkInp" placeholder="Paste multiple lines here...&#10;Each line becomes a slug" spellcheck="false" style="min-height:120px"></textarea>
+</div>
+<div class="controls">
+ <label class="toggle"><span>Sep:</span>
+  <select id="bulkSep"><option value="-">hyphen</option><option value="_">underscore</option><option value=".">dot</option></select>
+ </label>
+ <label class="toggle"><input type="checkbox" id="bulkLower" checked> Lowercase</label>
+ <label class="toggle"><input type="checkbox" id="bulkTranslit" checked> Transliterate</label>
+ <button id="bulkCopyAll">Copy All</button>
+</div>
+<div class="panel bulk-area">
+ <div class="panel-head"><strong>Output</strong></div>
+ <textarea id="bulkOut" readonly placeholder="Slugs appear here..." spellcheck="false" style="min-height:120px;color:#c0c8e0"></textarea>
+</div>
+</div>
+
+</div>
+<footer>Slug Generator &mdash; all processing happens in your browser</footer>
+
+<script>
+const SPECIAL = {"\u00C6":"AE","\u00E6":"ae","\u00D0":"D","\u00F0":"d","\u00DE":"Th","\u00FE":"th","\u00DF":"ss","\u00D8":"O","\u00F8":"o","\u0141":"L","\u0142":"l","\u0110":"D","\u0111":"d"};
+
+function transliterate(s) {
+ return s.replace(/[^\x00-\x7F]/g, c => SPECIAL[c] || c.normalize('NFD').replace(/[\u0300-\u036f]/g,'') || c);
+}
+
+function slugify(text, sep, lower, translit, maxLen) {
+ let s = text.trim();
+ if (translit) s = transliterate(s);
+ if (lower) s = s.toLowerCase();
+ s = s.replace(/[^\w\s-]/g, '').replace(/[\s_-]+/g, sep).replace(new RegExp('^\\'+sep+'+|\\'+sep+'+$','g'), '');
+ if (maxLen > 0 && s.length > maxLen) {
+  s = s.substring(0, maxLen).replace(new RegExp('\\'+sep+'+$'), '');
+ }
+ return s;
+}
+
+function toWords(text) {
+ let s = transliterate(text.trim()).toLowerCase();
+ return s.replace(/[^\w\s-]/g, '').replace(/[\s_-]+/g, ' ').trim().split(/\s+/).filter(Boolean);
+}
+
+function toCamelCase(text) {
+ const w = toWords(text);
+ if (!w.length) return '';
+ return w[0] + w.slice(1).map(x => x[0].toUpperCase() + x.slice(1)).join('');
+}
+
+function toPascalCase(text) {
+ return toWords(text).map(x => x[0].toUpperCase() + x.slice(1)).join('');
+}
+
+function toSnakeCase(text) {
+ return toWords(text).join('_');
+}
+
+function toKebabCase(text) {
+ return toWords(text).join('-');
+}
+
+function fileNameSafe(text, sep, lower, translit) {
+ let s = text.trim();
+ if (translit) s = transliterate(s);
+ if (lower) s = s.toLowerCase();
+ return s.replace(/[<>:"/\\|?*\x00-\x1f]/g, '').replace(/[\s]+/g, sep).replace(new RegExp('^\\'+sep+'+|\\'+sep+'+$','g'), '');
+}
+
+// DOM
+const $ = id => document.getElementById(id);
+const inp = $('inp'), sepSel = $('sepSelect'), lowerTog = $('lowerToggle');
+const translitTog = $('translitToggle'), maxLenInp = $('maxLen');
+const urlSlug = $('urlSlug'), resultsEl = $('results');
+const charEl = $('charCount'), wordEl = $('wordCount');
+const bulkInp = $('bulkInp'), bulkOut = $('bulkOut');
+const bulkSep = $('bulkSep'), bulkLower = $('bulkLower'), bulkTranslit = $('bulkTranslit');
+
+const formats = [
+ { id: 'slug', label: 'URL Slug' },
+ { id: 'file', label: 'File Name' },
+ { id: 'camel', label: 'camelCase' },
+ { id: 'snake', label: 'snake_case' },
+ { id: 'kebab', label: 'kebab-case' },
+ { id: 'pascal', label: 'PascalCase' }
+];
+
+function buildRows() {
+ resultsEl.innerHTML = '';
+ formats.forEach(f => {
+  const row = document.createElement('div');
+  row.className = 'out-row';
+  row.innerHTML = `<span class="label">${f.label}</span><span class="value empty" id="val-${f.id}">...</span><button data-target="val-${f.id}">Copy</button>`;
+  resultsEl.appendChild(row);
+ });
+}
+buildRows();
+
+function copyText(text, btn) {
+ navigator.clipboard.writeText(text).then(() => {
+  btn.textContent = 'Copied';
+  btn.classList.add('copied');
+  setTimeout(() => { btn.textContent = 'Copy'; btn.classList.remove('copied'); }, 1200);
+ });
+}
+
+resultsEl.addEventListener('click', e => {
+ if (e.target.tagName === 'BUTTON') {
+  const val = $(e.target.dataset.target);
+  if (val && !val.classList.contains('empty')) copyText(val.textContent, e.target);
+ }
+});
+
+function update() {
+ const text = inp.value;
+ const sep = sepSel.value;
+ const lower = lowerTog.checked;
+ const translit = translitTog.checked;
+ const maxLen = parseInt(maxLenInp.value) || 0;
+
+ const trimmed = text.trim();
+ charEl.textContent = trimmed.length + ' chars';
+ wordEl.textContent = (trimmed ? trimmed.split(/\s+/).length : 0) + ' words';
+
+ const slug = slugify(text, sep, lower, translit, maxLen);
+ const vals = {
+  slug,
+  file: fileNameSafe(text, sep, lower, translit),
+  camel: toCamelCase(text),
+  snake: toSnakeCase(text),
+  kebab: toKebabCase(text),
+  pascal: toPascalCase(text)
+ };
+
+ urlSlug.textContent = slug || '...';
+ formats.forEach(f => {
+  const el = $('val-' + f.id);
+  if (vals[f.id]) {
+   el.textContent = vals[f.id];
+   el.classList.remove('empty');
+  } else {
+   el.textContent = '...';
+   el.classList.add('empty');
+  }
+ });
+}
+
+inp.addEventListener('input', update);
+[sepSel, lowerTog, translitTog, maxLenInp].forEach(el => el.addEventListener('change', update));
+maxLenInp.addEventListener('input', update);
+
+// Bulk mode
+function updateBulk() {
+ const lines = bulkInp.value.split('\n');
+ const sep = bulkSep.value;
+ const lower = bulkLower.checked;
+ const translit = bulkTranslit.checked;
+ bulkOut.value = lines.map(l => l.trim() ? slugify(l, sep, lower, translit, 0) : '').join('\n');
+}
+bulkInp.addEventListener('input', updateBulk);
+[bulkSep, bulkLower, bulkTranslit].forEach(el => el.addEventListener('change', updateBulk));
+
+$('bulkCopyAll').addEventListener('click', function() {
+ if (bulkOut.value.trim()) copyText(bulkOut.value, this);
+});
+
+// Tabs
+document.querySelectorAll('.tab').forEach(tab => {
+ tab.addEventListener('click', () => {
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  tab.classList.add('active');
+  const mode = tab.dataset.tab;
+  $('singleMode').style.display = mode === 'single' ? '' : 'none';
+  $('bulkMode').style.display = mode === 'bulk' ? '' : 'none';
+ });
+});
+
+inp.focus();
+</script>
+</body>
+</html>

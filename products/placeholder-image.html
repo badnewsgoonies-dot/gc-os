@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Placeholder Image Generator - Create Custom Placeholder Images</title>
+<meta name="description" content="Generate custom placeholder images with configurable dimensions, colors, and text. Download as PNG, copy data URI, or get HTML img tags. Free online tool.">
+<meta name="keywords" content="placeholder image, placeholder generator, dummy image, placeholder png, custom placeholder, image placeholder">
+<meta property="og:title" content="Placeholder Image Generator - Create Custom Placeholder Images">
+<meta property="og:description" content="Generate custom placeholder images with configurable dimensions, colors, and text. Download as PNG or copy HTML tags.">
+<meta property="og:type" content="website">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Placeholder Image Generator">
+<meta name="twitter:description" content="Create custom placeholder images with live preview. Configure size, colors, text, and export as PNG or HTML.">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#0b1020;--pn:rgba(13,19,37,.94);--ac:#56c2ff;--tx:#eef3ff;--t2:#8a9bc0;--bd:rgba(86,194,255,.15);--ah:rgba(86,194,255,.12)}
+body{font-family:system-ui,-apple-system,sans-serif;background:var(--bg);color:var(--tx);min-height:100vh;padding:20px}
+h1{font-size:1.6rem;text-align:center;margin:20px 0 6px;font-weight:700}
+.sub{text-align:center;color:var(--t2);font-size:.9rem;margin-bottom:24px}
+.app{max-width:1060px;margin:0 auto;display:grid;grid-template-columns:320px 1fr;gap:20px}
+@media(max-width:760px){.app{grid-template-columns:1fr}}
+.pn{background:var(--pn);border:1px solid var(--bd);border-radius:10px;padding:20px}
+.pn h2{font-size:1rem;color:var(--ac);margin-bottom:14px;font-weight:600}
+label{display:block;font-size:.82rem;color:var(--t2);margin:10px 0 4px}
+label:first-of-type{margin-top:0}
+input[type=text],input[type=number],select,textarea{width:100%;padding:8px 10px;background:rgba(255,255,255,.06);border:1px solid var(--bd);border-radius:6px;color:var(--tx);font-size:.9rem;font-family:inherit}
+input[type=text]:focus,input[type=number]:focus,select:focus,textarea:focus{outline:none;border-color:var(--ac)}
+input[type=number]{-moz-appearance:textfield}
+input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none}
+input[type=color]{width:44px;height:32px;border:1px solid var(--bd);border-radius:6px;background:none;cursor:pointer;padding:2px}
+textarea{resize:vertical;min-height:60px;font-size:.8rem}
+.row{display:flex;gap:10px;align-items:end}
+.row>div{flex:1}
+.color-row{display:flex;align-items:center;gap:8px}
+.color-row input[type=text]{flex:1}
+.presets{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.presets button{padding:4px 10px;font-size:.75rem;background:rgba(255,255,255,.06);border:1px solid var(--bd);border-radius:5px;color:var(--t2);cursor:pointer;font-family:inherit;transition:all .15s}
+.presets button:hover{background:var(--ah);color:var(--ac);border-color:var(--ac)}
+.btn{display:inline-flex;align-items:center;gap:6px;padding:9px 16px;font-size:.85rem;font-family:inherit;border:1px solid var(--ac);border-radius:7px;cursor:pointer;transition:all .15s;font-weight:500}
+.btn-primary{background:var(--ac);color:#0b1020;border-color:var(--ac)}
+.btn-primary:hover{background:#7dd3ff}
+.btn-secondary{background:transparent;color:var(--ac)}
+.btn-secondary:hover{background:var(--ah)}
+.actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:16px}
+.preview-wrap{display:flex;align-items:center;justify-content:center;min-height:200px;background:repeating-conic-gradient(rgba(255,255,255,.04) 0% 25%,transparent 0% 50%) 0 0/16px 16px;border-radius:8px;padding:16px;overflow:auto}
+.preview-wrap canvas{max-width:100%;max-height:400px;border-radius:4px;image-rendering:auto}
+.dims{text-align:center;color:var(--t2);font-size:.8rem;margin-top:8px}
+.social-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px;margin-top:8px}
+.social-btn{padding:8px 10px;font-size:.78rem;background:rgba(255,255,255,.04);border:1px solid var(--bd);border-radius:7px;cursor:pointer;color:var(--tx);text-align:left;font-family:inherit;transition:all .15s;line-height:1.3}
+.social-btn:hover{border-color:var(--ac);background:var(--ah)}
+.social-btn span{display:block;color:var(--t2);font-size:.7rem;margin-top:2px}
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(80px);background:var(--ac);color:#0b1020;padding:10px 20px;border-radius:8px;font-size:.85rem;font-weight:600;opacity:0;transition:all .3s;pointer-events:none;z-index:99}
+.toast.show{transform:translateX(-50%) translateY(0);opacity:1}
+.full{grid-column:1/-1}
+</style>
+</head>
+<body>
+<h1>Placeholder Image Generator</h1>
+<p class="sub">Create custom placeholder images with live preview</p>
+
+<div class="app">
+  <div class="pn">
+    <h2>Settings</h2>
+    <div class="row">
+      <div><label>Width (px)</label><input type="number" id="w" value="800" min="1" max="4096"></div>
+      <div><label>Height (px)</label><input type="number" id="h" value="600" min="1" max="4096"></div>
+    </div>
+    <label>Common Sizes</label>
+    <div class="presets" id="sizePresets"></div>
+
+    <label>Background Color</label>
+    <div class="color-row">
+      <input type="color" id="bgColor" value="#cccccc">
+      <input type="text" id="bgHex" value="#cccccc" maxlength="7">
+    </div>
+
+    <label>Text Color</label>
+    <div class="color-row">
+      <input type="color" id="txColor" value="#666666">
+      <input type="text" id="txHex" value="#666666" maxlength="7">
+    </div>
+
+    <label>Text (leave empty for dimensions)</label>
+    <input type="text" id="txt" placeholder="800 x 600">
+
+    <label>Font Size (0 = auto)</label>
+    <input type="number" id="fs" value="0" min="0" max="999">
+
+    <div class="actions">
+      <button class="btn btn-primary" onclick="download()">Download PNG</button>
+      <button class="btn btn-secondary" onclick="copyURI()">Copy Data URI</button>
+      <button class="btn btn-secondary" onclick="copyTag()">Copy IMG Tag</button>
+    </div>
+  </div>
+
+  <div class="pn">
+    <h2>Preview</h2>
+    <div class="preview-wrap"><canvas id="cv"></canvas></div>
+    <div class="dims" id="info"></div>
+  </div>
+
+  <div class="pn full">
+    <h2>Social Media Sizes</h2>
+    <div class="social-grid" id="socialGrid"></div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const $=s=>document.getElementById(s);
+const cv=$('cv'),ctx=cv.getContext('2d');
+
+const sizePresets=[
+  ['150x150','150','150'],['300x200','300','200'],['400x300','400','300'],
+  ['640x480','640','480'],['800x600','800','600'],['1024x768','1024','768'],
+  ['1280x720','1280','720'],['1920x1080','1920','1080'],['2560x1440','2560','1440']
+];
+
+const socialSizes=[
+  ['Facebook Cover','820','312'],['Facebook Post','1200','630'],['Facebook Profile','170','170'],
+  ['Twitter Header','1500','500'],['Twitter Post','1200','675'],['Twitter Profile','400','400'],
+  ['Instagram Post','1080','1080'],['Instagram Story','1080','1920'],['Instagram Landscape','1080','566'],
+  ['LinkedIn Cover','1584','396'],['LinkedIn Post','1200','627'],['LinkedIn Profile','400','400'],
+  ['YouTube Thumbnail','1280','720'],['YouTube Banner','2560','1440'],['Pinterest Pin','1000','1500'],
+  ['TikTok Video','1080','1920'],['Open Graph','1200','630'],['Favicon','64','64']
+];
+
+function initPresets(){
+  const c=$('sizePresets');
+  sizePresets.forEach(([l,w,h])=>{
+    const b=document.createElement('button');
+    b.textContent=l;
+    b.onclick=()=>{$('w').value=w;$('h').value=h;render()};
+    c.appendChild(b);
+  });
+  const g=$('socialGrid');
+  socialSizes.forEach(([l,w,h])=>{
+    const b=document.createElement('button');
+    b.className='social-btn';
+    b.innerHTML=l+'<span>'+w+' x '+h+'</span>';
+    b.onclick=()=>{$('w').value=w;$('h').value=h;render()};
+    g.appendChild(b);
+  });
+}
+
+function render(){
+  const w=Math.max(1,Math.min(4096,parseInt($('w').value)||800));
+  const h=Math.max(1,Math.min(4096,parseInt($('h').value)||600));
+  const bg=$('bgHex').value||'#cccccc';
+  const tc=$('txHex').value||'#666666';
+  const txt=$('txt').value||w+' \u00d7 '+h;
+  let fs=parseInt($('fs').value)||0;
+  if(!fs) fs=Math.max(12,Math.min(Math.min(w,h)*0.15,120));
+
+  cv.width=w;cv.height=h;
+  ctx.fillStyle=bg;
+  ctx.fillRect(0,0,w,h);
+
+  // crosshatch lines
+  ctx.strokeStyle=tc;
+  ctx.globalAlpha=0.08;
+  ctx.lineWidth=1;
+  ctx.beginPath();ctx.moveTo(0,0);ctx.lineTo(w,h);ctx.stroke();
+  ctx.beginPath();ctx.moveTo(w,0);ctx.lineTo(0,h);ctx.stroke();
+  ctx.globalAlpha=1;
+
+  ctx.fillStyle=tc;
+  ctx.font=`600 ${fs}px system-ui, sans-serif`;
+  ctx.textAlign='center';
+  ctx.textBaseline='middle';
+  ctx.fillText(txt,w/2,h/2);
+
+  $('info').textContent=w+' \u00d7 '+h+' px  \u2022  ~'+estimateSize(w,h)+' KB PNG';
+}
+
+function estimateSize(w,h){return Math.round(w*h*0.5/1024)}
+
+function syncColor(picker,hex){
+  picker.addEventListener('input',()=>{hex.value=picker.value;render()});
+  hex.addEventListener('input',()=>{
+    if(/^#[0-9a-f]{6}$/i.test(hex.value)){picker.value=hex.value;render()}
+  });
+}
+
+function toast(msg){
+  const t=$('toast');t.textContent=msg;t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),2000);
+}
+
+function download(){
+  const a=document.createElement('a');
+  a.download='placeholder-'+$('w').value+'x'+$('h').value+'.png';
+  a.href=cv.toDataURL('image/png');
+  a.click();
+}
+
+function copyURI(){
+  navigator.clipboard.writeText(cv.toDataURL('image/png')).then(()=>toast('Data URI copied'));
+}
+
+function copyTag(){
+  const w=$('w').value,h=$('h').value;
+  const uri=cv.toDataURL('image/png');
+  const tag=`<img src="${uri}" width="${w}" height="${h}" alt="Placeholder ${w}x${h}">`;
+  navigator.clipboard.writeText(tag).then(()=>toast('IMG tag copied'));
+}
+
+syncColor($('bgColor'),$('bgHex'));
+syncColor($('txColor'),$('txHex'));
+
+['w','h','txt','fs'].forEach(id=>{
+  $(id).addEventListener('input',render);
+});
+
+initPresets();
+render();
+</script>
+</body>
+</html>

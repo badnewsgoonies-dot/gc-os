@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>JSON to CSV Converter - Convert JSON to CSV Online Free</title>
+<meta name="description" content="Free online JSON to CSV converter. Paste JSON arrays, flatten nested objects, choose delimiters, and download CSV instantly. Also converts CSV back to JSON.">
+<meta name="keywords" content="json to csv, csv to json, converter, online, free, flatten json, nested objects, delimiter, download csv">
+<meta name="robots" content="index, follow">
+<meta property="og:title" content="JSON to CSV Converter - Convert JSON to CSV Online Free">
+<meta property="og:description" content="Convert JSON arrays to CSV with nested object flattening, custom delimiters, and instant download. Also supports CSV to JSON.">
+<meta property="og:type" content="website">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="JSON to CSV Converter - Convert JSON to CSV Online Free">
+<meta name="twitter:description" content="Convert JSON arrays to CSV online. Flatten nested objects, choose delimiters, download instantly.">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#0b1020;color:#eef3ff;font-family:'SF Mono','Cascadia Code','Consolas',monospace;font-size:14px;min-height:100vh}
+.wrap{max-width:1200px;margin:0 auto;padding:20px}
+h1{font-size:1.4rem;color:#56c2ff;margin-bottom:4px;font-weight:600}
+.sub{color:#7a8aaa;font-size:.85rem;margin-bottom:18px}
+.toolbar{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-bottom:14px}
+.toolbar label{color:#7a8aaa;font-size:.8rem}
+.toolbar select,.toolbar button{background:rgba(13,19,37,.94);color:#eef3ff;border:1px solid #1e2a45;border-radius:6px;padding:6px 12px;font-family:inherit;font-size:.8rem;cursor:pointer;transition:border-color .2s}
+.toolbar select:hover,.toolbar button:hover{border-color:#56c2ff}
+.btn-accent{background:#56c2ff!important;color:#0b1020!important;font-weight:600;border-color:#56c2ff!important}
+.btn-accent:hover{background:#7dd4ff!important}
+.toggle{display:flex;align-items:center;gap:6px;cursor:pointer;font-size:.8rem;color:#7a8aaa}
+.toggle input{accent-color:#56c2ff;width:15px;height:15px}
+.panels{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px}
+@media(max-width:700px){.panels{grid-template-columns:1fr}}
+.panel{background:rgba(13,19,37,.94);border:1px solid #1e2a45;border-radius:8px;display:flex;flex-direction:column;min-height:0}
+.panel-head{display:flex;justify-content:space-between;align-items:center;padding:10px 14px;border-bottom:1px solid #1e2a45}
+.panel-head span{color:#56c2ff;font-weight:600;font-size:.85rem}
+.panel-head button{background:none;border:1px solid #1e2a45;color:#7a8aaa;border-radius:5px;padding:4px 10px;font-family:inherit;font-size:.75rem;cursor:pointer;transition:all .2s}
+.panel-head button:hover{border-color:#56c2ff;color:#56c2ff}
+textarea{width:100%;flex:1;min-height:320px;background:transparent;border:none;color:#eef3ff;font-family:inherit;font-size:.82rem;padding:12px 14px;resize:vertical;outline:none;line-height:1.5}
+textarea::placeholder{color:#3a4a6a}
+.status{padding:8px 14px;font-size:.75rem;color:#7a8aaa;border-top:1px solid #1e2a45;display:flex;justify-content:space-between}
+.status .err{color:#ff6b8a}
+.status .ok{color:#56c2ff}
+.drop-zone{border:2px dashed #1e2a45;border-radius:8px;padding:18px;text-align:center;color:#3a4a6a;font-size:.8rem;margin-bottom:14px;transition:all .2s;cursor:pointer}
+.drop-zone.over{border-color:#56c2ff;color:#56c2ff;background:rgba(86,194,255,.05)}
+.mode-tabs{display:flex;gap:0;margin-bottom:14px}
+.mode-tabs button{flex:1;padding:8px;background:rgba(13,19,37,.94);border:1px solid #1e2a45;color:#7a8aaa;font-family:inherit;font-size:.82rem;cursor:pointer;transition:all .2s}
+.mode-tabs button:first-child{border-radius:6px 0 0 6px}
+.mode-tabs button:last-child{border-radius:0 6px 6px 0}
+.mode-tabs button.active{background:#56c2ff;color:#0b1020;border-color:#56c2ff;font-weight:600}
+.toast{position:fixed;bottom:24px;right:24px;background:#56c2ff;color:#0b1020;padding:10px 20px;border-radius:6px;font-weight:600;font-size:.82rem;opacity:0;transform:translateY(10px);transition:all .3s;pointer-events:none;z-index:99}
+.toast.show{opacity:1;transform:translateY(0)}
+</style>
+</head>
+<body>
+<div class="wrap">
+<h1>JSON &harr; CSV Converter</h1>
+<p class="sub">Convert JSON arrays to CSV or CSV back to JSON. Supports nested objects, custom delimiters, and file upload.</p>
+
+<div class="mode-tabs">
+<button class="active" onclick="setMode('j2c')">JSON &rarr; CSV</button>
+<button onclick="setMode('c2j')">CSV &rarr; JSON</button>
+</div>
+
+<div class="drop-zone" id="dropZone" onclick="document.getElementById('fileIn').click()">
+Drop a file here or click to upload (.json / .csv)
+<input type="file" id="fileIn" accept=".json,.csv,.txt" hidden>
+</div>
+
+<div class="toolbar">
+<label>Delimiter:</label>
+<select id="delim">
+<option value=",">Comma (,)</option>
+<option value=";">Semicolon (;)</option>
+<option value="&#9;">Tab</option>
+<option value="|">Pipe (|)</option>
+</select>
+<label class="toggle"><input type="checkbox" id="headers" checked> Include headers</label>
+<label class="toggle"><input type="checkbox" id="flatten" checked> Flatten nested</label>
+<button onclick="loadSample()">Sample Data</button>
+<button class="btn-accent" onclick="convert()">Convert</button>
+</div>
+
+<div class="panels">
+<div class="panel">
+<div class="panel-head"><span id="inLabel">JSON Input</span><button onclick="clearInput()">Clear</button></div>
+<textarea id="input" placeholder="Paste JSON array here..."></textarea>
+<div class="status"><span id="inStatus">&nbsp;</span></div>
+</div>
+<div class="panel">
+<div class="panel-head"><span id="outLabel">CSV Output</span>
+<div style="display:flex;gap:6px">
+<button onclick="copyOutput()">Copy</button>
+<button onclick="download()">Download</button>
+</div>
+</div>
+<textarea id="output" readonly placeholder="Output will appear here..."></textarea>
+<div class="status"><span id="outStatus">&nbsp;</span></div>
+</div>
+</div>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+let mode='j2c';
+const $=id=>document.getElementById(id);
+const inputEl=$('input'),outputEl=$('output'),delimEl=$('delim'),headersEl=$('headers'),flattenEl=$('flatten');
+
+function setMode(m){
+  mode=m;
+  document.querySelectorAll('.mode-tabs button').forEach((b,i)=>b.classList.toggle('active',i===(m==='j2c'?0:1)));
+  $('inLabel').textContent=m==='j2c'?'JSON Input':'CSV Input';
+  $('outLabel').textContent=m==='j2c'?'CSV Output':'JSON Output';
+  inputEl.placeholder=m==='j2c'?'Paste JSON array here...':'Paste CSV here...';
+  outputEl.value='';
+  $('inStatus').innerHTML='&nbsp;';
+  $('outStatus').innerHTML='&nbsp;';
+}
+
+function toast(msg){
+  const t=$('toast');t.textContent=msg;t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),2000);
+}
+
+function flattenObj(obj,prefix=''){
+  const out={};
+  for(const k in obj){
+    if(!obj.hasOwnProperty(k))continue;
+    const key=prefix?prefix+'.'+k:k;
+    const v=obj[k];
+    if(v&&typeof v==='object'&&!Array.isArray(v)&&v!==null){
+      Object.assign(out,flattenObj(v,key));
+    }else{
+      out[key]=v;
+    }
+  }
+  return out;
+}
+
+function escapeCSV(val,delim){
+  if(val===null||val===undefined)return '';
+  let s=String(val);
+  if(s.includes('"'))s=s.replace(/"/g,'""');
+  if(s.includes(delim)||s.includes('"')||s.includes('\n')||s.includes('\r'))s='"'+s+'"';
+  return s;
+}
+
+function jsonToCsv(json,delim,includeHeaders,doFlatten){
+  let data;
+  try{data=typeof json==='string'?JSON.parse(json):json;}
+  catch(e){throw new Error('Invalid JSON: '+e.message);}
+  if(!Array.isArray(data))throw new Error('JSON must be an array of objects');
+  if(data.length===0)return '';
+  const rows=doFlatten?data.map(r=>flattenObj(r)):data;
+  const colSet=new Set();
+  rows.forEach(r=>{if(r&&typeof r==='object')Object.keys(r).forEach(k=>colSet.add(k));});
+  const cols=[...colSet];
+  const lines=[];
+  if(includeHeaders)lines.push(cols.map(c=>escapeCSV(c,delim)).join(delim));
+  rows.forEach(r=>{
+    lines.push(cols.map(c=>{
+      let v=r[c];
+      if(Array.isArray(v))v=JSON.stringify(v);
+      return escapeCSV(v,delim);
+    }).join(delim));
+  });
+  return lines.join('\n');
+}
+
+function parseCSVLine(line,delim){
+  const cells=[];let cur='',inQ=false;
+  for(let i=0;i<line.length;i++){
+    const ch=line[i];
+    if(inQ){
+      if(ch==='"'){
+        if(i+1<line.length&&line[i+1]==='"'){cur+='"';i++;}
+        else inQ=false;
+      }else cur+=ch;
+    }else{
+      if(ch==='"')inQ=true;
+      else if(ch===delim){cells.push(cur);cur='';}
+      else cur+=ch;
+    }
+  }
+  cells.push(cur);
+  return cells;
+}
+
+function csvToJson(csv,delim,hasHeaders){
+  const lines=csv.split(/\r?\n/).filter(l=>l.trim());
+  if(lines.length===0)return '[]';
+  let headers;
+  let startIdx=0;
+  if(hasHeaders){headers=parseCSVLine(lines[0],delim);startIdx=1;}
+  else{const count=parseCSVLine(lines[0],delim).length;headers=Array.from({length:count},(_,i)=>'col'+i);startIdx=0;}
+  const result=[];
+  for(let i=startIdx;i<lines.length;i++){
+    const vals=parseCSVLine(lines[i],delim);
+    const obj={};
+    headers.forEach((h,j)=>{
+      let v=vals[j]||'';
+      if(v==='true')v=true;
+      else if(v==='false')v=false;
+      else if(v==='null')v=null;
+      else if(v!==''&&!isNaN(v)&&v.trim()!=='')v=Number(v);
+      obj[h.trim()]=v;
+    });
+    result.push(obj);
+  }
+  return JSON.stringify(result,null,2);
+}
+
+function convert(){
+  const raw=inputEl.value.trim();
+  if(!raw){$('inStatus').innerHTML='<span class="err">Input is empty</span>';return;}
+  const delim=delimEl.value;
+  try{
+    let out;
+    if(mode==='j2c'){
+      out=jsonToCsv(raw,delim,headersEl.checked,flattenEl.checked);
+      const rows=out.split('\n').length-(headersEl.checked?1:0);
+      $('outStatus').innerHTML='<span class="ok">'+rows+' rows generated</span>';
+    }else{
+      out=csvToJson(raw,delim,headersEl.checked);
+      const arr=JSON.parse(out);
+      $('outStatus').innerHTML='<span class="ok">'+arr.length+' objects parsed</span>';
+    }
+    outputEl.value=out;
+    $('inStatus').innerHTML='<span class="ok">Valid input</span>';
+  }catch(e){
+    $('inStatus').innerHTML='<span class="err">'+e.message+'</span>';
+    outputEl.value='';
+  }
+}
+
+function copyOutput(){
+  if(!outputEl.value){toast('Nothing to copy');return;}
+  navigator.clipboard.writeText(outputEl.value).then(()=>toast('Copied to clipboard'));
+}
+
+function download(){
+  if(!outputEl.value){toast('Nothing to download');return;}
+  const ext=mode==='j2c'?'csv':'json';
+  const mime=mode==='j2c'?'text/csv':'application/json';
+  const blob=new Blob([outputEl.value],{type:mime});
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(blob);
+  a.download='output.'+ext;
+  a.click();
+  URL.revokeObjectURL(a.href);
+  toast('Downloaded output.'+ext);
+}
+
+function clearInput(){inputEl.value='';outputEl.value='';$('inStatus').innerHTML='&nbsp;';$('outStatus').innerHTML='&nbsp;';}
+
+function loadSample(){
+  if(mode==='j2c'){
+    inputEl.value=JSON.stringify([
+      {"id":1,"name":"Alice Johnson","email":"alice@example.com","address":{"city":"Portland","state":"OR"},"tags":["admin","editor"],"active":true},
+      {"id":2,"name":"Bob Smith","email":"bob@example.com","address":{"city":"Seattle","state":"WA"},"tags":["viewer"],"active":false},
+      {"id":3,"name":"Carol \"CJ\" Jones","email":"carol@example.com","address":{"city":"San Francisco","state":"CA"},"tags":["admin"],"active":true},
+      {"id":4,"name":"Dave Lee, Jr.","email":"dave@example.com","address":{"city":"Denver","state":"CO"},"tags":["editor","viewer"],"active":true}
+    ],null,2);
+  }else{
+    inputEl.value='id,name,email,city,active\n1,Alice Johnson,alice@example.com,Portland,true\n2,Bob Smith,bob@example.com,Seattle,false\n3,"Carol ""CJ"" Jones",carol@example.com,San Francisco,true\n4,"Dave Lee, Jr.",dave@example.com,Denver,true';
+  }
+  convert();
+  toast('Sample data loaded');
+}
+
+// File upload
+const dropZone=$('dropZone'),fileIn=$('fileIn');
+function handleFile(f){
+  if(!f)return;
+  const reader=new FileReader();
+  reader.onload=e=>{
+    inputEl.value=e.target.result;
+    if(f.name.endsWith('.csv')){setMode('c2j');}
+    else{setMode('j2c');}
+    convert();
+    toast('Loaded '+f.name);
+  };
+  reader.readAsText(f);
+}
+fileIn.addEventListener('change',e=>handleFile(e.target.files[0]));
+dropZone.addEventListener('dragover',e=>{e.preventDefault();dropZone.classList.add('over');});
+dropZone.addEventListener('dragleave',()=>dropZone.classList.remove('over'));
+dropZone.addEventListener('drop',e=>{e.preventDefault();dropZone.classList.remove('over');handleFile(e.dataTransfer.files[0]);});
+
+// Auto-convert on typing with debounce
+let timer;
+inputEl.addEventListener('input',()=>{clearTimeout(timer);timer=setTimeout(()=>{if(inputEl.value.trim())convert();},400);});
+delimEl.addEventListener('change',()=>{if(inputEl.value.trim())convert();});
+headersEl.addEventListener('change',()=>{if(inputEl.value.trim())convert();});
+flattenEl.addEventListener('change',()=>{if(inputEl.value.trim())convert();});
+</script>
+</body>
+</html>

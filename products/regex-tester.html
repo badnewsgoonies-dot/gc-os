@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Regex Tester Pro — Test, Debug & Learn Regular Expressions Online</title>
+<meta name="description" content="Free online regex tester with real-time matching, capture group inspection, and a built-in cheat sheet. Debug and learn regular expressions instantly.">
+<meta property="og:title" content="Regex Tester Pro — Test, Debug & Learn Regular Expressions Online">
+<meta property="og:description" content="Free online regex tester with real-time matching, capture group inspection, and a built-in cheat sheet.">
+<meta property="og:type" content="website">
+<link rel="canonical" href="https://example.com/regex-tester">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='6' fill='%230b1020'/><text x='16' y='23' text-anchor='middle' font-size='20' font-family='monospace' fill='%2356c2ff'>.*</text></svg>">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#0b1020;color:#eef3ff;font-family:'SF Mono','Cascadia Code','Fira Code',monospace;font-size:14px;line-height:1.6;display:flex;flex-direction:column;min-height:100vh}
+a{color:#56c2ff}
+::selection{background:#56c2ff33}
+::-webkit-scrollbar{width:6px;height:6px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:#56c2ff33;border-radius:3px}
+
+.header{padding:16px 24px;border-bottom:1px solid #1a2340;display:flex;align-items:center;gap:16px;flex-shrink:0}
+.header h1{font-size:16px;font-weight:600;color:#56c2ff;white-space:nowrap}
+.header .subtitle{font-size:12px;color:#7a8baa;margin-left:auto;white-space:nowrap}
+
+.main{display:flex;flex:1;overflow:hidden}
+
+.sidebar{width:260px;border-right:1px solid #1a2340;overflow-y:auto;flex-shrink:0;padding:16px}
+.sidebar h3{font-size:11px;text-transform:uppercase;letter-spacing:1.2px;color:#56c2ff;margin:16px 0 8px;padding-bottom:4px;border-bottom:1px solid #1a234066}
+.sidebar h3:first-child{margin-top:0}
+.sidebar .entry{display:flex;justify-content:space-between;padding:3px 0;font-size:12px;color:#9aaccc}
+.sidebar .entry code{color:#eef3ff;background:#1a234088;padding:1px 5px;border-radius:3px;font-size:11px}
+
+.workspace{flex:1;display:flex;flex-direction:column;overflow:hidden;padding:20px 24px;gap:16px}
+
+.pattern-bar{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.pattern-wrap{flex:1;min-width:300px;display:flex;align-items:center;background:rgba(13,19,37,.94);border:1px solid #1a2340;border-radius:6px;padding:0 12px;transition:border-color .2s}
+.pattern-wrap:focus-within{border-color:#56c2ff}
+.pattern-wrap .slash{color:#56c2ff;font-size:16px;user-select:none}
+.pattern-wrap input{flex:1;background:none;border:none;color:#eef3ff;font-family:inherit;font-size:14px;padding:10px 8px;outline:none}
+.flags{display:flex;gap:4px}
+.flag-btn{width:30px;height:30px;display:flex;align-items:center;justify-content:center;background:rgba(13,19,37,.94);border:1px solid #1a2340;border-radius:4px;color:#7a8baa;cursor:pointer;font-family:inherit;font-size:13px;font-weight:600;transition:all .15s}
+.flag-btn.active{color:#56c2ff;border-color:#56c2ff;background:#56c2ff15}
+.flag-btn:hover{border-color:#56c2ff88}
+
+.common-patterns{display:flex;gap:6px;flex-wrap:wrap}
+.common-btn{padding:5px 12px;background:rgba(13,19,37,.94);border:1px solid #1a2340;border-radius:4px;color:#9aaccc;cursor:pointer;font-family:inherit;font-size:12px;transition:all .15s}
+.common-btn:hover{border-color:#56c2ff;color:#56c2ff}
+
+.panels{flex:1;display:flex;gap:16px;overflow:hidden}
+.panel{flex:1;display:flex;flex-direction:column;background:rgba(13,19,37,.94);border:1px solid #1a2340;border-radius:8px;overflow:hidden;min-width:0}
+.panel-title{padding:10px 14px;font-size:11px;text-transform:uppercase;letter-spacing:1px;color:#7a8baa;border-bottom:1px solid #1a234088;flex-shrink:0}
+
+.test-area{flex:1;position:relative;overflow:hidden}
+.test-area textarea{width:100%;height:100%;background:transparent;border:none;color:#eef3ff;font-family:inherit;font-size:14px;padding:14px;outline:none;resize:none;position:absolute;top:0;left:0}
+.rendered{width:100%;height:100%;padding:14px;overflow-y:auto;white-space:pre-wrap;word-break:break-word;cursor:text;font-size:14px;line-height:1.6;color:#eef3ff}
+.rendered mark{background:#56c2ff33;color:#56c2ff;border-radius:2px;padding:0 1px}
+.rendered mark:nth-of-type(even){background:#ff6b9533;color:#ff6b95}
+
+.match-list{flex:1;overflow-y:auto;padding:10px 14px}
+.match-item{padding:8px 10px;margin-bottom:6px;background:#0b102088;border-radius:4px;font-size:12px;border-left:3px solid #56c2ff}
+.match-item:nth-child(even){border-left-color:#ff6b95}
+.match-idx{color:#7a8baa;margin-right:8px}
+.match-val{color:#56c2ff;word-break:break-all}
+.match-group{display:block;color:#9aaccc;margin-top:2px;padding-left:12px}
+.no-matches{color:#7a8baa;font-size:13px;text-align:center;padding:24px 0}
+
+.error-msg{color:#ff4466;font-size:12px;padding:6px 14px;background:#ff44660d;border-top:1px solid #ff44661a;flex-shrink:0;display:none}
+
+.info-bar{display:flex;gap:24px;padding:10px 24px;border-top:1px solid #1a2340;font-size:12px;color:#7a8baa;flex-shrink:0}
+.info-bar span{display:flex;align-items:center;gap:6px}
+.info-bar .num{color:#56c2ff;font-weight:600}
+
+@media(max-width:900px){
+  .sidebar{display:none}
+  .panels{flex-direction:column}
+}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>Regex Tester Pro</h1>
+  <span class="subtitle">Real-time regex testing & debugging</span>
+</div>
+
+<div class="main">
+  <div class="sidebar">
+    <h3>Character Classes</h3>
+    <div class="entry"><code>.</code> Any character</div>
+    <div class="entry"><code>\d</code> Digit [0-9]</div>
+    <div class="entry"><code>\D</code> Non-digit</div>
+    <div class="entry"><code>\w</code> Word [a-zA-Z0-9_]</div>
+    <div class="entry"><code>\W</code> Non-word</div>
+    <div class="entry"><code>\s</code> Whitespace</div>
+    <div class="entry"><code>\S</code> Non-whitespace</div>
+    <div class="entry"><code>[abc]</code> Char set</div>
+    <div class="entry"><code>[^abc]</code> Negated set</div>
+    <div class="entry"><code>[a-z]</code> Range</div>
+    <h3>Quantifiers</h3>
+    <div class="entry"><code>*</code> 0 or more</div>
+    <div class="entry"><code>+</code> 1 or more</div>
+    <div class="entry"><code>?</code> 0 or 1</div>
+    <div class="entry"><code>{n}</code> Exactly n</div>
+    <div class="entry"><code>{n,m}</code> n to m</div>
+    <div class="entry"><code>*?</code> Lazy *</div>
+
+    <h3>Anchors</h3>
+    <div class="entry"><code>^</code> Start of line</div>
+    <div class="entry"><code>$</code> End of line</div>
+    <div class="entry"><code>\b</code> Word boundary</div>
+    <div class="entry"><code>\B</code> Non-boundary</div>
+
+    <h3>Groups</h3>
+    <div class="entry"><code>(abc)</code> Capture group</div>
+    <div class="entry"><code>(?:abc)</code> Non-capture</div>
+    <div class="entry"><code>(?&lt;n&gt;abc)</code> Named group</div>
+    <div class="entry"><code>\1</code> Back-reference</div>
+    <div class="entry"><code>a|b</code> Alternation</div>
+
+    <h3>Lookaround</h3>
+    <div class="entry"><code>(?=..)</code> Lookahead</div>
+    <div class="entry"><code>(?!..)</code> Neg lookahead</div>
+    <div class="entry"><code>(?&lt;=..)</code> Lookbehind</div>
+    <div class="entry"><code>(?&lt;!..)</code> Neg lookbehind</div>
+  </div>
+
+  <div class="workspace">
+    <div class="pattern-bar">
+      <div class="pattern-wrap">
+        <span class="slash">/</span>
+        <input type="text" id="patternInput" placeholder="Enter regex pattern..." spellcheck="false" value="\b\w+@\w+\.\w+\b">
+        <span class="slash">/</span>
+      </div>
+      <div class="flags" id="flagBar">
+        <button class="flag-btn active" data-flag="g">g</button>
+        <button class="flag-btn" data-flag="i">i</button>
+        <button class="flag-btn active" data-flag="m">m</button>
+        <button class="flag-btn" data-flag="s">s</button>
+        <button class="flag-btn" data-flag="u">u</button>
+      </div>
+    </div>
+
+    <div class="common-patterns">
+      <button class="common-btn" data-key="email">Email</button>
+      <button class="common-btn" data-key="url">URL</button>
+      <button class="common-btn" data-key="ipv4">IPv4</button>
+      <button class="common-btn" data-key="phone">Phone</button>
+      <button class="common-btn" data-key="hex">Hex Color</button>
+    </div>
+
+    <div class="panels">
+      <div class="panel">
+        <div class="panel-title">Test String</div>
+        <div class="test-area" id="testArea">
+          <div class="rendered" id="rendered"></div>
+          <textarea id="testInput" spellcheck="false" style="display:none">Contact us at hello@example.com or support@company.org
+Visit https://example.com/path?q=1 for details.
+Server IPs: 192.168.1.1 and 10.0.0.255
+Call (555) 123-4567 or 800-555-0199
+Colors: #ff6600, #09C, #aabbcc</textarea>
+        </div>
+        <div class="error-msg" id="errorMsg"></div>
+      </div>
+      <div class="panel">
+        <div class="panel-title">Matches</div>
+        <div class="match-list" id="matchList"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="info-bar">
+  <span>Matches: <span class="num" id="matchCount">0</span></span>
+  <span>Groups: <span class="num" id="groupCount">0</span></span>
+  <span>Time: <span class="num" id="execTime">0ms</span></span>
+</div>
+
+<script>
+(function() {
+  const patternInput = document.getElementById('patternInput');
+  const testInput = document.getElementById('testInput');
+  const rendered = document.getElementById('rendered');
+  const matchList = document.getElementById('matchList');
+  const errorMsg = document.getElementById('errorMsg');
+  const matchCountEl = document.getElementById('matchCount');
+  const groupCountEl = document.getElementById('groupCount');
+  const execTimeEl = document.getElementById('execTime');
+  const flagBar = document.getElementById('flagBar');
+
+  const COMMON = {
+    email: {
+      pattern: '[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}',
+      test: 'Valid: user@example.com, first.last@company.co.uk\nInvalid: user@, @domain.com, user@.com\nMore: admin+tag@mail.org, test_123@sub.domain.io'
+    },
+    url: {
+      pattern: 'https?://[\\w.-]+(?:\\.[a-z]{2,})(?:/[^\\s]*)?',
+      test: 'Visit https://www.example.com/path?key=val\nOr http://sub.domain.org/page#section\nNot a URL: ftp://files.example.com\nAnother: https://api.service.io/v2/data.json'
+    },
+    ipv4: {
+      pattern: '\\b(?:(?:25[0-5]|2[0-4]\\d|[01]?\\d\\d?)\\.){3}(?:25[0-5]|2[0-4]\\d|[01]?\\d\\d?)\\b',
+      test: 'Valid IPs: 192.168.1.1, 10.0.0.1, 255.255.255.0\nEdge cases: 0.0.0.0, 127.0.0.1\nInvalid: 256.1.1.1, 192.168.1.999, 1.2.3'
+    },
+    phone: {
+      pattern: '\\(?\\d{3}\\)?[-.\\s]?\\d{3}[-.\\s]?\\d{4}',
+      test: 'Call us: (555) 123-4567\nOr try: 800-555-0199, 555.867.5309\nMobile: (212) 555-1234\nPlain: 5551234567'
+    },
+    hex: {
+      pattern: '#(?:[0-9a-fA-F]{3}){1,2}\\b',
+      test: 'Colors in CSS:\nprimary: #ff6600\nsecondary: #09C\nbackground: #1a1a2e\naccent: #e94560\nShort: #FFF, #000, #abc'
+    }
+  };
+
+  function getFlags() {
+    let f = '';
+    flagBar.querySelectorAll('.flag-btn.active').forEach(b => f += b.dataset.flag);
+    return f;
+  }
+
+  function escapeHtml(s) {
+    return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  }
+
+  function run() {
+    const pattern = patternInput.value;
+    const text = testInput.value;
+    const flags = getFlags();
+
+    errorMsg.style.display = 'none';
+    errorMsg.textContent = '';
+
+    if (!pattern) {
+      rendered.innerHTML = escapeHtml(text);
+      matchList.innerHTML = '<div class="no-matches">Enter a pattern to begin</div>';
+      matchCountEl.textContent = '0';
+      groupCountEl.textContent = '0';
+      execTimeEl.textContent = '0ms';
+      return;
+    }
+
+    let re;
+    try {
+      re = new RegExp(pattern, flags);
+    } catch (e) {
+      errorMsg.textContent = e.message;
+      errorMsg.style.display = 'block';
+      rendered.innerHTML = escapeHtml(text);
+      matchList.innerHTML = '<div class="no-matches">Invalid pattern</div>';
+      matchCountEl.textContent = '0';
+      groupCountEl.textContent = '0';
+      execTimeEl.textContent = '0ms';
+      return;
+    }
+
+    const t0 = performance.now();
+    const matches = [];
+    let maxGroups = 0;
+
+    if (flags.includes('g')) {
+      let m;
+      let guard = 0;
+      while ((m = re.exec(text)) !== null && guard++ < 5000) {
+        matches.push(m);
+        if (m[0].length === 0) re.lastIndex++;
+        if (m.length - 1 > maxGroups) maxGroups = m.length - 1;
+      }
+    } else {
+      const m = re.exec(text);
+      if (m) {
+        matches.push(m);
+        if (m.length - 1 > maxGroups) maxGroups = m.length - 1;
+      }
+    }
+
+    const elapsed = performance.now() - t0;
+
+    // Build highlighted text
+    if (matches.length === 0) {
+      rendered.innerHTML = escapeHtml(text);
+    } else {
+      let html = '';
+      let last = 0;
+      for (const m of matches) {
+        const start = m.index;
+        const end = start + m[0].length;
+        if (start > last) html += escapeHtml(text.slice(last, start));
+        if (m[0].length > 0) {
+          html += '<mark>' + escapeHtml(m[0]) + '</mark>';
+        }
+        last = end;
+      }
+      if (last < text.length) html += escapeHtml(text.slice(last));
+      rendered.innerHTML = html;
+    }
+
+    // Build match list
+    if (matches.length === 0) {
+      matchList.innerHTML = '<div class="no-matches">No matches found</div>';
+    } else {
+      let ml = '';
+      matches.forEach((m, i) => {
+        ml += '<div class="match-item"><span class="match-idx">#' + i + '</span>';
+        ml += '<span class="match-val">' + escapeHtml(m[0]) + '</span>';
+        ml += '<span style="color:#7a8baa;margin-left:6px">[' + m.index + ']</span>';
+        for (let g = 1; g < m.length; g++) {
+          if (m[g] !== undefined) {
+            ml += '<span class="match-group">Group ' + g + ': ' + escapeHtml(m[g]) + '</span>';
+          }
+        }
+        ml += '</div>';
+      });
+      matchList.innerHTML = ml;
+    }
+
+    matchCountEl.textContent = matches.length;
+    groupCountEl.textContent = maxGroups;
+    execTimeEl.textContent = elapsed < 1 ? '<1ms' : elapsed.toFixed(1) + 'ms';
+  }
+
+  // Flag toggle
+  flagBar.addEventListener('click', e => {
+    const btn = e.target.closest('.flag-btn');
+    if (!btn) return;
+    btn.classList.toggle('active');
+    run();
+  });
+
+  // Common patterns
+  document.querySelector('.common-patterns').addEventListener('click', e => {
+    const btn = e.target.closest('.common-btn');
+    if (!btn) return;
+    const data = COMMON[btn.dataset.key];
+    if (!data) return;
+    patternInput.value = data.pattern;
+    testInput.value = data.test;
+    run();
+  });
+
+  // Click rendered div to edit
+  rendered.addEventListener('click', () => {
+    rendered.style.display = 'none';
+    testInput.style.display = 'block';
+    testInput.focus();
+  });
+
+  testInput.addEventListener('blur', () => {
+    testInput.style.display = 'none';
+    rendered.style.display = 'block';
+    run();
+  });
+
+  testInput.addEventListener('input', run);
+  patternInput.addEventListener('input', run);
+
+  // Initial run
+  run();
+})();
+</script>
+</body>
+</html>

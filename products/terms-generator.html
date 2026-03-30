@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Terms of Service Generator - Create Free ToS Online</title>
+<meta name="description" content="Free Terms of Service Generator. Create professional, customizable Terms of Service for your website, app, or SaaS. Download as TXT or HTML instantly.">
+<meta name="keywords" content="terms of service generator, ToS generator, terms and conditions, free legal documents, website terms, SaaS terms, app terms">
+<meta name="robots" content="index,follow">
+<meta property="og:title" content="Terms of Service Generator - Create Free ToS Online">
+<meta property="og:description" content="Generate professional Terms of Service for your website, app, or SaaS product. Free, customizable, and instant download.">
+<meta property="og:type" content="website">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect rx='12' width='100' height='100' fill='%230b1020'/><text x='50' y='68' font-size='38' font-family='system-ui' font-weight='bold' text-anchor='middle' fill='%2356c2ff'>ToS</text></svg>">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#0b1020;color:#eef3ff;font-family:system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;min-height:100vh;display:flex;flex-direction:column;align-items:center}
+h1{font-size:1.3rem;padding:1.2rem 0 .3rem;color:#56c2ff;text-align:center;letter-spacing:.5px}
+.sub{font-size:.75rem;color:#6a7a9b;text-align:center;margin-bottom:.6rem}
+.disclaimer{font-size:.65rem;color:#ff6b8a;text-align:center;margin-bottom:1rem;padding:0 1rem;line-height:1.5}
+.wrap{width:100%;max-width:960px;padding:0 1rem 1rem;flex:1;display:flex;flex-direction:column;gap:.8rem}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:.8rem}
+.panel{background:rgba(13,19,37,.94);border:1px solid #1a2340;border-radius:8px;overflow:hidden}
+.panel-head{display:flex;justify-content:space-between;align-items:center;padding:.5rem .7rem;border-bottom:1px solid #1a2340;font-size:.75rem;color:#6a7a9b}
+.panel-head strong{color:#56c2ff;font-size:.8rem}
+.panel-body{padding:.7rem}
+.field{margin-bottom:.6rem}
+.field:last-child{margin-bottom:0}
+.field label{display:block;font-size:.7rem;color:#6a7a9b;margin-bottom:.25rem;letter-spacing:.3px}
+.field input,.field select{width:100%;background:rgba(10,14,28,.7);border:1px solid #1a2340;border-radius:5px;color:#eef3ff;font-family:inherit;font-size:.8rem;padding:.4rem .55rem;outline:none;transition:border-color .15s}
+.field input:focus,.field select:focus{border-color:#56c2ff}
+.field select{cursor:pointer}
+.field select option{background:#0b1020;color:#eef3ff}
+.toggles{display:flex;flex-direction:column;gap:.5rem}
+.toggle{display:flex;align-items:center;justify-content:space-between;padding:.4rem .55rem;background:rgba(10,14,28,.5);border-radius:5px;cursor:pointer;user-select:none;transition:background .15s}
+.toggle:hover{background:rgba(86,194,255,.06)}
+.toggle span{font-size:.75rem;color:#c0c8e0}
+.switch{position:relative;width:36px;height:20px;flex-shrink:0}
+.switch input{opacity:0;width:0;height:0}
+.switch .track{position:absolute;inset:0;background:#1a2340;border-radius:10px;transition:background .2s}
+.switch input:checked+.track{background:rgba(86,194,255,.35)}
+.track::after{content:'';position:absolute;width:16px;height:16px;left:2px;top:2px;background:#6a7a9b;border-radius:50%;transition:all .2s}
+.switch input:checked+.track::after{transform:translateX(16px);background:#56c2ff}
+.actions{display:flex;gap:.5rem;flex-wrap:wrap;padding:.5rem .7rem;border-top:1px solid #1a2340}
+button{background:rgba(86,194,255,.12);color:#56c2ff;border:1px solid rgba(86,194,255,.25);border-radius:6px;padding:.4rem .8rem;font-family:inherit;font-size:.72rem;cursor:pointer;transition:all .15s;white-space:nowrap}
+button:hover{background:rgba(86,194,255,.22);border-color:#56c2ff}
+button.primary{background:rgba(86,194,255,.2);font-weight:600}
+.output{font-size:.8rem;line-height:1.65;color:#c0c8e0;padding:.7rem;white-space:pre-wrap;word-wrap:break-word;max-height:520px;overflow-y:auto;min-height:200px}
+.output::-webkit-scrollbar{width:6px}
+.output::-webkit-scrollbar-track{background:transparent}
+.output::-webkit-scrollbar-thumb{background:#1a2340;border-radius:3px}
+.output::-webkit-scrollbar-thumb:hover{background:#2a3360}
+.output h2{color:#56c2ff;font-size:.85rem;margin:1rem 0 .4rem}
+.output h2:first-child{margin-top:0}
+.output p{margin-bottom:.5rem}
+.pair-note{font-size:.65rem;color:#6a7a9b;text-align:center;margin-top:.2rem}
+.pair-note a{color:#56c2ff;text-decoration:none}
+.pair-note a:hover{text-decoration:underline}
+.toast{position:fixed;bottom:1.5rem;left:50%;transform:translateX(-50%) translateY(60px);background:rgba(13,19,37,.96);border:1px solid #56c2ff;color:#56c2ff;padding:.5rem 1.2rem;border-radius:6px;font-size:.75rem;opacity:0;transition:all .3s;pointer-events:none;z-index:99}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+footer{font-size:.65rem;color:#3a4a6b;padding:.8rem 0;text-align:center}
+@media(max-width:700px){
+ .row{grid-template-columns:1fr}
+ .output{max-height:400px}
+}
+</style>
+</head>
+<body>
+<h1>Terms of Service Generator</h1>
+<p class="sub">Generate professional Terms of Service for your website, app, or SaaS</p>
+<p class="disclaimer">This tool generates template language for informational purposes only. It does not constitute legal advice. Consult a qualified attorney before publishing any legal document.</p>
+
+<div class="wrap">
+ <div class="row">
+  <div class="panel">
+   <div class="panel-head"><strong>Details</strong></div>
+   <div class="panel-body">
+    <div class="field"><label>Website / App Name</label><input id="siteName" placeholder="Acme App"></div>
+    <div class="field"><label>URL</label><input id="siteUrl" placeholder="https://example.com"></div>
+    <div class="field"><label>Company / Legal Entity</label><input id="companyName" placeholder="Acme Inc."></div>
+    <div class="field"><label>Contact Email</label><input id="contactEmail" placeholder="legal@example.com"></div>
+    <div class="field"><label>Country / Jurisdiction</label><input id="country" placeholder="United States"></div>
+    <div class="field"><label>Service Type</label>
+     <select id="serviceType"><option value="website">Website</option><option value="app">Mobile Application</option><option value="saas">SaaS Platform</option></select>
+    </div>
+   </div>
+  </div>
+  <div class="panel">
+   <div class="panel-head"><strong>Options</strong></div>
+   <div class="panel-body">
+    <div class="toggles">
+     <label class="toggle"><span>User Accounts</span><div class="switch"><input type="checkbox" id="tglAccounts" checked><span class="track"></span></div></label>
+     <label class="toggle"><span>Paid Services</span><div class="switch"><input type="checkbox" id="tglPaid"><span class="track"></span></div></label>
+     <label class="toggle"><span>User-Generated Content</span><div class="switch"><input type="checkbox" id="tglContent" checked><span class="track"></span></div></label>
+     <label class="toggle"><span>API Access</span><div class="switch"><input type="checkbox" id="tglApi"><span class="track"></span></div></label>
+     <label class="toggle"><span>Refund Policy</span><div class="switch"><input type="checkbox" id="tglRefund"><span class="track"></span></div></label>
+    </div>
+    <div style="margin-top:.8rem">
+     <button class="primary" onclick="generate()" style="width:100%;padding:.55rem">Generate Terms of Service</button>
+    </div>
+   </div>
+  </div>
+ </div>
+
+ <div class="panel">
+  <div class="panel-head"><strong>Generated Terms of Service</strong>
+   <div class="actions" style="border:none;padding:0">
+    <button onclick="copyText()">Copy Text</button>
+    <button onclick="downloadTxt()">Download .txt</button>
+    <button onclick="downloadHtml()">Download .html</button>
+   </div>
+  </div>
+  <div class="output" id="output"><span style="color:#3a4a6b;font-style:italic">Fill in your details and click "Generate Terms of Service" to get started.</span></div>
+ </div>
+ <p class="pair-note">Pairs perfectly with the <a href="privacy-generator.html">Privacy Policy Generator</a></p>
+</div>
+
+<div class="toast" id="toast"></div>
+<footer>Terms of Service Generator &mdash; Free Online Tool</footer>
+
+<script>
+const $=id=>document.getElementById(id);
+const v=id=>$(id).value.trim();
+const on=id=>$(id).checked;
+
+function toast(msg){const t=$('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2200)}
+
+function esc(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}
+
+function today(){const d=new Date();return d.toLocaleDateString('en-US',{year:'numeric',month:'long',day:'numeric'})}
+
+function svcLabel(){const t=v('serviceType');return t==='app'?'application':t==='saas'?'platform':'website'}
+
+function generate(){
+ const name=v('siteName')||'[Your Service]';
+ const url=v('siteUrl')||'[URL]';
+ const company=v('companyName')||'[Company Name]';
+ const email=v('contactEmail')||'[email]';
+ const country=v('country')||'[Country]';
+ const hasAccounts=on('tglAccounts'),hasPaid=on('tglPaid'),hasContent=on('tglContent'),hasApi=on('tglApi'),hasRefund=on('tglRefund');
+ let s=[],section=3;
+ s.push(`<h2>Terms of Service</h2>`);
+ s.push(`<p><strong>${esc(name)}</strong><br>Last Updated: ${today()}</p>`);
+ s.push(`<h2>1. Acceptance of Terms</h2>`);
+ s.push(`<p>By accessing or using ${esc(name)} ("Service"), operated by ${esc(company)} ("Company," "we," "us," or "our"), located at ${esc(url)}, you ("User," "you," or "your") agree to be bound by these Terms of Service ("Terms"). If you do not agree to these Terms, you must not access or use the Service.</p>`);
+ s.push(`<p>We reserve the right to modify these Terms at any time. Changes become effective upon posting. Your continued use of the Service after modifications constitutes acceptance of the revised Terms.</p>`);
+ s.push(`<h2>2. Eligibility</h2>`);
+ s.push(`<p>You must be at least 18 years of age, or the age of legal majority in your jurisdiction, to use this Service. By using the Service, you represent and warrant that you meet these requirements. If you use the Service on behalf of an organization, you represent that you have authority to bind that organization to these Terms.</p>`);
+ if(hasAccounts){
+  s.push(`<h2>${section}. User Accounts</h2>`);
+  s.push(`<p>To access certain features, you may be required to create an account. You agree to provide accurate, current, and complete registration information and to keep it updated.</p>`);
+  s.push(`<p>You are solely responsible for maintaining the confidentiality of your account credentials and for all activities under your account. Notify us immediately at ${esc(email)} of any unauthorized use or security breach.</p>`);
+  s.push(`<p>We reserve the right to suspend or terminate your account at our sole discretion, without prior notice, for conduct that violates these Terms or is harmful to other users.</p>`);
+  section++;}
+ s.push(`<h2>${section}. Intellectual Property</h2>`);
+ s.push(`<p>The Service and its original content, features, and functionality are owned by ${esc(company)} and protected by international copyright, trademark, patent, trade secret, and other intellectual property laws.</p>`);
+ s.push(`<p>You are granted a limited, non-exclusive, non-transferable, revocable license to access and use the Service in accordance with these Terms. You may not reproduce, distribute, modify, create derivative works of, publicly display, or transmit any material from our Service except as ordinarily permitted through the Service.</p>`);
+ section++;
+ if(hasContent){
+  s.push(`<h2>${section}. User Content</h2>`);
+  s.push(`<p>"User Content" means any content you submit, post, upload, or make available through the Service, including text, images, audio, video, and other materials.</p>`);
+  s.push(`<p>You retain ownership of your User Content. By submitting it, you grant us a worldwide, non-exclusive, royalty-free, sublicensable license to use, reproduce, distribute, display, and perform your User Content in connection with the Service.</p>`);
+  s.push(`<p>You warrant that: (a) you own or have the necessary rights to submit the content; (b) it does not infringe any third party's intellectual property, privacy, or publicity rights; and (c) it contains no defamatory, obscene, unlawful, or threatening material.</p>`);
+  s.push(`<p>We reserve the right to monitor, edit, or remove any User Content at our sole discretion, without notice.</p>`);
+  section++;}
+ if(hasPaid){
+  s.push(`<h2>${section}. Payment Terms</h2>`);
+  s.push(`<p>Certain features may require payment. You agree to pay all fees associated with the plan or features you select. All fees are non-refundable except as expressly stated in these Terms.</p>`);
+  s.push(`<p>We may change pricing at any time. For recurring subscriptions, price changes take effect at the start of your next billing cycle with reasonable prior notice.</p>`);
+  s.push(`<p>You are responsible for providing valid, current payment information. Failure to pay may result in suspension or termination of access to paid features.</p>`);
+  section++;}
+ if(hasRefund){
+  s.push(`<h2>${section}. Refund Policy</h2>`);
+  s.push(`<p>You may request a refund within fourteen (14) days of purchase or renewal by contacting ${esc(email)}. Requests are evaluated on a case-by-case basis at our sole discretion.</p>`);
+  s.push(`<p>Approved refunds will be processed to the original payment method within ten (10) business days. We may deny requests determined to be fraudulent or excessive.</p>`);
+  section++;}
+ if(hasApi){
+  s.push(`<h2>${section}. API Access</h2>`);
+  s.push(`<p>We may provide access to our application programming interface ("API"), subject to these Terms and any additional API documentation we provide.</p>`);
+  s.push(`<p>You agree not to: (a) exceed rate limits or usage quotas; (b) degrade the performance or availability of the Service; (c) reverse-engineer the API; or (d) use the API to build a competing product.</p>`);
+  s.push(`<p>We may modify, suspend, or discontinue API access at any time and may revoke your credentials if your use violates these Terms.</p>`);
+  section++;}
+ s.push(`<h2>${section}. Termination</h2>`);
+ s.push(`<p>We may terminate or suspend your access immediately, without prior notice or liability, for any reason, including breach of these Terms.</p>`);
+ s.push(`<p>Upon termination, your right to use the Service ceases immediately.${hasAccounts?' We may delete your account and associated data.':''} Provisions that by their nature should survive termination shall survive, including ownership, warranty disclaimers, indemnification, and limitations of liability.</p>`);
+ section++;
+ s.push(`<h2>${section}. Disclaimers</h2>`);
+ s.push(`<p>THE SERVICE IS PROVIDED "AS IS" AND "AS AVAILABLE," WITHOUT WARRANTIES OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, AND NON-INFRINGEMENT.</p>`);
+ s.push(`<p>${esc(company).toUpperCase()} DOES NOT WARRANT THAT THE SERVICE WILL BE UNINTERRUPTED, SECURE, OR ERROR-FREE, OR THAT RESULTS WILL MEET YOUR REQUIREMENTS.</p>`);
+ section++;
+ s.push(`<h2>${section}. Limitation of Liability</h2>`);
+ s.push(`<p>TO THE MAXIMUM EXTENT PERMITTED BY LAW, ${esc(company).toUpperCase()}, ITS DIRECTORS, EMPLOYEES, PARTNERS, AGENTS, OR AFFILIATES SHALL NOT BE LIABLE FOR ANY INDIRECT, INCIDENTAL, SPECIAL, CONSEQUENTIAL, OR PUNITIVE DAMAGES, INCLUDING LOSS OF PROFITS, DATA, USE, OR GOODWILL, ARISING FROM YOUR USE OF OR INABILITY TO USE THE SERVICE.</p>`);
+ s.push(`<p>OUR TOTAL AGGREGATE LIABILITY SHALL NOT EXCEED THE GREATER OF ONE HUNDRED DOLLARS ($100 USD) OR THE AMOUNT YOU PAID US IN THE TWELVE (12) MONTHS PRECEDING THE CLAIM.</p>`);
+ section++;
+ s.push(`<h2>${section}. Governing Law</h2>`);
+ s.push(`<p>These Terms are governed by the laws of ${esc(country)}, without regard to conflict of law provisions. Disputes shall be subject to the exclusive jurisdiction of the courts in ${esc(country)}.</p>`);
+ s.push(`<p>Our failure to enforce any provision of these Terms will not be considered a waiver. If any provision is held invalid or unenforceable, the remaining provisions remain in effect.</p>`);
+ section++;
+ s.push(`<h2>${section}. Contact Information</h2>`);
+ s.push(`<p>If you have questions about these Terms, contact us at:<br>${esc(company)}<br>${esc(email)}${url?'<br>'+esc(url):''}</p>`);
+
+ $('output').innerHTML=s.join('\n');
+}
+
+function getPlainText(){
+ const el=$('output');
+ if(!el.querySelector('h2'))return'';
+ let t=el.innerText||el.textContent;
+ return t.trim();
+}
+
+function getHtmlDoc(){
+ const el=$('output');
+ if(!el.querySelector('h2'))return'';
+ const name=v('siteName')||'Terms of Service';
+ return`<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Terms of Service - ${name.replace(/</g,'&lt;')}</title>
+<style>
+body{max-width:800px;margin:2rem auto;padding:0 1.5rem;font-family:system-ui,-apple-system,sans-serif;line-height:1.7;color:#222}
+h2{margin-top:2rem;color:#1a1a2e;border-bottom:1px solid #eee;padding-bottom:.3rem}
+p{margin-bottom:.8rem}
+</style>
+</head>
+<body>
+${el.innerHTML}
+</body>
+</html>`;
+}
+
+function copyText(){
+ const t=getPlainText();
+ if(!t){toast('Generate terms first');return}
+ navigator.clipboard.writeText(t).then(()=>toast('Copied to clipboard'));
+}
+
+function downloadTxt(){
+ const t=getPlainText();
+ if(!t){toast('Generate terms first');return}
+ dl(t,'terms-of-service.txt','text/plain');
+}
+
+function downloadHtml(){
+ const h=getHtmlDoc();
+ if(!h){toast('Generate terms first');return}
+ dl(h,'terms-of-service.html','text/html');
+}
+
+function dl(content,name,type){
+ const a=document.createElement('a');
+ a.href=URL.createObjectURL(new Blob([content],{type}));
+ a.download=name;
+ a.click();
+ URL.revokeObjectURL(a.href);
+ toast('Downloaded '+name);
+}
+</script>
+</body>
+</html>

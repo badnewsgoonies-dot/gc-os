@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Hash Generator - MD5, SHA-1, SHA-256, SHA-512 Online</title>
+<meta name="description" content="Free online hash generator. Compute MD5, SHA-1, SHA-256, SHA-384, SHA-512 hashes instantly. Supports text and file hashing, HMAC mode, and real-time output.">
+<meta name="keywords" content="hash generator, md5, sha1, sha256, sha384, sha512, hmac, online tool, checksum, file hash">
+<meta name="robots" content="index,follow">
+<meta property="og:title" content="Hash Generator - MD5, SHA-1, SHA-256, SHA-512 Online">
+<meta property="og:description" content="Free online hash generator. Compute MD5, SHA-1, SHA-256, SHA-384, SHA-512 hashes instantly.">
+<meta property="og:type" content="website">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect rx='12' width='100' height='100' fill='%230b1020'/><text x='50' y='68' font-size='42' font-family='monospace' font-weight='bold' text-anchor='middle' fill='%2356c2ff'>#</text></svg>">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#0b1020;color:#eef3ff;font-family:'SF Mono','Fira Code','Cascadia Code','Consolas',monospace;min-height:100vh;display:flex;flex-direction:column;align-items:center}
+h1{font-size:1.3rem;padding:1.2rem 0 .3rem;color:#56c2ff;text-align:center;letter-spacing:.5px}
+.sub{font-size:.75rem;color:#6a7a9b;text-align:center;margin-bottom:1rem}
+.wrap{width:100%;max-width:900px;padding:0 1rem 1rem;flex:1;display:flex;flex-direction:column}
+.panel{background:rgba(13,19,37,.94);border:1px solid #1a2340;border-radius:8px;overflow:hidden}
+.panel-head{display:flex;justify-content:space-between;align-items:center;padding:.5rem .7rem;border-bottom:1px solid #1a2340;font-size:.75rem;color:#6a7a9b;flex-wrap:wrap;gap:.4rem}
+.panel-head strong{color:#56c2ff;font-size:.8rem}
+textarea{width:100%;background:transparent;border:none;color:#eef3ff;font-family:inherit;font-size:.85rem;padding:.7rem;resize:vertical;outline:none;line-height:1.5;min-height:120px}
+textarea::placeholder{color:#3a4a6b}
+.controls{display:flex;align-items:center;gap:.7rem;padding:.6rem .7rem;flex-wrap:wrap;border-bottom:1px solid #1a2340}
+button{background:rgba(86,194,255,.12);color:#56c2ff;border:1px solid rgba(86,194,255,.25);border-radius:6px;padding:.35rem .7rem;font-family:inherit;font-size:.7rem;cursor:pointer;transition:all .15s;white-space:nowrap}
+button:hover{background:rgba(86,194,255,.22);border-color:#56c2ff}
+.toggle{display:flex;align-items:center;gap:.35rem;font-size:.7rem;color:#6a7a9b;cursor:pointer;user-select:none}
+.toggle input{accent-color:#56c2ff;cursor:pointer}
+.key-input{background:rgba(13,19,37,.94);border:1px solid #1a2340;border-radius:5px;color:#eef3ff;font-family:inherit;font-size:.75rem;padding:.3rem .5rem;outline:none;width:180px;transition:border-color .15s}
+.key-input:focus{border-color:#56c2ff}
+.key-input:disabled{opacity:.3;cursor:not-allowed}
+.results{display:flex;flex-direction:column;gap:1px;margin-top:.8rem}
+.hash-row{display:flex;align-items:center;gap:.5rem;padding:.55rem .7rem;background:rgba(13,19,37,.94);border:1px solid #1a2340;border-radius:6px}
+.hash-row .algo{font-size:.7rem;color:#56c2ff;font-weight:600;min-width:62px;flex-shrink:0}
+.hash-row .value{flex:1;font-size:.72rem;color:#c0c8e0;word-break:break-all;line-height:1.4;min-height:1em}
+.hash-row .value.empty{color:#3a4a6b;font-style:italic}
+.hash-row button{flex-shrink:0;padding:.25rem .55rem;font-size:.65rem}
+.drop-zone{border:2px dashed transparent;transition:border-color .2s}
+.drop-zone.over{border-color:#56c2ff}
+.file-info{font-size:.7rem;color:#56c2ff;padding:.4rem .7rem;border-top:1px solid #1a2340;display:none;align-items:center;gap:.5rem}
+.file-info .dismiss{cursor:pointer;color:#6a7a9b;font-size:.8rem}
+.file-info .dismiss:hover{color:#ff6b8a}
+.status{font-size:.7rem;text-align:center;padding:.3rem 0;color:#6a7a9b;min-height:1.4rem}
+.status.ok{color:#56c2ff}
+footer{font-size:.65rem;color:#3a4a6b;padding:.8rem 0;text-align:center}
+@media(max-width:600px){
+ .hash-row{flex-wrap:wrap}
+ .hash-row .algo{min-width:auto}
+ .hash-row .value{width:100%;order:3}
+ .controls{gap:.4rem}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+<h1>Hash Generator</h1>
+<p class="sub">Type text or drop a file to compute hashes in real time</p>
+
+<div class="panel drop-zone" id="inputPanel">
+ <div class="panel-head">
+  <strong>Input</strong>
+  <span id="byteCount">0 bytes</span>
+ </div>
+ <textarea id="inp" placeholder="Type or paste text here, or drag and drop a file..." spellcheck="false"></textarea>
+ <div class="file-info" id="fileInfo">
+  <span id="fileName"></span>
+  <span class="dismiss" id="fileDismiss" title="Clear file">&times;</span>
+ </div>
+</div>
+
+<div class="controls">
+ <label class="toggle"><input type="checkbox" id="hmacToggle"> HMAC</label>
+ <input type="text" class="key-input" id="hmacKey" placeholder="Secret key..." disabled>
+ <label class="toggle" style="margin-left:auto"><input type="checkbox" id="upperToggle"> UPPERCASE</label>
+</div>
+
+<div class="results" id="results"></div>
+<div class="status" id="status"></div>
+</div>
+<footer>Hash Generator &mdash; all computation runs locally in your browser</footer>
+
+<script>
+/* ---- MD5 implementation (RFC 1321) ---- */
+const md5=(function(){
+function safeAdd(x,y){var l=(x&0xFFFF)+(y&0xFFFF),m=(x>>16)+(y>>16)+(l>>16);return(m<<16)|(l&0xFFFF)}
+function bitRotL(n,c){return(n<<c)|(n>>>(32-c))}
+function cmn(q,a,b,x,s,t){return safeAdd(bitRotL(safeAdd(safeAdd(a,q),safeAdd(x,t)),s),b)}
+function ff(a,b,c,d,x,s,t){return cmn((b&c)|((~b)&d),a,b,x,s,t)}
+function gg(a,b,c,d,x,s,t){return cmn((b&d)|(c&(~d)),a,b,x,s,t)}
+function hh(a,b,c,d,x,s,t){return cmn(b^c^d,a,b,x,s,t)}
+function ii(a,b,c,d,x,s,t){return cmn(c^(b|(~d)),a,b,x,s,t)}
+function core(x,len){
+x[len>>5]|=0x80<<(len%32);
+x[((len+64)>>>9<<4)+14]=len;
+var a=1732584193,b=-271733879,c=-1732584194,d=271733878;
+for(var i=0;i<x.length;i+=16){
+var oa=a,ob=b,oc=c,od=d;
+a=ff(a,b,c,d,x[i],7,-680876936);d=ff(d,a,b,c,x[i+1],12,-389564586);c=ff(c,d,a,b,x[i+2],17,606105819);b=ff(b,c,d,a,x[i+3],22,-1044525330);
+a=ff(a,b,c,d,x[i+4],7,-176418897);d=ff(d,a,b,c,x[i+5],12,1200080426);c=ff(c,d,a,b,x[i+6],17,-1473231341);b=ff(b,c,d,a,x[i+7],22,-45705983);
+a=ff(a,b,c,d,x[i+8],7,1770035416);d=ff(d,a,b,c,x[i+9],12,-1958414417);c=ff(c,d,a,b,x[i+10],17,-42063);b=ff(b,c,d,a,x[i+11],22,-1990404162);
+a=ff(a,b,c,d,x[i+12],7,1804603682);d=ff(d,a,b,c,x[i+13],12,-40341101);c=ff(c,d,a,b,x[i+14],17,-1502002290);b=ff(b,c,d,a,x[i+15],22,1236535329);
+a=gg(a,b,c,d,x[i+1],5,-165796510);d=gg(d,a,b,c,x[i+6],9,-1069501632);c=gg(c,d,a,b,x[i+11],14,643717713);b=gg(b,c,d,a,x[i],20,-373897302);
+a=gg(a,b,c,d,x[i+5],5,-701558691);d=gg(d,a,b,c,x[i+10],9,38016083);c=gg(c,d,a,b,x[i+15],14,-660478335);b=gg(b,c,d,a,x[i+4],20,-405537848);
+a=gg(a,b,c,d,x[i+9],5,568446438);d=gg(d,a,b,c,x[i+14],9,-1019803690);c=gg(c,d,a,b,x[i+3],14,-187363961);b=gg(b,c,d,a,x[i+8],20,1163531501);
+a=gg(a,b,c,d,x[i+13],5,-1444681467);d=gg(d,a,b,c,x[i+2],9,-51403784);c=gg(c,d,a,b,x[i+7],14,1735328473);b=gg(b,c,d,a,x[i+12],20,-1926607734);
+a=hh(a,b,c,d,x[i+5],4,-378558);d=hh(d,a,b,c,x[i+8],11,-2022574463);c=hh(c,d,a,b,x[i+11],16,1839030562);b=hh(b,c,d,a,x[i],23,-35309556);
+a=hh(a,b,c,d,x[i+3],4,-1530992060);d=hh(d,a,b,c,x[i+6],11,1272893353);c=hh(c,d,a,b,x[i+9],16,-155497632);b=hh(b,c,d,a,x[i+12],23,-1094730640);
+a=hh(a,b,c,d,x[i+15],4,681279174);d=hh(d,a,b,c,x[i+2],11,-358537222);c=hh(c,d,a,b,x[i+5],16,-722521979);b=hh(b,c,d,a,x[i+8],23,76029189);
+a=hh(a,b,c,d,x[i+11],4,-640364487);d=hh(d,a,b,c,x[i+14],11,-421815835);c=hh(c,d,a,b,x[i+1],16,530742520);b=hh(b,c,d,a,x[i+4],23,-995338651);
+a=ii(a,b,c,d,x[i],6,-198630844);d=ii(d,a,b,c,x[i+7],10,1126891415);c=ii(c,d,a,b,x[i+14],15,-1416354905);b=ii(b,c,d,a,x[i+5],21,-57434055);
+a=ii(a,b,c,d,x[i+12],6,1700485571);d=ii(d,a,b,c,x[i+3],10,-1894986606);c=ii(c,d,a,b,x[i+10],15,-1051523);b=ii(b,c,d,a,x[i+1],21,-2054922799);
+a=ii(a,b,c,d,x[i+8],6,1873313359);d=ii(d,a,b,c,x[i+15],10,-30611744);c=ii(c,d,a,b,x[i+6],15,-1560198380);b=ii(b,c,d,a,x[i+13],21,1309151649);
+a=ii(a,b,c,d,x[i+4],6,-145523070);d=ii(d,a,b,c,x[i+11],10,-1120210379);c=ii(c,d,a,b,x[i+2],15,718787259);b=ii(b,c,d,a,x[i+9],21,-343485551);
+a=safeAdd(a,oa);b=safeAdd(b,ob);c=safeAdd(c,oc);d=safeAdd(d,od);
+}
+return[a,b,c,d];
+}
+function bytesToWords(bytes){
+var words=[];
+for(var i=0;i<bytes.length*8;i+=8)words[i>>5]|=(bytes[i/8]&0xFF)<<(i%32);
+return words;
+}
+function wordsToHex(words){
+var hex=[];
+for(var i=0;i<words.length*32;i+=8){
+var b=(words[i>>5]>>>(i%32))&0xFF;
+hex.push(('0'+b.toString(16)).slice(-2));
+}
+return hex.join('');
+}
+function md5Bytes(bytes){return wordsToHex(core(bytesToWords(bytes),bytes.length*8))}
+/* MD5-HMAC */
+function md5Hmac(keyBytes,msgBytes){
+var blockSize=64,oKey=new Uint8Array(blockSize),iKey=new Uint8Array(blockSize);
+if(keyBytes.length>blockSize){
+var hk=wordsToHex(core(bytesToWords(keyBytes),keyBytes.length*8));
+keyBytes=new Uint8Array(hk.match(/.{2}/g).map(h=>parseInt(h,16)));
+}
+for(var i=0;i<keyBytes.length;i++){oKey[i]=keyBytes[i];iKey[i]=keyBytes[i]}
+for(var i=0;i<blockSize;i++){oKey[i]^=0x5c;iKey[i]^=0x36}
+var inner=new Uint8Array(blockSize+msgBytes.length);
+inner.set(iKey);inner.set(msgBytes,blockSize);
+var innerHash=wordsToHex(core(bytesToWords(inner),inner.length*8));
+var innerBytes=new Uint8Array(innerHash.match(/.{2}/g).map(h=>parseInt(h,16)));
+var outer=new Uint8Array(blockSize+innerBytes.length);
+outer.set(oKey);outer.set(innerBytes,blockSize);
+return wordsToHex(core(bytesToWords(outer),outer.length*8));
+}
+return{hash:md5Bytes,hmac:md5Hmac};
+})();
+
+/* ---- State ---- */
+const algos=['MD5','SHA-1','SHA-256','SHA-384','SHA-512'];
+const cryptoNames={'SHA-1':'SHA-1','SHA-256':'SHA-256','SHA-384':'SHA-384','SHA-512':'SHA-512'};
+let currentBytes=null;
+let fileMode=false;
+
+/* ---- DOM refs ---- */
+const inp=document.getElementById('inp');
+const byteCount=document.getElementById('byteCount');
+const hmacToggle=document.getElementById('hmacToggle');
+const hmacKey=document.getElementById('hmacKey');
+const upperToggle=document.getElementById('upperToggle');
+const resultsEl=document.getElementById('results');
+const statusEl=document.getElementById('status');
+const inputPanel=document.getElementById('inputPanel');
+const fileInfo=document.getElementById('fileInfo');
+const fileName=document.getElementById('fileName');
+const fileDismiss=document.getElementById('fileDismiss');
+
+/* ---- Build result rows ---- */
+algos.forEach(algo=>{
+const row=document.createElement('div');
+row.className='hash-row';
+row.innerHTML=`<span class="algo">${algo}</span><span class="value empty" id="val-${algo}">waiting for input...</span><button onclick="copyHash('${algo}')">Copy</button>`;
+resultsEl.appendChild(row);
+});
+
+/* ---- Hashing ---- */
+function formatHex(hex){return upperToggle.checked?hex.toUpperCase():hex.toLowerCase()}
+
+function bufToHex(buf){return Array.from(new Uint8Array(buf)).map(b=>('0'+b.toString(16)).slice(-2)).join('')}
+
+async function computeHashes(){
+const bytes=currentBytes;
+if(!bytes||bytes.length===0){
+algos.forEach(a=>{const el=document.getElementById('val-'+a);el.textContent='waiting for input...';el.className='value empty'});
+statusEl.textContent='';return;
+}
+const isHmac=hmacToggle.checked;
+const keyStr=hmacKey.value;
+const keyBytes=new TextEncoder().encode(keyStr);
+
+statusEl.textContent='Computing...';statusEl.className='status';
+
+try{
+/* MD5 */
+const md5Val=isHmac?md5.hmac(keyBytes,bytes):md5.hash(bytes);
+setResult('MD5',formatHex(md5Val));
+
+/* SHA variants via Web Crypto */
+for(const algo of Object.keys(cryptoNames)){
+let hex;
+if(isHmac){
+const cryptoKey=await crypto.subtle.importKey('raw',keyBytes,{name:'HMAC',hash:cryptoNames[algo]},false,['sign']);
+const sig=await crypto.subtle.sign('HMAC',cryptoKey,bytes);
+hex=bufToHex(sig);
+}else{
+const digest=await crypto.subtle.digest(cryptoNames[algo],bytes);
+hex=bufToHex(digest);
+}
+setResult(algo,formatHex(hex));
+}
+statusEl.textContent=isHmac?'HMAC computed':'Hashes computed';
+statusEl.className='status ok';
+}catch(e){
+statusEl.textContent='Error: '+e.message;statusEl.className='status err';
+}
+}
+
+function setResult(algo,hex){
+const el=document.getElementById('val-'+algo);
+el.textContent=hex;el.className='value';
+}
+
+function updateByteCount(bytes){
+const n=bytes.length;
+let label;
+if(n<1024)label=n+' bytes';
+else if(n<1048576)label=(n/1024).toFixed(1)+' KB';
+else label=(n/1048576).toFixed(1)+' MB';
+byteCount.textContent=label;
+}
+
+/* ---- Event handlers ---- */
+let debounceTimer=null;
+function onInput(){
+if(fileMode)return;
+const text=inp.value;
+currentBytes=new TextEncoder().encode(text);
+updateByteCount(currentBytes);
+clearTimeout(debounceTimer);
+debounceTimer=setTimeout(computeHashes,80);
+}
+
+inp.addEventListener('input',onInput);
+hmacToggle.addEventListener('change',()=>{hmacKey.disabled=!hmacToggle.checked;computeHashes()});
+hmacKey.addEventListener('input',()=>{clearTimeout(debounceTimer);debounceTimer=setTimeout(computeHashes,120)});
+upperToggle.addEventListener('change',computeHashes);
+
+/* ---- Copy ---- */
+async function copyHash(algo){
+const el=document.getElementById('val-'+algo);
+if(el.classList.contains('empty'))return;
+try{
+await navigator.clipboard.writeText(el.textContent);
+statusEl.textContent=algo+' hash copied';statusEl.className='status ok';
+}catch{
+statusEl.textContent='Copy failed';statusEl.className='status err';
+}
+}
+
+/* ---- File drag and drop ---- */
+['dragenter','dragover'].forEach(ev=>inputPanel.addEventListener(ev,e=>{e.preventDefault();inputPanel.classList.add('over')}));
+['dragleave','drop'].forEach(ev=>inputPanel.addEventListener(ev,()=>inputPanel.classList.remove('over')));
+
+inputPanel.addEventListener('drop',e=>{
+e.preventDefault();
+const file=e.dataTransfer.files[0];
+if(!file)return;
+fileMode=true;
+inp.value='';inp.disabled=true;
+inp.placeholder='File loaded — clear to return to text mode';
+fileName.textContent=file.name+' ('+formatSize(file.size)+')';
+fileInfo.style.display='flex';
+statusEl.textContent='Reading file...';statusEl.className='status';
+const reader=new FileReader();
+reader.onload=function(){
+currentBytes=new Uint8Array(reader.result);
+updateByteCount(currentBytes);
+computeHashes();
+};
+reader.readAsArrayBuffer(file);
+});
+
+fileDismiss.addEventListener('click',clearFile);
+function clearFile(){
+fileMode=false;inp.disabled=false;inp.placeholder='Type or paste text here, or drag and drop a file...';
+fileInfo.style.display='none';currentBytes=new TextEncoder().encode(inp.value);
+updateByteCount(currentBytes);computeHashes();
+}
+
+function formatSize(n){
+if(n<1024)return n+' B';
+if(n<1048576)return(n/1024).toFixed(1)+' KB';
+return(n/1048576).toFixed(1)+' MB';
+}
+
+/* ---- Init ---- */
+onInput();
+</script>
+</body>
+</html>

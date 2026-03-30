@@ -1,0 +1,569 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<meta name="description" content="Fruit Slash - A fast-paced fruit slicing game. Swipe to slash fruits, avoid bombs, and rack up combos in this addictive arcade game.">
+<meta name="keywords" content="fruit slash, fruit ninja, slicing game, arcade game, browser game, HTML5 game">
+<meta name="author" content="Fruit Slash">
+<meta property="og:title" content="Fruit Slash - Premium Fruit Slicing Game">
+<meta property="og:description" content="Slash fruits, dodge bombs, and chase high scores in this thrilling arcade game. Play free in your browser!">
+<meta property="og:type" content="website">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Fruit Slash - Premium Fruit Slicing Game">
+<meta name="twitter:description" content="Slash fruits, dodge bombs, and chase high scores in this thrilling arcade game.">
+<title>Fruit Slash - Premium Fruit Slicing Game</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{width:100%;height:100%;overflow:hidden;background:#1a0a2e;touch-action:none;user-select:none;-webkit-user-select:none}
+canvas{display:block;width:100%;height:100%}
+</style>
+</head>
+<body>
+<canvas id="c"></canvas>
+<script>
+(function(){
+"use strict";
+const canvas=document.getElementById("c");
+const ctx=canvas.getContext("2d");
+let W,H;
+function resize(){
+W=canvas.width=window.innerWidth;
+H=canvas.height=window.innerHeight;
+}
+resize();
+window.addEventListener("resize",resize);
+
+// Audio
+const audioCtx=new(window.AudioContext||window.webkitAudioContext)();
+function playSound(freq,dur,type,vol){
+try{
+const o=audioCtx.createOscillator();
+const g=audioCtx.createGain();
+o.type=type||"sine";
+o.frequency.setValueAtTime(freq,audioCtx.currentTime);
+g.gain.setValueAtTime(vol||0.15,audioCtx.currentTime);
+g.gain.exponentialRampToValueAtTime(0.001,audioCtx.currentTime+dur);
+o.connect(g);g.connect(audioCtx.destination);
+o.start();o.stop(audioCtx.currentTime+dur);
+}catch(e){}
+}
+function slashSound(){playSound(800,0.08,"sawtooth",0.12);playSound(1200,0.06,"square",0.08);}
+function bombSound(){playSound(80,0.5,"sawtooth",0.3);playSound(60,0.7,"square",0.2);}
+function launchSound(){playSound(200,0.15,"sine",0.05);}
+function comboSound(n){playSound(400+n*80,0.15,"triangle",0.1);}
+function frenzySound(){playSound(600,0.1,"square",0.15);playSound(900,0.1,"square",0.12);playSound(1200,0.15,"square",0.1);}
+function missSound(){playSound(150,0.3,"sawtooth",0.1);}
+
+// Game state
+const STATE={MENU:0,PLAYING:1,GAMEOVER:2};
+let state=STATE.MENU;
+let score=0,combo=0,maxCombo=0,missed=0,highScore=0;
+let frenzyMode=false,frenzyTimer=0;
+const FRENZY_DURATION=5;
+let frenzyThreshold=50;
+let lastFrenzyScore=0;
+let fruits=[],halves=[],particles=[],slashTrail=[];
+let lastTime=0,dt=0;
+
+// Load high score
+try{highScore=parseInt(localStorage.getItem("fruitSlashHigh"))||0;}catch(e){}
+function saveHigh(){try{localStorage.setItem("fruitSlashHigh",highScore);}catch(e){}}
+
+// Fruit types
+const FRUIT_TYPES=[
+{name:"watermelon",r:38,color1:"#2d8a2d",color2:"#1a5c1a",inner:"#ff3355",highlight:"#88ff88",seed:"#222"},
+{name:"orange",r:30,color1:"#ff9922",color2:"#cc6600",inner:"#ffcc44",highlight:"#ffdd88"},
+{name:"apple",r:28,color1:"#dd2233",color2:"#991122",inner:"#ffffcc",highlight:"#ff8899"},
+{name:"banana",r:26,ovalX:1.6,color1:"#ffee33",color2:"#ccaa00",inner:"#fff8cc",highlight:"#fffff0"}
+];
+
+// Input
+let mouseDown=false,mouseX=0,mouseY=0,prevMX=0,prevMY=0,swipeSpeed=0;
+
+function getPos(e){
+const t=e.touches?e.touches[0]||e.changedTouches[0]:e;
+return{x:t.clientX,y:t.clientY};
+}
+function onDown(e){
+e.preventDefault();
+if(audioCtx.state==="suspended")audioCtx.resume();
+const p=getPos(e);
+mouseDown=true;mouseX=p.x;mouseY=p.y;prevMX=p.x;prevMY=p.y;
+if(state===STATE.MENU){startGame();}
+else if(state===STATE.GAMEOVER){state=STATE.MENU;}
+}
+function onMove(e){
+e.preventDefault();
+if(!mouseDown)return;
+const p=getPos(e);
+prevMX=mouseX;prevMY=mouseY;mouseX=p.x;mouseY=p.y;
+const dx=mouseX-prevMX,dy=mouseY-prevMY;
+swipeSpeed=Math.sqrt(dx*dx+dy*dy);
+if(state===STATE.PLAYING&&swipeSpeed>2){
+slashTrail.push({x:mouseX,y:mouseY,life:0.3,mx:mouseX,my:mouseY});
+checkSlash(prevMX,prevMY,mouseX,mouseY);
+}
+}
+function onUp(e){e.preventDefault();mouseDown=false;swipeSpeed=0;}
+
+canvas.addEventListener("mousedown",onDown);
+canvas.addEventListener("mousemove",onMove);
+canvas.addEventListener("mouseup",onUp);
+canvas.addEventListener("touchstart",onDown,{passive:false});
+canvas.addEventListener("touchmove",onMove,{passive:false});
+canvas.addEventListener("touchend",onUp,{passive:false});
+
+function startGame(){
+state=STATE.PLAYING;
+score=0;combo=0;maxCombo=0;missed=0;
+frenzyMode=false;frenzyTimer=0;lastFrenzyScore=0;frenzyThreshold=50;
+fruits=[];halves=[];particles=[];slashTrail=[];
+}
+
+// Spawn
+let spawnTimer=0;
+function spawnFruit(){
+const isBomb=Math.random()<0.12+score*0.0005;
+const type=isBomb?null:FRUIT_TYPES[Math.floor(Math.random()*FRUIT_TYPES.length)];
+const spread=W*0.7;
+const x=W*0.15+Math.random()*spread;
+const vx=(Math.random()-0.5)*3+(W/2-x)*0.003;
+const baseVy=-(H*0.012+Math.random()*H*0.005);
+const vy=frenzyMode?baseVy*1.15:baseVy;
+const r=isBomb?28:(type.r*(0.85+Math.random()*0.3));
+fruits.push({
+x,y:H+r+10,vx,vy,r,
+rotation:Math.random()*Math.PI*2,
+rotSpeed:(Math.random()-0.5)*4,
+type,isBomb,slashed:false,
+ovalX:type&&type.ovalX?type.ovalX:1
+});
+launchSound();
+}
+
+// Line-circle intersection
+function lineCircle(x1,y1,x2,y2,cx,cy,cr){
+const dx=x2-x1,dy=y2-y1;
+const fx=x1-cx,fy=y1-cy;
+const a=dx*dx+dy*dy;
+const b=2*(fx*dx+fy*dy);
+const c=fx*fx+fy*fy-cr*cr;
+let disc=b*b-4*a*c;
+if(disc<0)return false;
+disc=Math.sqrt(disc);
+const t1=(-b-disc)/(2*a);
+const t2=(-b+disc)/(2*a);
+return(t1>=0&&t1<=1)||(t2>=0&&t2<=1)||(t1<0&&t2>1);
+}
+
+function checkSlash(x1,y1,x2,y2){
+for(let i=fruits.length-1;i>=0;i--){
+const f=fruits[i];
+if(f.slashed)continue;
+if(lineCircle(x1,y1,x2,y2,f.x,f.y,f.r*f.ovalX)){
+if(f.isBomb){
+bombSound();
+spawnExplosion(f.x,f.y,"#ff4400","#ffaa00",40);
+state=STATE.GAMEOVER;
+if(score>highScore){highScore=score;saveHigh();}
+return;
+}
+f.slashed=true;
+slashSound();
+slashFruit(f,x2-x1,y2-y1);
+score+=frenzyMode?2:1;
+combo++;
+if(combo>maxCombo)maxCombo=combo;
+if(combo>1)comboSound(combo);
+// Frenzy check
+if(score>=frenzyThreshold&&score-lastFrenzyScore>=50&&!frenzyMode){
+frenzyMode=true;
+frenzyTimer=FRENZY_DURATION;
+lastFrenzyScore=score;
+frenzyThreshold=score+50;
+frenzySound();
+}
+}
+}
+}
+
+function slashFruit(f,dx,dy){
+const ang=Math.atan2(dy,dx);
+const perpAng=ang+Math.PI/2;
+const speed=3+Math.random()*2;
+const t=f.type;
+// Two halves
+for(let side=-1;side<=1;side+=2){
+halves.push({
+x:f.x,y:f.y,
+vx:Math.cos(perpAng)*speed*side+f.vx*0.5,
+vy:Math.sin(perpAng)*speed*side+f.vy*0.5-2,
+r:f.r,rotation:f.rotation,
+rotSpeed:side*3,
+sliceAng:ang,side,
+type:t,life:1.5,
+ovalX:f.ovalX
+});
+}
+// Juice particles
+const colors=[t.inner,t.color1,t.color2,"#ffffff"];
+for(let i=0;i<(frenzyMode?20:12);i++){
+const a=Math.random()*Math.PI*2;
+const sp=2+Math.random()*6;
+particles.push({
+x:f.x,y:f.y,
+vx:Math.cos(a)*sp,vy:Math.sin(a)*sp-2,
+r:2+Math.random()*4,
+color:colors[Math.floor(Math.random()*colors.length)],
+life:0.4+Math.random()*0.6,maxLife:0.4+Math.random()*0.6,
+gravity:0.15
+});
+}
+}
+
+function spawnExplosion(x,y,c1,c2,count){
+for(let i=0;i<count;i++){
+const a=Math.random()*Math.PI*2;
+const sp=3+Math.random()*8;
+particles.push({
+x,y,vx:Math.cos(a)*sp,vy:Math.sin(a)*sp,
+r:2+Math.random()*5,
+color:Math.random()>0.5?c1:c2,
+life:0.5+Math.random()*0.8,maxLife:0.5+Math.random()*0.8,
+gravity:0.1
+});
+}
+}
+
+// Update
+function update(){
+if(state!==STATE.PLAYING)return;
+// Spawn
+const spawnRate=frenzyMode?0.25:Math.max(0.4,1.2-score*0.008);
+spawnTimer-=dt;
+if(spawnTimer<=0){
+const count=frenzyMode?(1+Math.floor(Math.random()*2)):1;
+for(let i=0;i<count;i++)spawnFruit();
+spawnTimer=spawnRate+Math.random()*spawnRate*0.5;
+}
+// Frenzy
+if(frenzyMode){
+frenzyTimer-=dt;
+if(frenzyTimer<=0)frenzyMode=false;
+}
+// Fruits
+for(let i=fruits.length-1;i>=0;i--){
+const f=fruits[i];
+f.x+=f.vx;
+f.vy+=0.35;
+f.y+=f.vy;
+f.rotation+=f.rotSpeed*dt;
+if(f.y>H+f.r+50){
+if(!f.slashed&&!f.isBomb){
+missed++;
+combo=0;
+missSound();
+if(missed>=3){
+state=STATE.GAMEOVER;
+if(score>highScore){highScore=score;saveHigh();}
+}
+}
+fruits.splice(i,1);
+}
+}
+// Halves
+for(let i=halves.length-1;i>=0;i--){
+const h=halves[i];
+h.x+=h.vx;h.vy+=0.4;h.y+=h.vy;
+h.rotation+=h.rotSpeed*dt;
+h.life-=dt;
+if(h.life<=0||h.y>H+100)halves.splice(i,1);
+}
+// Particles
+for(let i=particles.length-1;i>=0;i--){
+const p=particles[i];
+p.x+=p.vx;p.vy+=p.gravity;p.y+=p.vy;
+p.life-=dt;
+if(p.life<=0)particles.splice(i,1);
+}
+// Trail
+for(let i=slashTrail.length-1;i>=0;i--){
+slashTrail[i].life-=dt;
+if(slashTrail[i].life<=0)slashTrail.splice(i,1);
+}
+}
+
+// Draw functions
+function drawBg(){
+const grd=ctx.createLinearGradient(0,0,0,H);
+grd.addColorStop(0,"#1a0a2e");
+grd.addColorStop(0.5,"#12082a");
+grd.addColorStop(1,"#0a1628");
+ctx.fillStyle=grd;
+ctx.fillRect(0,0,W,H);
+// Subtle stars
+if(!drawBg.stars||drawBg.sw!==W){
+drawBg.stars=[];drawBg.sw=W;
+for(let i=0;i<60;i++){
+drawBg.stars.push({x:Math.random()*W,y:Math.random()*H*0.7,r:0.5+Math.random()*1.5,a:0.2+Math.random()*0.4});
+}
+}
+ctx.fillStyle="#ffffff";
+for(const s of drawBg.stars){
+ctx.globalAlpha=s.a*(0.6+0.4*Math.sin(lastTime*0.001+s.x));
+ctx.beginPath();ctx.arc(s.x,s.y,s.r,0,Math.PI*2);ctx.fill();
+}
+ctx.globalAlpha=1;
+}
+
+function drawFruit(f){
+ctx.save();
+ctx.translate(f.x,f.y);
+ctx.rotate(f.rotation);
+ctx.scale(f.ovalX,1);
+const r=f.r;
+if(f.isBomb){
+// Bomb
+const bg=ctx.createRadialGradient(0,0,r*0.1,0,0,r);
+bg.addColorStop(0,"#444");bg.addColorStop(1,"#111");
+ctx.fillStyle=bg;
+ctx.beginPath();ctx.arc(0,0,r,0,Math.PI*2);ctx.fill();
+// Fuse
+ctx.strokeStyle="#aa8844";ctx.lineWidth=3;
+ctx.beginPath();ctx.moveTo(0,-r);
+ctx.quadraticCurveTo(r*0.3,-r*1.4,r*0.1,-r*1.6);
+ctx.stroke();
+// Spark
+const sparkT=lastTime*0.005;
+ctx.fillStyle=`hsl(${30+Math.sin(sparkT)*20},100%,${60+Math.sin(sparkT*3)*20}%)`;
+ctx.beginPath();ctx.arc(r*0.1,-r*1.6,3+Math.sin(sparkT*5)*2,0,Math.PI*2);ctx.fill();
+// Skull hint
+ctx.fillStyle="rgba(255,255,255,0.15)";
+ctx.beginPath();ctx.arc(0,-r*0.1,r*0.35,0,Math.PI*2);ctx.fill();
+ctx.fillStyle="rgba(0,0,0,0.4)";
+ctx.beginPath();ctx.arc(-r*0.15,-r*0.15,r*0.1,0,Math.PI*2);ctx.fill();
+ctx.beginPath();ctx.arc(r*0.15,-r*0.15,r*0.1,0,Math.PI*2);ctx.fill();
+}else{
+const t=f.type;
+// Outer
+const og=ctx.createRadialGradient(-r*0.3,-r*0.3,r*0.1,0,0,r);
+og.addColorStop(0,t.color1);og.addColorStop(1,t.color2);
+ctx.fillStyle=og;
+ctx.beginPath();ctx.arc(0,0,r,0,Math.PI*2);ctx.fill();
+// Highlight
+ctx.fillStyle="rgba(255,255,255,0.25)";
+ctx.beginPath();ctx.ellipse(-r*0.25,-r*0.25,r*0.45,r*0.3,Math.PI/4,0,Math.PI*2);ctx.fill();
+// Leaf for apple
+if(t.name==="apple"){
+ctx.fillStyle="#33aa33";
+ctx.beginPath();ctx.ellipse(0,-r*0.9,r*0.15,r*0.35,0.3,0,Math.PI*2);ctx.fill();
+}
+// Stem for banana top
+if(t.name==="banana"){
+ctx.fillStyle="#886622";
+ctx.fillRect(-2,-r-4,4,8);
+}
+// Stripes for watermelon
+if(t.name==="watermelon"){
+ctx.strokeStyle="rgba(0,80,0,0.3)";ctx.lineWidth=2;
+for(let s=-2;s<=2;s++){
+ctx.beginPath();
+ctx.moveTo(s*r*0.3,-r);ctx.lineTo(s*r*0.3,r);
+ctx.stroke();
+}
+}
+}
+ctx.restore();
+}
+
+function drawHalf(h){
+ctx.save();
+ctx.translate(h.x,h.y);
+ctx.rotate(h.rotation);
+ctx.scale(h.ovalX,1);
+const r=h.r;
+const t=h.type;
+const alpha=Math.min(1,h.life/0.3);
+ctx.globalAlpha=alpha;
+// Clip to half
+ctx.beginPath();
+const ang=h.sliceAng-h.rotation;
+if(h.side===1){
+ctx.moveTo(0,0);
+ctx.arc(0,0,r+2,ang,ang+Math.PI);
+}else{
+ctx.moveTo(0,0);
+ctx.arc(0,0,r+2,ang+Math.PI,ang+Math.PI*2);
+}
+ctx.closePath();
+ctx.clip();
+// Outer
+const og=ctx.createRadialGradient(-r*0.3,-r*0.3,r*0.1,0,0,r);
+og.addColorStop(0,t.color1);og.addColorStop(1,t.color2);
+ctx.fillStyle=og;
+ctx.beginPath();ctx.arc(0,0,r,0,Math.PI*2);ctx.fill();
+// Inner flesh
+ctx.fillStyle=t.inner;
+ctx.beginPath();ctx.arc(0,0,r*0.75,0,Math.PI*2);ctx.fill();
+// Seeds for watermelon
+if(t.name==="watermelon"){
+ctx.fillStyle=t.seed;
+for(let i=0;i<6;i++){
+const sa=i*Math.PI/3;
+ctx.beginPath();ctx.ellipse(Math.cos(sa)*r*0.4,Math.sin(sa)*r*0.4,2,4,sa,0,Math.PI*2);ctx.fill();
+}
+}
+ctx.globalAlpha=1;
+ctx.restore();
+}
+
+function drawParticles(){
+for(const p of particles){
+const alpha=p.life/p.maxLife;
+ctx.globalAlpha=alpha;
+ctx.fillStyle=p.color;
+ctx.beginPath();ctx.arc(p.x,p.y,p.r*alpha,0,Math.PI*2);ctx.fill();
+}
+ctx.globalAlpha=1;
+}
+
+function drawSlashTrail(){
+if(slashTrail.length<2)return;
+for(let i=1;i<slashTrail.length;i++){
+const a=slashTrail[i-1],b=slashTrail[i];
+const alphaA=a.life/0.3,alphaB=b.life/0.3;
+if(alphaA<=0||alphaB<=0)continue;
+ctx.strokeStyle=frenzyMode?`rgba(255,200,50,${alphaB*0.8})`:`rgba(220,220,255,${alphaB*0.7})`;
+ctx.lineWidth=frenzyMode?5:3;
+ctx.lineCap="round";
+ctx.beginPath();ctx.moveTo(a.mx,a.my);ctx.lineTo(b.mx,b.my);ctx.stroke();
+// Glow
+ctx.strokeStyle=frenzyMode?`rgba(255,150,0,${alphaB*0.3})`:`rgba(180,180,255,${alphaB*0.2})`;
+ctx.lineWidth=frenzyMode?12:8;
+ctx.beginPath();ctx.moveTo(a.mx,a.my);ctx.lineTo(b.mx,b.my);ctx.stroke();
+}
+}
+
+function drawHUD(){
+ctx.fillStyle="#fff";ctx.font="bold 28px sans-serif";ctx.textAlign="left";
+ctx.fillText("Score: "+score,20,40);
+ctx.font="18px sans-serif";
+ctx.fillText("Best: "+highScore,20,65);
+// Missed
+ctx.textAlign="right";
+ctx.font="bold 22px sans-serif";
+for(let i=0;i<3;i++){
+ctx.fillStyle=i<(3-missed)?"#ff4466":"#333";
+ctx.fillText("\u2764",W-20-i*30,38);
+}
+// Combo
+if(combo>1){
+ctx.textAlign="center";
+ctx.font="bold 36px sans-serif";
+ctx.fillStyle=`hsl(${combo*30},100%,70%)`;
+ctx.fillText(combo+"x COMBO",W/2,80);
+}
+// Frenzy
+if(frenzyMode){
+const pulse=0.8+0.2*Math.sin(lastTime*0.01);
+ctx.globalAlpha=pulse;
+ctx.textAlign="center";
+ctx.font="bold 42px sans-serif";
+ctx.fillStyle="#ffcc00";
+ctx.fillText("FRENZY!",W/2,130);
+const barW=200,barH=8;
+ctx.fillStyle="rgba(255,200,0,0.3)";
+ctx.fillRect(W/2-barW/2,140,barW,barH);
+ctx.fillStyle="#ffcc00";
+ctx.fillRect(W/2-barW/2,140,barW*(frenzyTimer/FRENZY_DURATION),barH);
+ctx.globalAlpha=1;
+}
+}
+
+function drawMenu(){
+drawBg();
+// Title
+ctx.textAlign="center";
+const pulse=1+0.03*Math.sin(lastTime*0.003);
+ctx.save();
+ctx.translate(W/2,H*0.28);ctx.scale(pulse,pulse);
+ctx.font="bold 64px sans-serif";
+ctx.fillStyle="#ff4466";
+ctx.strokeStyle="#ffcc44";ctx.lineWidth=2;
+ctx.fillText("FRUIT SLASH",0,0);
+ctx.strokeText("FRUIT SLASH",0,0);
+ctx.restore();
+// Decorative fruits
+const deco=FRUIT_TYPES;
+for(let i=0;i<deco.length;i++){
+const ang=lastTime*0.001+i*Math.PI/2;
+const dx=Math.cos(ang)*80;
+const dy=Math.sin(ang)*30;
+drawFruit({x:W/2+dx-90+i*60,y:H*0.4+dy,r:22,rotation:ang,type:deco[i],isBomb:false,ovalX:deco[i].ovalX||1});
+}
+ctx.textAlign="center";
+ctx.font="24px sans-serif";ctx.fillStyle="rgba(255,255,255,0.8)";
+ctx.fillText("Tap or Click to Start",W/2,H*0.55);
+ctx.font="18px sans-serif";ctx.fillStyle="rgba(255,255,255,0.5)";
+ctx.fillText("Swipe to slash fruits \u2014 Avoid bombs!",W/2,H*0.62);
+if(highScore>0){
+ctx.font="22px sans-serif";ctx.fillStyle="#ffcc44";
+ctx.fillText("High Score: "+highScore,W/2,H*0.72);
+}
+}
+
+function drawGameOver(){
+drawBg();
+// Dim overlay
+ctx.fillStyle="rgba(0,0,0,0.6)";ctx.fillRect(0,0,W,H);
+ctx.textAlign="center";
+ctx.font="bold 56px sans-serif";
+ctx.fillStyle="#ff4466";
+ctx.fillText("GAME OVER",W/2,H*0.3);
+ctx.font="32px sans-serif";ctx.fillStyle="#fff";
+ctx.fillText("Score: "+score,W/2,H*0.42);
+ctx.font="22px sans-serif";ctx.fillStyle="#ffcc44";
+ctx.fillText("Best Combo: "+maxCombo+"x",W/2,H*0.50);
+if(score>=highScore&&score>0){
+ctx.font="bold 26px sans-serif";ctx.fillStyle="#44ff88";
+ctx.fillText("NEW HIGH SCORE!",W/2,H*0.58);
+}else{
+ctx.fillStyle="rgba(255,255,255,0.5)";
+ctx.fillText("High Score: "+highScore,W/2,H*0.58);
+}
+ctx.font="20px sans-serif";ctx.fillStyle="rgba(255,255,255,0.7)";
+ctx.fillText("Tap to continue",W/2,H*0.70);
+}
+
+// Main loop
+function loop(time){
+requestAnimationFrame(loop);
+dt=(time-lastTime)/1000;
+if(dt>0.1)dt=0.1;
+lastTime=time;
+
+if(state===STATE.MENU){
+drawMenu();
+}else if(state===STATE.PLAYING){
+update();
+drawBg();
+// Frenzy bg effect
+if(frenzyMode){
+ctx.fillStyle=`rgba(255,180,0,${0.03+0.02*Math.sin(time*0.01)})`;
+ctx.fillRect(0,0,W,H);
+}
+drawSlashTrail();
+for(const h of halves)drawHalf(h);
+drawParticles();
+for(const f of fruits)if(!f.slashed)drawFruit(f);
+drawHUD();
+}else if(state===STATE.GAMEOVER){
+drawGameOver();
+}
+}
+requestAnimationFrame(loop);
+})();
+</script>
+</body>
+</html>

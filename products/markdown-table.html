@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Markdown Table Generator - Create Markdown Tables Online</title>
+<meta name="description" content="Free online Markdown table generator. Visual spreadsheet editor with real-time Markdown output, CSV/JSON import, column alignment, templates, and live preview.">
+<meta name="keywords" content="markdown table generator, markdown table, create markdown table, csv to markdown, json to markdown, table editor, markdown tool">
+<meta name="robots" content="index,follow">
+<meta property="og:title" content="Markdown Table Generator - Create Markdown Tables Online">
+<meta property="og:description" content="Free online Markdown table generator. Visual editor with real-time output, CSV/JSON import, alignment options, and live preview.">
+<meta property="og:type" content="website">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect rx='12' width='100' height='100' fill='%230b1020'/><text x='50' y='66' font-size='38' font-family='monospace' font-weight='bold' text-anchor='middle' fill='%2356c2ff'>T</text></svg>">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#0b1020;color:#eef3ff;font-family:'SF Mono','Fira Code','Cascadia Code','Consolas',monospace;min-height:100vh;display:flex;flex-direction:column;align-items:center}
+h1{font-size:1.3rem;padding:1.2rem 0 .3rem;color:#56c2ff;text-align:center;letter-spacing:.5px}
+.sub{font-size:.75rem;color:#6a7a9b;text-align:center;margin-bottom:1rem}
+.wrap{width:100%;max-width:960px;padding:0 1rem 1.5rem;flex:1;display:flex;flex-direction:column;gap:.8rem}
+.panel{background:rgba(13,19,37,.94);border:1px solid #1a2340;border-radius:8px;overflow:hidden}
+.panel-head{display:flex;justify-content:space-between;align-items:center;padding:.5rem .7rem;border-bottom:1px solid #1a2340;font-size:.75rem;color:#6a7a9b;flex-wrap:wrap;gap:.4rem}
+.panel-head strong{color:#56c2ff;font-size:.8rem}
+button{background:rgba(86,194,255,.12);color:#56c2ff;border:1px solid rgba(86,194,255,.25);border-radius:6px;padding:.35rem .7rem;font-family:inherit;font-size:.7rem;cursor:pointer;transition:all .15s;white-space:nowrap}
+button:hover{background:rgba(86,194,255,.22);border-color:#56c2ff}
+button.danger{color:#ff6b8a;border-color:rgba(255,107,138,.25);background:rgba(255,107,138,.1)}
+button.danger:hover{background:rgba(255,107,138,.2);border-color:#ff6b8a}
+.toolbar{display:flex;gap:.5rem;padding:.6rem .7rem;flex-wrap:wrap;align-items:center;border-bottom:1px solid #1a2340}
+.toolbar .sep{width:1px;height:18px;background:#1a2340;margin:0 .2rem}
+select{background:rgba(13,19,37,.94);border:1px solid #1a2340;border-radius:5px;color:#eef3ff;font-family:inherit;font-size:.7rem;padding:.3rem .4rem;outline:none;cursor:pointer}
+select:focus{border-color:#56c2ff}
+.table-wrap{overflow-x:auto;padding:.5rem}
+table.editor{border-collapse:collapse;width:100%}
+table.editor th,table.editor td{border:1px solid #1a2340;padding:0;position:relative}
+table.editor th{background:rgba(86,194,255,.08);font-size:.65rem;color:#6a7a9b;font-weight:600;text-transform:uppercase;padding:.3rem .4rem;text-align:center}
+table.editor td input{width:100%;background:transparent;border:none;color:#eef3ff;font-family:inherit;font-size:.8rem;padding:.4rem .5rem;outline:none}
+table.editor td input:focus{background:rgba(86,194,255,.06)}
+table.editor td.align-cell{padding:0}
+.align-btn{background:none;border:none;color:#6a7a9b;font-size:.7rem;padding:.2rem .35rem;cursor:pointer;border-radius:3px;font-family:inherit}
+.align-btn:hover,.align-btn.active{color:#56c2ff;background:rgba(86,194,255,.15);border:none}
+.align-row{display:flex;justify-content:center;gap:2px;padding:.15rem}
+textarea.output{width:100%;background:transparent;border:none;color:#eef3ff;font-family:inherit;font-size:.8rem;padding:.7rem;resize:vertical;outline:none;line-height:1.6;min-height:100px}
+textarea.output::placeholder{color:#3a4a6b}
+.preview-area{padding:.7rem;overflow-x:auto}
+.preview-area table{border-collapse:collapse;width:100%;font-size:.8rem}
+.preview-area th{background:rgba(86,194,255,.1);padding:.4rem .6rem;border:1px solid #1a2340;color:#56c2ff;font-weight:600}
+.preview-area td{padding:.4rem .6rem;border:1px solid #1a2340;color:#eef3ff}
+.preview-area tr:nth-child(even) td{background:rgba(86,194,255,.03)}
+.toast{position:fixed;bottom:1.5rem;left:50%;transform:translateX(-50%);background:rgba(86,194,255,.18);color:#56c2ff;border:1px solid rgba(86,194,255,.35);border-radius:6px;padding:.45rem 1rem;font-family:inherit;font-size:.75rem;opacity:0;transition:opacity .25s;pointer-events:none;z-index:99}
+.toast.show{opacity:1}
+.import-area{padding:.7rem}
+.import-area textarea{width:100%;background:rgba(13,19,37,.6);border:1px solid #1a2340;border-radius:5px;color:#eef3ff;font-family:inherit;font-size:.78rem;padding:.5rem;resize:vertical;outline:none;min-height:80px;line-height:1.5}
+.import-area textarea:focus{border-color:#56c2ff}
+.import-area textarea::placeholder{color:#3a4a6b}
+.import-btns{display:flex;gap:.5rem;margin-top:.5rem}
+.row-actions{display:flex;gap:2px;justify-content:center}
+footer{padding:.8rem;text-align:center;font-size:.65rem;color:#3a4a6b}
+</style>
+</head>
+<body>
+<h1>Markdown Table Generator</h1>
+<p class="sub">Visual editor with real-time Markdown output</p>
+<div class="wrap">
+
+<div class="panel">
+<div class="toolbar">
+<button onclick="addCol()">+ Column</button>
+<button onclick="addRow()">+ Row</button>
+<button class="danger" onclick="removeCol()">- Column</button>
+<button class="danger" onclick="removeRow()">- Row</button>
+<div class="sep"></div>
+<label style="font-size:.7rem;color:#6a7a9b">Template:</label>
+<select id="tpl" onchange="loadTemplate(this.value)">
+<option value="">-- select --</option>
+<option value="2x3">2 cols x 3 rows</option>
+<option value="3x5">3 cols x 5 rows</option>
+<option value="compare">Comparison table</option>
+</select>
+<div class="sep"></div>
+<button onclick="toggleImport('csv')">Import CSV</button>
+<button onclick="toggleImport('json')">Import JSON</button>
+</div>
+<div id="importPanel" style="display:none">
+<div class="import-area">
+<textarea id="importText" rows="4" placeholder="Paste data here..."></textarea>
+<div class="import-btns">
+<button onclick="doImport()">Import</button>
+<button class="danger" onclick="hideImport()">Cancel</button>
+</div>
+</div>
+</div>
+<div class="table-wrap">
+<table class="editor" id="editorTable"></table>
+</div>
+</div>
+
+<div class="panel">
+<div class="panel-head"><strong>Markdown Output</strong><button onclick="copyMd()">Copy</button></div>
+<textarea class="output" id="mdOutput" readonly placeholder="Markdown will appear here..."></textarea>
+</div>
+
+<div class="panel">
+<div class="panel-head"><strong>Live Preview</strong></div>
+<div class="preview-area" id="preview"></div>
+</div>
+
+</div>
+<div class="toast" id="toast"></div>
+<footer>Markdown Table Generator</footer>
+
+<script>
+let cols=3,rows=3,data=[],aligns=[],importMode='csv';
+
+function init(c,r,seed){
+  cols=c;rows=r;aligns=Array(cols).fill('left');
+  data=[];
+  for(let i=0;i<=rows;i++){
+    const row=[];
+    for(let j=0;j<cols;j++) row.push(seed?.[i]?.[j]||'');
+    data.push(row);
+  }
+  render();
+}
+
+function render(){
+  const t=document.getElementById('editorTable');
+  let h='<tr><th style="width:30px">#</th>';
+  for(let j=0;j<cols;j++){
+    h+=`<th>Col ${j+1}<div class="align-row">`+
+      ['left','center','right'].map(a=>
+        `<span class="align-btn${aligns[j]===a?' active':''}" onclick="setAlign(${j},'${a}')">${a==='left'?'L':a==='center'?'C':'R'}</span>`
+      ).join('')+'</div></th>';
+  }
+  h+='</tr>';
+  for(let i=0;i<=rows;i++){
+    h+=`<tr><td style="text-align:center;font-size:.65rem;color:#6a7a9b;padding:.2rem;width:30px">${i===0?'H':(i)}</td>`;
+    for(let j=0;j<cols;j++){
+      h+=`<td><input value="${esc(data[i][j])}" data-r="${i}" data-c="${j}" oninput="cellInput(this)"></td>`;
+    }
+    h+='</tr>';
+  }
+  t.innerHTML=h;
+  updateOutput();
+}
+
+function esc(s){return s.replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}
+
+function cellInput(el){
+  const r=+el.dataset.r,c=+el.dataset.c;
+  data[r][c]=el.value;
+  updateOutput();
+}
+
+function setAlign(c,a){aligns[c]=a;render()}
+
+function addCol(){
+  cols++;aligns.push('left');
+  data.forEach(r=>r.push(''));
+  render();
+}
+function addRow(){
+  rows++;
+  data.push(Array(cols).fill(''));
+  render();
+}
+function removeCol(){
+  if(cols<=1)return;
+  cols--;aligns.pop();
+  data.forEach(r=>r.pop());
+  render();
+}
+function removeRow(){
+  if(rows<=1)return;
+  rows--;data.pop();
+  render();
+}
+
+function pad(s,len){return s+' '.repeat(Math.max(0,len-s.length))}
+
+function updateOutput(){
+  const widths=[];
+  for(let j=0;j<cols;j++){
+    let mx=3;
+    for(let i=0;i<=rows;i++) mx=Math.max(mx,data[i][j].length);
+    widths.push(mx);
+  }
+  let lines=[];
+  // header
+  let hdr='|';
+  for(let j=0;j<cols;j++) hdr+=' '+pad(data[0][j],widths[j])+' |';
+  lines.push(hdr);
+  // separator
+  let sep='|';
+  for(let j=0;j<cols;j++){
+    const w=widths[j];
+    const a=aligns[j];
+    if(a==='center') sep+=' :'+'-'.repeat(Math.max(1,w-2))+': |';
+    else if(a==='right') sep+=' '+'-'.repeat(Math.max(1,w-1))+': |';
+    else sep+=' '+'-'.repeat(w)+' |';
+  }
+  lines.push(sep);
+  // body
+  for(let i=1;i<=rows;i++){
+    let row='|';
+    for(let j=0;j<cols;j++) row+=' '+pad(data[i][j],widths[j])+' |';
+    lines.push(row);
+  }
+  const md=lines.join('\n');
+  document.getElementById('mdOutput').value=md;
+  renderPreview(md);
+}
+
+function renderPreview(md){
+  const lines=md.split('\n').filter(l=>l.trim());
+  if(lines.length<2){document.getElementById('preview').innerHTML='';return}
+  const parse=l=>l.replace(/^\|/,'').replace(/\|$/,'').split('|').map(c=>c.trim());
+  const headers=parse(lines[0]);
+  const sepLine=parse(lines[1]);
+  const alignsP=sepLine.map(s=>{
+    const l=s.startsWith(':'),r=s.endsWith(':');
+    if(l&&r)return'center';if(r)return'right';return'left';
+  });
+  let html='<table><tr>';
+  headers.forEach((h,i)=>html+=`<th style="text-align:${alignsP[i]||'left'}">${escHtml(h)}</th>`);
+  html+='</tr>';
+  for(let i=2;i<lines.length;i++){
+    const cells=parse(lines[i]);
+    html+='<tr>';
+    cells.forEach((c,j)=>html+=`<td style="text-align:${alignsP[j]||'left'}">${escHtml(c)}</td>`);
+    html+='</tr>';
+  }
+  html+='</table>';
+  document.getElementById('preview').innerHTML=html;
+}
+
+function escHtml(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}
+
+function copyMd(){
+  const v=document.getElementById('mdOutput').value;
+  if(!v)return;
+  navigator.clipboard.writeText(v).then(()=>toast('Copied to clipboard'));
+}
+
+function toast(msg){
+  const t=document.getElementById('toast');
+  t.textContent=msg;t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),1800);
+}
+
+function loadTemplate(v){
+  document.getElementById('tpl').value='';
+  if(v==='2x3') init(2,3);
+  else if(v==='3x5') init(3,5);
+  else if(v==='compare'){
+    init(3,4,[
+      ['Feature','Plan A','Plan B'],
+      ['Price','$9/mo','$19/mo'],
+      ['Storage','10 GB','50 GB'],
+      ['Support','Email','Priority'],
+      ['API Access','No','Yes']
+    ]);
+    aligns=['left','center','center'];
+    render();
+  }
+}
+
+function toggleImport(mode){
+  importMode=mode;
+  const p=document.getElementById('importPanel');
+  const ta=document.getElementById('importText');
+  if(p.style.display==='none'){
+    p.style.display='block';
+    ta.placeholder=mode==='csv'?'Paste CSV here (comma-separated, one row per line)...'
+      :'Paste JSON array here, e.g. [{"col":"val"}, ...] or [["a","b"],["c","d"]]...';
+    ta.value='';ta.focus();
+  } else {
+    if(ta.placeholder.includes(mode==='csv'?'CSV':'JSON')){p.style.display='none';return}
+    ta.placeholder=mode==='csv'?'Paste CSV here (comma-separated, one row per line)...'
+      :'Paste JSON array here, e.g. [{"col":"val"}, ...] or [["a","b"],["c","d"]]...';
+    ta.value='';ta.focus();
+  }
+}
+function hideImport(){document.getElementById('importPanel').style.display='none'}
+
+function doImport(){
+  const raw=document.getElementById('importText').value.trim();
+  if(!raw){toast('No data to import');return}
+  try{
+    if(importMode==='csv') importCSV(raw);
+    else importJSON(raw);
+    hideImport();
+    toast('Imported successfully');
+  }catch(e){toast('Import error: '+e.message)}
+}
+
+function parseCSVLine(line){
+  const cells=[];let cur='',inQ=false;
+  for(let i=0;i<line.length;i++){
+    const ch=line[i];
+    if(inQ){
+      if(ch==='"'&&line[i+1]==='"'){cur+='"';i++}
+      else if(ch==='"')inQ=false;
+      else cur+=ch;
+    }else{
+      if(ch==='"')inQ=true;
+      else if(ch===','){cells.push(cur);cur=''}
+      else cur+=ch;
+    }
+  }
+  cells.push(cur);
+  return cells;
+}
+
+function importCSV(raw){
+  const lines=raw.split(/\r?\n/).filter(l=>l.trim());
+  if(lines.length<1)throw new Error('No data');
+  const parsed=lines.map(l=>parseCSVLine(l));
+  const c=Math.max(...parsed.map(r=>r.length));
+  const r=parsed.length-1;
+  const seed=parsed.map(row=>{while(row.length<c)row.push('');return row});
+  init(c,Math.max(1,r),seed);
+}
+
+function importJSON(raw){
+  const arr=JSON.parse(raw);
+  if(!Array.isArray(arr)||arr.length===0)throw new Error('Expected non-empty array');
+  let seed;
+  if(Array.isArray(arr[0])){
+    const c=Math.max(...arr.map(r=>r.length));
+    seed=arr.map(r=>{const row=r.map(String);while(row.length<c)row.push('');return row});
+  }else if(typeof arr[0]==='object'){
+    const keys=[...new Set(arr.flatMap(o=>Object.keys(o)))];
+    seed=[keys,...arr.map(o=>keys.map(k=>o[k]!=null?String(o[k]):''))];
+  }else throw new Error('Array items must be objects or arrays');
+  const c=seed[0].length;
+  const r=seed.length-1;
+  init(c,Math.max(1,r),seed);
+}
+
+// default
+init(3,3,[
+  ['Header 1','Header 2','Header 3'],
+  ['Cell 1','Cell 2','Cell 3'],
+  ['Cell 4','Cell 5','Cell 6'],
+  ['Cell 7','Cell 8','Cell 9']
+]);
+</script>
+</body>
+</html>

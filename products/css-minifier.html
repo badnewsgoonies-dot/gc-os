@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CSS Minifier - Minify & Beautify CSS Online Free</title>
+<meta name="description" content="Free online CSS minifier and beautifier. Minify CSS to reduce file size, or beautify minified CSS for readability. Real-time stats, file upload, and more.">
+<meta name="keywords" content="css minifier, css beautifier, minify css, compress css, format css, css optimizer, online css tool">
+<meta name="author" content="CSS Minifier">
+<meta name="robots" content="index, follow">
+<meta property="og:title" content="CSS Minifier - Minify & Beautify CSS Online Free">
+<meta property="og:description" content="Free online tool to minify and beautify CSS. Reduce file size and optimize your stylesheets instantly.">
+<meta property="og:type" content="website">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="CSS Minifier - Minify & Beautify CSS Online Free">
+<meta name="twitter:description" content="Free online tool to minify and beautify CSS instantly.">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='6' fill='%230b1020'/><text x='16' y='22' font-size='18' font-family='monospace' font-weight='bold' fill='%2356c2ff' text-anchor='middle'>{}</text></svg>">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#0b1020;color:#eef3ff;font-family:'SF Mono','Cascadia Code','Fira Code',Consolas,'Liberation Mono',monospace;min-height:100vh;display:flex;flex-direction:column}
+header{padding:16px 24px;display:flex;align-items:center;gap:12px;border-bottom:1px solid rgba(86,194,255,.12)}
+header svg{flex-shrink:0}
+header h1{font-size:18px;font-weight:600;color:#56c2ff}
+header span{font-size:12px;color:rgba(238,243,255,.45);margin-left:auto}
+.toolbar{display:flex;flex-wrap:wrap;gap:8px;padding:12px 24px;border-bottom:1px solid rgba(86,194,255,.08);align-items:center}
+.btn{background:rgba(86,194,255,.1);color:#56c2ff;border:1px solid rgba(86,194,255,.2);padding:7px 16px;border-radius:6px;cursor:pointer;font-family:inherit;font-size:13px;transition:all .15s}
+.btn:hover{background:rgba(86,194,255,.18);border-color:rgba(86,194,255,.35)}
+.btn-primary{background:rgba(86,194,255,.2);border-color:#56c2ff}
+.btn-primary:hover{background:rgba(86,194,255,.3)}
+.toggle{display:flex;align-items:center;gap:6px;font-size:12px;color:rgba(238,243,255,.6);cursor:pointer;user-select:none}
+.toggle input{accent-color:#56c2ff;cursor:pointer}
+.sep{width:1px;height:24px;background:rgba(86,194,255,.12);margin:0 4px}
+.panels{display:flex;flex:1;min-height:0}
+.panel{flex:1;display:flex;flex-direction:column;min-width:0}
+.panel:first-child{border-right:1px solid rgba(86,194,255,.1)}
+.panel-head{display:flex;align-items:center;justify-content:space-between;padding:8px 16px;background:rgba(13,19,37,.94);border-bottom:1px solid rgba(86,194,255,.08);font-size:12px;color:rgba(238,243,255,.5)}
+.panel-head strong{color:#eef3ff;font-weight:500}
+textarea{flex:1;background:rgba(13,19,37,.94);color:#eef3ff;border:none;resize:none;padding:16px;font-family:inherit;font-size:13px;line-height:1.6;outline:none;tab-size:2}
+textarea::placeholder{color:rgba(238,243,255,.2)}
+.stats{display:flex;gap:20px;padding:10px 24px;border-top:1px solid rgba(86,194,255,.1);font-size:12px;color:rgba(238,243,255,.45)}
+.stats span{display:flex;align-items:center;gap:5px}
+.stats b{color:#56c2ff;font-weight:500}
+.drop-overlay{display:none;position:absolute;inset:0;background:rgba(11,16,32,.9);border:2px dashed #56c2ff;border-radius:8px;z-index:10;align-items:center;justify-content:center;font-size:16px;color:#56c2ff;pointer-events:none}
+.panel{position:relative}
+.panel.dragover .drop-overlay{display:flex}
+.toast{position:fixed;bottom:24px;right:24px;background:rgba(13,19,37,.96);border:1px solid rgba(86,194,255,.25);color:#56c2ff;padding:10px 20px;border-radius:8px;font-size:13px;font-family:inherit;opacity:0;transform:translateY(8px);transition:all .25s;pointer-events:none;z-index:99}
+.toast.show{opacity:1;transform:translateY(0)}
+@media(max-width:700px){.panels{flex-direction:column}.panel:first-child{border-right:none;border-bottom:1px solid rgba(86,194,255,.1)}.panel{min-height:35vh}}
+</style>
+</head>
+<body>
+<header>
+<svg width="28" height="28" viewBox="0 0 32 32" fill="none"><rect width="32" height="32" rx="6" fill="rgba(86,194,255,.12)"/><text x="16" y="22" font-size="18" font-family="monospace" font-weight="bold" fill="#56c2ff" text-anchor="middle">{}</text></svg>
+<h1>CSS Minifier</h1>
+<span>Minify & Beautify CSS</span>
+</header>
+
+<div class="toolbar">
+<button class="btn btn-primary" onclick="minify()" title="Minify CSS">Minify</button>
+<button class="btn" onclick="beautify()" title="Beautify CSS">Beautify</button>
+<div class="sep"></div>
+<button class="btn" onclick="copyOutput()" title="Copy output">Copy</button>
+<button class="btn" onclick="clearAll()" title="Clear both panels">Clear</button>
+<button class="btn" onclick="loadSample()" title="Load sample CSS">Sample</button>
+<label class="btn" style="margin:0" title="Upload a CSS file">Upload<input type="file" accept=".css,text/css" hidden onchange="handleFile(event)"></label>
+<div class="sep"></div>
+<label class="toggle"><input type="checkbox" id="optComments" checked>Remove comments</label>
+<label class="toggle"><input type="checkbox" id="optWhitespace" checked>Remove whitespace</label>
+<label class="toggle"><input type="checkbox" id="optMerge">Merge selectors</label>
+</div>
+
+<div class="panels">
+<div class="panel" id="inputPanel">
+<div class="panel-head"><strong>Input CSS</strong><span id="inputSize">0 B</span></div>
+<textarea id="input" placeholder="Paste your CSS here or drag & drop a .css file..." spellcheck="false" oninput="updateStats()"></textarea>
+<div class="drop-overlay">Drop CSS file here</div>
+</div>
+<div class="panel">
+<div class="panel-head"><strong>Output CSS</strong><span id="outputSize">0 B</span></div>
+<textarea id="output" placeholder="Minified or beautified CSS will appear here..." spellcheck="false" readonly></textarea>
+</div>
+</div>
+
+<div class="stats">
+<span>Original: <b id="statOrig">0 B</b></span>
+<span>Output: <b id="statOut">0 B</b></span>
+<span>Savings: <b id="statSave">0%</b></span>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const $=s=>document.getElementById(s);
+const inputEl=$('input'),outputEl=$('output');
+
+function fmtSize(b){
+  if(b<1024)return b+' B';
+  if(b<1048576)return(b/1024).toFixed(1)+' KB';
+  return(b/1048576).toFixed(2)+' MB';
+}
+
+function updateStats(){
+  const ib=new Blob([inputEl.value]).size;
+  const ob=new Blob([outputEl.value]).size;
+  $('inputSize').textContent=fmtSize(ib);
+  $('outputSize').textContent=fmtSize(ob);
+  $('statOrig').textContent=fmtSize(ib);
+  $('statOut').textContent=fmtSize(ob);
+  const pct=ib>0?((1-ob/ib)*100):0;
+  $('statSave').textContent=(pct>0?pct.toFixed(1):'0')+'%';
+}
+
+function minify(){
+  let css=inputEl.value;
+  if(!css.trim()){toast('Nothing to minify');return}
+  const rmComments=$('optComments').checked;
+  const rmWhitespace=$('optWhitespace').checked;
+  const doMerge=$('optMerge').checked;
+
+  if(rmComments){
+    css=css.replace(/\/\*[\s\S]*?\*\//g,'');
+  }
+  if(rmWhitespace){
+    css=css.replace(/\s*\n\s*/g,'');
+    css=css.replace(/\s*{\s*/g,'{');
+    css=css.replace(/\s*}\s*/g,'}');
+    css=css.replace(/\s*;\s*/g,';');
+    css=css.replace(/\s*:\s*/g,':');
+    css=css.replace(/\s*,\s*/g,',');
+    css=css.replace(/;}/g,'}');
+    css=css.replace(/\s{2,}/g,' ');
+    css=css.trim();
+  }else{
+    css=css.replace(/;(\s*})/g,'$1');
+  }
+  if(doMerge){
+    css=mergeSelectors(css);
+  }
+  outputEl.value=css;
+  updateStats();
+  toast('Minified!');
+}
+
+function mergeSelectors(css){
+  const map=new Map();
+  const order=[];
+  const re=/([^{}]+)\{([^{}]*)\}/g;
+  let m;
+  const atBlocks=[];
+  let clean=css.replace(/@[^{]+\{[^{}]*(?:\{[^}]*\}[^{}]*)*\}/g,b=>{atBlocks.push(b);return'/*@BLOCK'+(atBlocks.length-1)+'*/'});
+  while((m=re.exec(clean))!==null){
+    const sel=m[1].trim();
+    const body=m[2].trim();
+    if(map.has(sel)){
+      map.set(sel,map.get(sel)+';'+body);
+    }else{
+      map.set(sel,body);
+      order.push(sel);
+    }
+  }
+  let out=order.map(s=>s+'{'+map.get(s)+'}').join('');
+  atBlocks.forEach((b,i)=>{out=out.replace('/*@BLOCK'+i+'*/',b)});
+  return out;
+}
+
+function beautify(){
+  let css=inputEl.value||outputEl.value;
+  if(!css.trim()){toast('Nothing to beautify');return}
+  css=css.replace(/\/\*[\s\S]*?\*\//g,m=>'/*PRESERVE'+btoa(m)+'*/');
+  css=css.replace(/\s+/g,' ').trim();
+  css=css.replace(/\s*{\s*/g,' {\n');
+  css=css.replace(/\s*}\s*/g,'\n}\n\n');
+  css=css.replace(/;\s*/g,';\n');
+  let lines=css.split('\n');
+  let depth=0;
+  let result=[];
+  for(let line of lines){
+    let trimmed=line.trim();
+    if(!trimmed)continue;
+    if(trimmed==='}'){
+      depth=Math.max(0,depth-1);
+      result.push('  '.repeat(depth)+trimmed);
+    }else if(trimmed.endsWith('{')){
+      result.push('  '.repeat(depth)+trimmed);
+      depth++;
+    }else{
+      result.push('  '.repeat(depth)+trimmed);
+    }
+  }
+  let out=result.join('\n')+'\n';
+  out=out.replace(/\/\*PRESERVE([A-Za-z0-9+/=]+)\*\//g,(_,b)=>{try{return atob(b)}catch{return''}});
+  out=out.replace(/\n{3,}/g,'\n\n');
+  outputEl.value=out.trim();
+  updateStats();
+  toast('Beautified!');
+}
+
+function copyOutput(){
+  const text=outputEl.value;
+  if(!text){toast('Nothing to copy');return}
+  navigator.clipboard.writeText(text).then(()=>toast('Copied!')).catch(()=>{
+    outputEl.select();document.execCommand('copy');toast('Copied!');
+  });
+}
+
+function clearAll(){
+  inputEl.value='';outputEl.value='';updateStats();toast('Cleared');
+}
+
+function loadSample(){
+  inputEl.value=`/* === Base Reset & Typography === */
+:root {
+  --primary: #56c2ff;
+  --bg-dark: #0b1020;
+  --text-light: #eef3ff;
+  --radius: 8px;
+  --shadow: 0 4px 24px rgba(0, 0, 0, 0.3);
+}
+
+*,
+*::before,
+*::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  background: var(--bg-dark);
+  color: var(--text-light);
+  line-height: 1.6;
+  min-height: 100vh;
+}
+
+/* Navigation */
+.navbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 32px;
+  background: rgba(13, 19, 37, 0.94);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid rgba(86, 194, 255, 0.1);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.navbar .logo {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--primary);
+  text-decoration: none;
+}
+
+.navbar .nav-links {
+  display: flex;
+  gap: 24px;
+  list-style: none;
+}
+
+.navbar .nav-links a {
+  color: rgba(238, 243, 255, 0.7);
+  text-decoration: none;
+  font-size: 14px;
+  transition: color 0.2s;
+}
+
+.navbar .nav-links a:hover {
+  color: var(--primary);
+}
+
+/* Hero Section */
+.hero {
+  text-align: center;
+  padding: 80px 24px;
+  max-width: 720px;
+  margin: 0 auto;
+}
+
+.hero h1 {
+  font-size: 48px;
+  font-weight: 800;
+  line-height: 1.1;
+  margin-bottom: 16px;
+}
+
+/* Card Grid */
+.card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 24px;
+  padding: 40px 32px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.card {
+  background: rgba(13, 19, 37, 0.94);
+  border: 1px solid rgba(86, 194, 255, 0.08);
+  border-radius: var(--radius);
+  padding: 24px;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow);
+}
+
+.card h3 {
+  color: var(--primary);
+  margin-bottom: 8px;
+}
+
+/* Buttons */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 24px;
+  border-radius: var(--radius);
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  border: none;
+  transition: all 0.15s ease;
+}
+
+.btn-primary {
+  background: var(--primary);
+  color: var(--bg-dark);
+}
+
+.btn-primary:hover {
+  opacity: 0.85;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .hero h1 {
+    font-size: 32px;
+  }
+
+  .navbar {
+    padding: 12px 16px;
+  }
+
+  .card-grid {
+    grid-template-columns: 1fr;
+    padding: 24px 16px;
+  }
+}`;
+  updateStats();
+  toast('Sample loaded');
+}
+
+function handleFile(e){
+  const file=e.target.files[0];
+  if(!file)return;
+  const reader=new FileReader();
+  reader.onload=ev=>{inputEl.value=ev.target.result;updateStats();toast('File loaded');};
+  reader.readAsText(file);
+  e.target.value='';
+}
+
+function toast(msg){
+  const t=$('toast');t.textContent=msg;t.classList.add('show');
+  clearTimeout(t._tid);t._tid=setTimeout(()=>t.classList.remove('show'),1800);
+}
+
+// Drag and drop
+const ip=$('inputPanel');
+['dragenter','dragover'].forEach(ev=>ip.addEventListener(ev,e=>{e.preventDefault();ip.classList.add('dragover')}));
+['dragleave','drop'].forEach(ev=>ip.addEventListener(ev,e=>{e.preventDefault();ip.classList.remove('dragover')}));
+ip.addEventListener('drop',e=>{
+  const file=e.dataTransfer.files[0];
+  if(file){const r=new FileReader();r.onload=ev=>{inputEl.value=ev.target.result;updateStats();toast('File loaded')};r.readAsText(file)}
+});
+
+updateStats();
+</script>
+</body>
+</html>

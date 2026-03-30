@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>JWT Decoder - Decode and Inspect JSON Web Tokens Online</title>
+<meta name="description" content="JWT Decoder - Decode and inspect JSON Web Tokens online. View header, payload, and signature with real-time parsing and expiration status.">
+<meta name="keywords" content="JWT, JSON Web Token, decoder, inspector, base64, HS256, RS256">
+<meta property="og:title" content="JWT Decoder - Decode and Inspect JSON Web Tokens Online">
+<meta property="og:description" content="Decode and inspect JSON Web Tokens in your browser. Real-time parsing with expiration status.">
+<meta property="og:type" content="website">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='6' fill='%230b1020'/><text x='16' y='23' text-anchor='middle' font-size='18' font-weight='bold' fill='%2356c2ff'>J</text></svg>">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#0b1020;color:#eef3ff;font-family:'SF Mono','Cascadia Code','Fira Code',Consolas,monospace;min-height:100vh;line-height:1.5}
+.container{max-width:960px;margin:0 auto;padding:24px 16px}
+h1{font-size:1.4rem;color:#56c2ff;margin-bottom:4px;letter-spacing:-.5px}
+.subtitle{color:#7a8baa;font-size:.8rem;margin-bottom:20px}
+.input-section{margin-bottom:20px}
+.input-section label{display:block;font-size:.75rem;color:#7a8baa;margin-bottom:6px;text-transform:uppercase;letter-spacing:1px}
+textarea{width:100%;height:120px;background:rgba(13,19,37,.94);border:1px solid #1e2a45;border-radius:8px;color:#eef3ff;font-family:inherit;font-size:.85rem;padding:12px;resize:vertical;outline:none;transition:border-color .2s}
+textarea:focus{border-color:#56c2ff}
+.btn-row{display:flex;gap:8px;margin-top:8px}
+.btn{background:rgba(13,19,37,.94);border:1px solid #1e2a45;color:#eef3ff;padding:6px 14px;border-radius:6px;font-family:inherit;font-size:.75rem;cursor:pointer;transition:all .2s}
+.btn:hover{border-color:#56c2ff;color:#56c2ff}
+.btn-accent{background:#56c2ff;color:#0b1020;border-color:#56c2ff;font-weight:600}
+.btn-accent:hover{background:#3daee6;border-color:#3daee6;color:#0b1020}
+.info-bar{display:flex;gap:16px;flex-wrap:wrap;padding:10px 14px;background:rgba(13,19,37,.94);border:1px solid #1e2a45;border-radius:8px;margin-bottom:20px;font-size:.75rem}
+.info-item{color:#7a8baa}
+.info-item span{color:#eef3ff}
+.status{font-weight:600}
+.status.valid{color:#4ade80}
+.status.expired{color:#f87171}
+.panels{display:grid;gap:16px}
+.panel{background:rgba(13,19,37,.94);border:1px solid #1e2a45;border-radius:8px;overflow:hidden}
+.panel-head{display:flex;justify-content:space-between;align-items:center;padding:10px 14px;border-bottom:1px solid #1e2a45}
+.panel-title{font-size:.75rem;text-transform:uppercase;letter-spacing:1px;font-weight:600}
+.panel-title.header-color{color:#ff6b6b}
+.panel-title.payload-color{color:#c084fc}
+.panel-title.sig-color{color:#56c2ff}
+.copy-btn{background:none;border:1px solid #1e2a45;color:#7a8baa;padding:3px 10px;border-radius:4px;font-family:inherit;font-size:.7rem;cursor:pointer;transition:all .2s}
+.copy-btn:hover{border-color:#56c2ff;color:#56c2ff}
+.panel-body{padding:14px;font-size:.8rem;overflow-x:auto;white-space:pre-wrap;word-break:break-all;max-height:320px;overflow-y:auto}
+.panel-body .key{color:#7a8baa}
+.panel-body .str{color:#a5d6ff}
+.panel-body .num{color:#f9a8d4}
+.panel-body .bool{color:#fbbf24}
+.panel-body .null-val{color:#7a8baa;font-style:italic}
+.panel-body .date-hint{color:#4ade80;font-size:.7rem;margin-left:8px}
+.panel-body .field-label{color:#c084fc;font-weight:600}
+.sig-hex{color:#56c2ff;word-break:break-all}
+.error-msg{color:#f87171;padding:14px;font-size:.8rem}
+.countdown{font-size:.7rem;color:#7a8baa;margin-left:6px}
+</style>
+</head>
+<body>
+<div class="container">
+  <h1>JWT Decoder</h1>
+  <p class="subtitle">Decode and inspect JSON Web Tokens in your browser</p>
+
+  <div class="input-section">
+    <label>Encoded Token</label>
+    <textarea id="jwt-input" spellcheck="false" placeholder="Paste a JWT token here..."></textarea>
+    <div class="btn-row">
+      <button class="btn btn-accent" onclick="loadSample()">Sample</button>
+      <button class="btn" onclick="clearAll()">Clear</button>
+    </div>
+  </div>
+
+  <div class="info-bar" id="info-bar" style="display:none">
+    <div class="info-item">Algorithm: <span id="info-alg">-</span></div>
+    <div class="info-item">Type: <span id="info-typ">-</span></div>
+    <div class="info-item">Size: <span id="info-size">-</span></div>
+    <div class="info-item">Status: <span id="info-status" class="status">-</span><span id="info-countdown" class="countdown"></span></div>
+  </div>
+
+  <div class="panels">
+    <div class="panel" id="header-panel" style="display:none">
+      <div class="panel-head">
+        <span class="panel-title header-color">Header</span>
+        <button class="copy-btn" onclick="copyJSON('header')">Copy</button>
+      </div>
+      <div class="panel-body" id="header-body"></div>
+    </div>
+    <div class="panel" id="payload-panel" style="display:none">
+      <div class="panel-head">
+        <span class="panel-title payload-color">Payload</span>
+        <button class="copy-btn" onclick="copyJSON('payload')">Copy</button>
+      </div>
+      <div class="panel-body" id="payload-body"></div>
+    </div>
+    <div class="panel" id="sig-panel" style="display:none">
+      <div class="panel-head">
+        <span class="panel-title sig-color">Signature</span>
+      </div>
+      <div class="panel-body" id="sig-body"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+const SAMPLE_JWT = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkphbmUgRG9lIiwiZW1haWwiOiJqYW5lQGV4YW1wbGUuY29tIiwiaXNzIjoiaHR0cHM6Ly9hdXRoLmV4YW1wbGUuY29tIiwiYXVkIjoiaHR0cHM6Ly9hcGkuZXhhbXBsZS5jb20iLCJpYXQiOjE3MTE2ODAwMDAsImV4cCI6MTg2NDM1MjAwMCwibmJmIjoxNzExNjgwMDAwLCJyb2xlIjoiYWRtaW4ifQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c';
+
+let decodedHeader = null;
+let decodedPayload = null;
+let countdownTimer = null;
+
+const input = document.getElementById('jwt-input');
+input.addEventListener('input', decode);
+
+function b64urlDecode(str) {
+  str = str.replace(/-/g, '+').replace(/_/g, '/');
+  while (str.length % 4) str += '=';
+  return atob(str);
+}
+
+function b64urlToHex(str) {
+  const raw = b64urlDecode(str);
+  return Array.from(raw, c => c.charCodeAt(0).toString(16).padStart(2, '0')).join('');
+}
+
+function escapeHtml(s) {
+  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+function formatTimestamp(ts) {
+  try {
+    const d = new Date(ts * 1000);
+    return d.toUTCString();
+  } catch { return 'Invalid date'; }
+}
+
+function timeUntil(ts) {
+  const now = Date.now() / 1000;
+  const diff = ts - now;
+  if (diff <= 0) return null;
+  const d = Math.floor(diff / 86400);
+  const h = Math.floor((diff % 86400) / 3600);
+  const m = Math.floor((diff % 3600) / 60);
+  const parts = [];
+  if (d > 0) parts.push(d + 'd');
+  if (h > 0) parts.push(h + 'h');
+  parts.push(m + 'm');
+  return parts.join(' ');
+}
+
+const TIME_FIELDS = new Set(['exp', 'iat', 'nbf']);
+const KNOWN_FIELDS = new Set(['exp', 'iat', 'nbf', 'iss', 'sub', 'aud']);
+
+function renderJSON(obj, isPayload) {
+  const lines = [];
+  lines.push('{');
+  const keys = Object.keys(obj);
+  keys.forEach((k, i) => {
+    const v = obj[k];
+    const comma = i < keys.length - 1 ? ',' : '';
+    const label = isPayload && KNOWN_FIELDS.has(k)
+      ? `<span class="field-label">"${escapeHtml(k)}"</span>`
+      : `<span class="key">"${escapeHtml(k)}"</span>`;
+    let valHtml;
+    if (v === null) {
+      valHtml = '<span class="null-val">null</span>';
+    } else if (typeof v === 'string') {
+      valHtml = `<span class="str">"${escapeHtml(v)}"</span>`;
+    } else if (typeof v === 'number') {
+      valHtml = `<span class="num">${v}</span>`;
+    } else if (typeof v === 'boolean') {
+      valHtml = `<span class="bool">${v}</span>`;
+    } else {
+      valHtml = `<span class="str">${escapeHtml(JSON.stringify(v))}</span>`;
+    }
+    let hint = '';
+    if (isPayload && TIME_FIELDS.has(k) && typeof v === 'number') {
+      hint = `<span class="date-hint">// ${formatTimestamp(v)}</span>`;
+    }
+    lines.push(`  ${label}: ${valHtml}${comma}${hint}`);
+  });
+  lines.push('}');
+  return lines.join('\n');
+}
+
+function showPanels(show) {
+  ['header-panel','payload-panel','sig-panel','info-bar'].forEach(id => {
+    document.getElementById(id).style.display = show ? '' : 'none';
+  });
+}
+
+function decode() {
+  const raw = input.value.trim();
+  if (countdownTimer) { clearInterval(countdownTimer); countdownTimer = null; }
+  if (!raw) { showPanels(false); decodedHeader = null; decodedPayload = null; return; }
+
+  const parts = raw.split('.');
+  if (parts.length !== 3) {
+    showPanels(true);
+    document.getElementById('header-body').innerHTML = '<span class="error-msg">Invalid JWT: expected 3 dot-separated parts, got ' + parts.length + '</span>';
+    document.getElementById('payload-body').innerHTML = '';
+    document.getElementById('sig-body').innerHTML = '';
+    document.getElementById('info-bar').style.display = 'none';
+    return;
+  }
+
+  let header, payload;
+  try {
+    header = JSON.parse(b64urlDecode(parts[0]));
+    decodedHeader = header;
+  } catch {
+    showPanels(true);
+    document.getElementById('header-body').innerHTML = '<span class="error-msg">Failed to decode header</span>';
+    document.getElementById('payload-body').innerHTML = '';
+    document.getElementById('sig-body').innerHTML = '';
+    return;
+  }
+
+  try {
+    payload = JSON.parse(b64urlDecode(parts[1]));
+    decodedPayload = payload;
+  } catch {
+    showPanels(true);
+    document.getElementById('header-body').innerHTML = renderJSON(header, false);
+    document.getElementById('payload-body').innerHTML = '<span class="error-msg">Failed to decode payload</span>';
+    document.getElementById('sig-body').innerHTML = '';
+    return;
+  }
+
+  let sigHex;
+  try { sigHex = b64urlToHex(parts[2]); } catch { sigHex = parts[2]; }
+
+  showPanels(true);
+  document.getElementById('header-body').innerHTML = renderJSON(header, false);
+  document.getElementById('payload-body').innerHTML = renderJSON(payload, true);
+  document.getElementById('sig-body').innerHTML = '<span class="sig-hex">' + escapeHtml(sigHex) + '</span>';
+
+  // Info bar
+  document.getElementById('info-alg').textContent = header.alg || '-';
+  document.getElementById('info-typ').textContent = header.typ || '-';
+  document.getElementById('info-size').textContent = raw.length + ' bytes';
+
+  updateExpStatus(payload);
+  if (typeof payload.exp === 'number') {
+    countdownTimer = setInterval(() => updateExpStatus(payload), 1000);
+  }
+}
+
+function updateExpStatus(payload) {
+  const statusEl = document.getElementById('info-status');
+  const countdownEl = document.getElementById('info-countdown');
+  if (typeof payload.exp === 'number') {
+    const now = Date.now() / 1000;
+    if (payload.exp < now) {
+      statusEl.textContent = 'Expired';
+      statusEl.className = 'status expired';
+      countdownEl.textContent = '';
+    } else {
+      statusEl.textContent = 'Valid';
+      statusEl.className = 'status valid';
+      const remaining = timeUntil(payload.exp);
+      countdownEl.textContent = remaining ? '(expires in ' + remaining + ')' : '';
+    }
+  } else {
+    statusEl.textContent = 'No exp claim';
+    statusEl.className = 'status';
+    countdownEl.textContent = '';
+  }
+}
+
+function copyJSON(which) {
+  const obj = which === 'header' ? decodedHeader : decodedPayload;
+  if (!obj) return;
+  navigator.clipboard.writeText(JSON.stringify(obj, null, 2)).then(() => {
+    const panel = document.getElementById(which === 'header' ? 'header-panel' : 'payload-panel');
+    const btn = panel.querySelector('.copy-btn');
+    btn.textContent = 'Copied!';
+    setTimeout(() => btn.textContent = 'Copy', 1500);
+  });
+}
+
+function clearAll() {
+  input.value = '';
+  decode();
+  input.focus();
+}
+
+function loadSample() {
+  input.value = SAMPLE_JWT;
+  decode();
+}
+
+// Load sample on start
+loadSample();
+</script>
+</body>
+</html>

@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cron Expression Builder - Visual Cron Schedule Generator</title>
+<meta name="description" content="Build and visualize cron expressions interactively. Generate cron schedules with human-readable descriptions and next run previews.">
+<meta name="keywords" content="cron, cron expression, cron builder, cron generator, crontab">
+<meta property="og:title" content="Cron Expression Builder - Visual Cron Schedule Generator">
+<meta property="og:description" content="Interactive cron expression builder with live preview and next run calculator.">
+<meta property="og:type" content="website">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><circle cx='16' cy='16' r='14' fill='%230b1020' stroke='%2356c2ff' stroke-width='2'/><line x1='16' y1='16' x2='16' y2='7' stroke='%2356c2ff' stroke-width='2' stroke-linecap='round'/><line x1='16' y1='16' x2='23' y2='16' stroke='%2356c2ff' stroke-width='1.5' stroke-linecap='round'/><circle cx='16' cy='16' r='1.5' fill='%2356c2ff'/></svg>">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#0b1020;color:#eef3ff;font-family:'SF Mono','Cascadia Code','Fira Code',Consolas,monospace;font-size:14px;line-height:1.6;min-height:100vh}
+.container{max-width:1100px;margin:0 auto;padding:20px}
+h1{font-size:1.5rem;color:#56c2ff;margin-bottom:4px}
+.subtitle{color:#7a8baa;font-size:.85rem;margin-bottom:24px}
+.layout{display:grid;grid-template-columns:1fr 260px;gap:16px}
+.panel{background:rgba(13,19,37,.94);border:1px solid rgba(86,194,255,.12);border-radius:8px;padding:16px}
+.panel h2{font-size:.85rem;color:#56c2ff;text-transform:uppercase;letter-spacing:.08em;margin-bottom:12px;font-weight:600}
+.expression-bar{display:flex;gap:8px;margin-bottom:16px;align-items:center}
+.expression-bar input{flex:1;background:rgba(0,0,0,.3);border:1px solid rgba(86,194,255,.25);border-radius:6px;padding:10px 14px;color:#56c2ff;font-family:inherit;font-size:1.2rem;letter-spacing:.1em;text-align:center}
+.expression-bar input:focus{outline:none;border-color:#56c2ff;box-shadow:0 0 0 2px rgba(86,194,255,.15)}
+.btn{background:rgba(86,194,255,.12);border:1px solid rgba(86,194,255,.3);border-radius:6px;color:#56c2ff;padding:8px 16px;cursor:pointer;font-family:inherit;font-size:.8rem;transition:all .15s}
+.btn:hover{background:rgba(86,194,255,.22);border-color:#56c2ff}
+.btn.active{background:rgba(86,194,255,.25);border-color:#56c2ff}
+.btn-copy{padding:10px 18px;font-size:.9rem}
+.presets{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:16px}
+.fields-grid{display:grid;gap:12px}
+.field-row{display:grid;grid-template-columns:110px 140px 1fr;gap:8px;align-items:center}
+.field-label{color:#7a8baa;font-size:.8rem;text-transform:uppercase;letter-spacing:.05em}
+select,input[type=text],input[type=number]{background:rgba(0,0,0,.3);border:1px solid rgba(86,194,255,.18);border-radius:4px;color:#eef3ff;padding:6px 8px;font-family:inherit;font-size:.8rem}
+select:focus,input[type=text]:focus,input[type=number]:focus{outline:none;border-color:rgba(86,194,255,.5)}
+select{cursor:pointer}
+.field-inputs{display:flex;gap:6px;align-items:center}
+.field-inputs input{width:60px}
+.field-inputs span{color:#7a8baa;font-size:.75rem}
+.result-section{margin-top:16px}
+.human-readable{color:#eef3ff;font-size:1rem;padding:10px;background:rgba(86,194,255,.06);border-radius:6px;border-left:3px solid #56c2ff;margin-bottom:12px}
+.next-runs{list-style:none}
+.next-runs li{padding:4px 0;color:#9aafcc;font-size:.82rem;border-bottom:1px solid rgba(86,194,255,.06)}
+.next-runs li:last-child{border-bottom:none}
+.next-runs .run-num{color:#56c2ff;margin-right:8px;font-size:.7rem}
+.ref-table{width:100%;font-size:.72rem;border-collapse:collapse}
+.ref-table th{text-align:left;color:#56c2ff;padding:4px 6px;border-bottom:1px solid rgba(86,194,255,.15);font-weight:600}
+.ref-table td{padding:3px 6px;color:#9aafcc;border-bottom:1px solid rgba(86,194,255,.06)}
+.ref-table code{color:#eef3ff;background:rgba(86,194,255,.08);padding:1px 4px;border-radius:2px}
+.copied{color:#4ade80 !important;border-color:rgba(74,222,128,.4) !important}
+@media(max-width:800px){.layout{grid-template-columns:1fr}.field-row{grid-template-columns:90px 120px 1fr}}
+</style>
+</head>
+<body>
+<div class="container">
+<h1>Cron Expression Builder</h1>
+<p class="subtitle">Visual cron schedule generator with live preview</p>
+
+<div class="expression-bar">
+<input type="text" id="cronInput" value="* * * * *" spellcheck="false" aria-label="Cron expression">
+<button class="btn btn-copy" id="copyBtn" onclick="copyCron()">Copy</button>
+</div>
+
+<div class="presets">
+<button class="btn" onclick="setPreset('* * * * *')">Every minute</button>
+<button class="btn" onclick="setPreset('*/5 * * * *')">Every 5 min</button>
+<button class="btn" onclick="setPreset('*/30 * * * *')">Every 30 min</button>
+<button class="btn" onclick="setPreset('0 * * * *')">Every hour</button>
+<button class="btn" onclick="setPreset('0 */2 * * *')">Every 2 hours</button>
+<button class="btn" onclick="setPreset('0 0 * * *')">Daily midnight</button>
+<button class="btn" onclick="setPreset('0 0 * * 1')">Weekly Mon</button>
+<button class="btn" onclick="setPreset('0 0 1 * *')">Monthly 1st</button>
+</div>
+
+<div class="layout">
+<div>
+<div class="panel">
+<h2>Fields</h2>
+<div class="fields-grid" id="fieldsGrid"></div>
+</div>
+<div class="result-section">
+<div class="human-readable" id="humanReadable">Every minute</div>
+<div class="panel">
+<h2>Next 5 Runs</h2>
+<ul class="next-runs" id="nextRuns"></ul>
+</div>
+</div>
+</div>
+<div class="panel">
+<h2>Syntax Reference</h2>
+<table class="ref-table">
+<tr><th>Field</th><th>Values</th></tr>
+<tr><td>Minute</td><td><code>0-59</code></td></tr>
+<tr><td>Hour</td><td><code>0-23</code></td></tr>
+<tr><td>Day</td><td><code>1-31</code></td></tr>
+<tr><td>Month</td><td><code>1-12</code></td></tr>
+<tr><td>Weekday</td><td><code>0-6</code> (Sun=0)</td></tr>
+</table>
+<br>
+<table class="ref-table">
+<tr><th>Symbol</th><th>Meaning</th></tr>
+<tr><td><code>*</code></td><td>Any value</td></tr>
+<tr><td><code>,</code></td><td>List separator</td></tr>
+<tr><td><code>-</code></td><td>Range</td></tr>
+<tr><td><code>/</code></td><td>Step interval</td></tr>
+</table>
+<br>
+<table class="ref-table">
+<tr><th colspan="2">Examples</th></tr>
+<tr><td><code>*/15</code></td><td>Every 15 units</td></tr>
+<tr><td><code>1,15</code></td><td>At 1 and 15</td></tr>
+<tr><td><code>1-5</code></td><td>From 1 to 5</td></tr>
+<tr><td><code>5/10</code></td><td>At 5, then every 10</td></tr>
+</table>
+<br>
+<table class="ref-table">
+<tr><th colspan="2">Weekdays</th></tr>
+<tr><td colspan="2"><code>0</code>Sun <code>1</code>Mon <code>2</code>Tue <code>3</code>Wed <code>4</code>Thu <code>5</code>Fri <code>6</code>Sat</td></tr>
+</table>
+<br>
+<table class="ref-table">
+<tr><th colspan="2">Months</th></tr>
+<tr><td colspan="2"><code>1</code>Jan <code>2</code>Feb <code>3</code>Mar <code>4</code>Apr <code>5</code>May <code>6</code>Jun <code>7</code>Jul <code>8</code>Aug <code>9</code>Sep <code>10</code>Oct <code>11</code>Nov <code>12</code>Dec</td></tr>
+</table>
+</div>
+</div>
+</div>
+
+<script>
+const FIELDS=[
+{name:'Minute',key:'minute',min:0,max:59},
+{name:'Hour',key:'hour',min:0,max:23},
+{name:'Day of Month',key:'dom',min:1,max:31},
+{name:'Month',key:'month',min:1,max:12},
+{name:'Day of Week',key:'dow',min:0,max:6}
+];
+const MONTHS=['','Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+const DAYS=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+const state={minute:{mode:'every'},hour:{mode:'every'},dom:{mode:'every'},month:{mode:'every'},dow:{mode:'every'}};
+let updating=false;
+
+function init(){
+const grid=document.getElementById('fieldsGrid');
+FIELDS.forEach(f=>{
+const row=document.createElement('div');
+row.className='field-row';
+row.innerHTML=`<span class="field-label">${f.name}</span>
+<select id="mode_${f.key}" onchange="changeMode('${f.key}')">
+<option value="every">Every</option>
+<option value="specific">Specific</option>
+<option value="range">Range</option>
+<option value="interval">Interval</option>
+</select>
+<div class="field-inputs" id="inputs_${f.key}"></div>`;
+grid.appendChild(row);
+renderInputs(f.key);
+});
+document.getElementById('cronInput').addEventListener('input',e=>{if(!updating)parseCron(e.target.value)});
+update();
+}
+
+function renderInputs(key){
+const f=FIELDS.find(x=>x.key===key),s=state[key],el=document.getElementById('inputs_'+key);
+const n=n=>`min="${f.min}" max="${f.max}"`,c=`onchange="updateField('${key}')"`;
+const m={every:'<span>*</span>',
+specific:`<input type="text" id="val_${key}" value="${s.values||f.min}" ${c} style="width:100px" placeholder="1,5,10">`,
+range:`<input type="number" id="from_${key}" value="${s.from??f.min}" ${n()} ${c}><span>to</span><input type="number" id="to_${key}" value="${s.to??f.max}" ${n()} ${c}>`,
+interval:`<span>every</span><input type="number" id="step_${key}" value="${s.step||2}" min="1" max="${f.max}" ${c}><span>from</span><input type="number" id="start_${key}" value="${s.start??f.min}" ${n()} ${c}>`};
+el.innerHTML=m[s.mode];
+}
+
+function changeMode(key){
+state[key].mode=document.getElementById('mode_'+key).value;
+const f=FIELDS.find(x=>x.key===key);
+if(state[key].mode==='specific')state[key].values=String(f.min);
+if(state[key].mode==='range'){state[key].from=f.min;state[key].to=f.max;}
+if(state[key].mode==='interval'){state[key].step=2;state[key].start=f.min;}
+renderInputs(key);update();
+}
+function updateField(k){
+const s=state[k],$=id=>document.getElementById(id);
+if(s.mode==='specific')s.values=$('val_'+k).value;
+if(s.mode==='range'){s.from=+$('from_'+k).value;s.to=+$('to_'+k).value;}
+if(s.mode==='interval'){s.step=+$('step_'+k).value;s.start=+$('start_'+k).value;}
+update();
+}
+
+function buildField(key){
+const s=state[key];
+if(s.mode==='every')return'*';
+if(s.mode==='specific')return s.values||'*';
+if(s.mode==='range')return s.from+'-'+s.to;
+if(s.mode==='interval'){const st=s.start||0;return(st?st+'/':'*/')+s.step;}
+return'*';
+}
+
+function update(){
+const expr=FIELDS.map(f=>buildField(f.key)).join(' ');
+updating=true;
+document.getElementById('cronInput').value=expr;
+updating=false;
+document.getElementById('humanReadable').textContent=describe(expr);
+calcNextRuns(expr);
+}
+
+function parseCron(expr){
+const parts=expr.trim().split(/\s+/);
+if(parts.length!==5)return;
+FIELDS.forEach((f,i)=>{
+const p=parts[i],s=state[f.key];
+if(p==='*'){s.mode='every';}
+else if(p.includes('/')){
+s.mode='interval';
+const sp=p.split('/');
+s.start=sp[0]==='*'?0:+sp[0];
+s.step=+sp[1];
+}else if(p.includes('-')&&!p.includes(',')){
+s.mode='range';
+const sp=p.split('-');
+s.from=+sp[0];s.to=+sp[1];
+}else{
+s.mode='specific';s.values=p;
+}
+document.getElementById('mode_'+f.key).value=s.mode;
+renderInputs(f.key);
+});
+document.getElementById('humanReadable').textContent=describe(expr);
+calcNextRuns(expr);
+}
+
+function describe(expr){
+const p=expr.trim().split(/\s+/);
+if(p.length!==5)return'Invalid expression';
+const[mi,hr,dm,mo,dw]=p;
+let parts=[];
+if(mi==='*'&&hr==='*'&&dm==='*'&&mo==='*'&&dw==='*')return'Every minute';
+if(mi.startsWith('*/')&&hr==='*'&&dm==='*'&&mo==='*'&&dw==='*')return'Every '+mi.slice(2)+' minutes';
+if(mi==='0'&&hr.startsWith('*/')&&dm==='*'&&mo==='*'&&dw==='*')return'Every '+hr.slice(2)+' hours';
+// minute
+if(mi==='*')parts.push('every minute');
+else if(mi.startsWith('*/'))parts.push('every '+mi.slice(2)+' minutes');
+else if(mi.includes('-'))parts.push('minutes '+mi);
+else if(mi.includes(','))parts.push('at minutes '+mi);
+else parts.push('at minute '+mi);
+// hour
+if(hr==='*'){}
+else if(hr.startsWith('*/'))parts.push('every '+hr.slice(2)+' hours');
+else if(hr.includes('-'))parts.push('hours '+hr);
+else if(hr.includes(','))parts.push('at hours '+hr);
+else parts.push('at hour '+hr+':00');
+// dom
+if(dm!=='*'){
+if(dm.startsWith('*/'))parts.push('every '+dm.slice(2)+' days');
+else parts.push('on day '+dm+' of the month');
+}
+// month
+if(mo!=='*'){
+if(mo.startsWith('*/'))parts.push('every '+mo.slice(2)+' months');
+else{
+const names=mo.split(',').map(v=>MONTHS[+v]||v).join(', ');
+parts.push('in '+names);
+}
+}
+// dow
+if(dw!=='*'){
+if(dw.startsWith('*/'))parts.push('every '+dw.slice(2)+' days of week');
+else{
+const names=dw.split(',').map(v=>DAYS[+v]||v).join(', ');
+parts.push('on '+names);
+}
+}
+let s=parts.join(', ');
+return s.charAt(0).toUpperCase()+s.slice(1);
+}
+
+function parseField(part,min,max){
+if(part==='*')return Array.from({length:max-min+1},(_,i)=>i+min);
+let vals=new Set();
+part.split(',').forEach(seg=>{
+if(seg.includes('/')){
+const[r,step]=seg.split('/');
+let start=min,end=max;
+if(r!=='*'){if(r.includes('-')){const[a,b]=r.split('-');start=+a;end=+b;}else start=+r;}
+for(let i=start;i<=end;i+=+step)vals.add(i);
+}else if(seg.includes('-')){
+const[a,b]=seg.split('-');
+for(let i=+a;i<=+b;i++)vals.add(i);
+}else vals.add(+seg);
+});
+return[...vals].sort((a,b)=>a-b);
+}
+
+function calcNextRuns(expr){
+const p=expr.trim().split(/\s+/);
+const el=document.getElementById('nextRuns');
+if(p.length!==5){el.innerHTML='<li>Invalid expression</li>';return;}
+const mins=parseField(p[0],0,59),hrs=parseField(p[1],0,23),doms=parseField(p[2],1,31),mos=parseField(p[3],1,12),dows=parseField(p[4],0,6);
+const runs=[];
+const now=new Date();
+let d=new Date(now.getFullYear(),now.getMonth(),now.getDate(),now.getHours(),now.getMinutes()+1,0,0);
+const limit=new Date(now.getTime()+366*24*3600000);
+while(runs.length<5&&d<limit){
+const mo=d.getMonth()+1,dm=d.getDate(),dw=d.getDay(),hr=d.getHours(),mi=d.getMinutes();
+if(mos.includes(mo)&&doms.includes(dm)&&dows.includes(dw)&&hrs.includes(hr)&&mins.includes(mi)){
+runs.push(new Date(d));
+}
+d=new Date(d.getTime()+60000);
+}
+if(runs.length===0){el.innerHTML='<li>No runs found in next year</li>';return;}
+const pad=n=>String(n).padStart(2,'0');
+el.innerHTML=runs.map((r,i)=>`<li><span class="run-num">#${i+1}</span>${DAYS[r.getDay()]} ${r.getFullYear()}-${pad(r.getMonth()+1)}-${pad(r.getDate())} ${pad(r.getHours())}:${pad(r.getMinutes())}</li>`).join('');
+}
+
+function setPreset(expr){
+document.getElementById('cronInput').value=expr;
+parseCron(expr);
+}
+
+function copyCron(){
+const val=document.getElementById('cronInput').value;
+navigator.clipboard.writeText(val).then(()=>{
+const btn=document.getElementById('copyBtn');
+btn.textContent='Copied!';btn.classList.add('copied');
+setTimeout(()=>{btn.textContent='Copy';btn.classList.remove('copied');},1500);
+});
+}
+
+init();
+</script>
+</body>
+</html>

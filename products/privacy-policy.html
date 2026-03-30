@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Privacy Policy Generator - Create Free Privacy Policy Online</title>
+<meta name="description" content="Free Privacy Policy Generator for websites and apps. Create a professional, GDPR and CCPA compliant privacy policy in minutes. No signup required.">
+<meta name="keywords" content="privacy policy generator, free privacy policy, GDPR, CCPA, website privacy policy, cookie policy, data protection, legal compliance">
+<meta name="robots" content="index,follow">
+<meta property="og:title" content="Privacy Policy Generator - Create Free Privacy Policy Online">
+<meta property="og:description" content="Generate a professional privacy policy for your website or app. GDPR and CCPA compliant. Free, instant, no signup.">
+<meta property="og:type" content="website">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect rx='12' width='100' height='100' fill='%230b1020'/><text x='50' y='68' font-size='42' font-family='system-ui' font-weight='bold' text-anchor='middle' fill='%2356c2ff'>&#128274;</text></svg>">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#0b1020;color:#eef3ff;font-family:system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;min-height:100vh;display:flex;flex-direction:column;align-items:center}
+h1{font-size:1.3rem;padding:1.2rem 0 .3rem;color:#56c2ff;text-align:center;letter-spacing:.5px}
+.sub{font-size:.75rem;color:#6a7a9b;text-align:center;margin-bottom:1rem}
+.wrap{width:100%;max-width:1100px;padding:0 1rem 2rem;flex:1}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-top:.5rem}
+@media(max-width:768px){.grid{grid-template-columns:1fr}}
+.panel{background:rgba(13,19,37,.94);border:1px solid #1a2340;border-radius:8px;overflow:hidden}
+.panel-head{display:flex;justify-content:space-between;align-items:center;padding:.5rem .7rem;border-bottom:1px solid #1a2340;font-size:.75rem;color:#6a7a9b}
+.panel-head strong{color:#56c2ff;font-size:.8rem}
+.panel-body{padding:.7rem}
+label{display:block;font-size:.72rem;color:#6a7a9b;margin-bottom:.2rem;margin-top:.5rem}
+label:first-child{margin-top:0}
+input:not([type=checkbox]){width:100%;background:rgba(10,14,28,.7);border:1px solid #1a2340;border-radius:5px;color:#eef3ff;font-family:inherit;font-size:.78rem;padding:.4rem .5rem;outline:none;transition:border-color .15s}
+input:not([type=checkbox]):focus{border-color:#56c2ff}
+.chk-group{display:flex;flex-wrap:wrap;gap:.3rem .8rem;margin-top:.3rem}
+.chk{display:flex;align-items:center;gap:.3rem;font-size:.72rem;color:#b0bdd4;cursor:pointer;user-select:none}
+.chk input{accent-color:#56c2ff;cursor:pointer}
+.toggle-row{display:flex;align-items:center;justify-content:space-between;padding:.4rem 0;border-bottom:1px solid #111a30}
+.toggle-row:last-child{border-bottom:none}
+.toggle-label{font-size:.75rem;color:#b0bdd4}
+.toggle-desc{font-size:.65rem;color:#4a5a7b;margin-top:.1rem}
+.switch{position:relative;width:36px;height:20px;flex-shrink:0}
+.switch input{opacity:0;width:0;height:0}
+.slider{position:absolute;inset:0;background:#1a2340;border-radius:10px;cursor:pointer;transition:.2s}
+.slider::before{content:'';position:absolute;height:14px;width:14px;left:3px;bottom:3px;background:#4a5a7b;border-radius:50%;transition:.2s}
+.switch input:checked+.slider{background:rgba(86,194,255,.25)}
+.switch input:checked+.slider::before{transform:translateX(16px);background:#56c2ff}
+.actions{display:flex;gap:.5rem;flex-wrap:wrap;padding:.5rem .7rem;border-top:1px solid #1a2340}
+button{background:rgba(86,194,255,.12);color:#56c2ff;border:1px solid rgba(86,194,255,.25);border-radius:6px;padding:.4rem .8rem;font-family:inherit;font-size:.72rem;cursor:pointer;transition:all .15s;white-space:nowrap}
+button:hover{background:rgba(86,194,255,.22);border-color:#56c2ff}
+button.primary{background:rgba(86,194,255,.2);border-color:#56c2ff}
+.output{width:100%;min-height:400px;max-height:70vh;overflow-y:auto;padding:.8rem;font-size:.78rem;line-height:1.65;color:#c8d4ea;white-space:pre-wrap;word-wrap:break-word}
+.output h2{color:#56c2ff;font-size:.85rem;margin:1rem 0 .3rem}
+.disclaimer{font-size:.65rem;color:#4a5a7b;text-align:center;padding:.8rem 1rem;border-top:1px solid #111a30;margin-top:1.5rem;line-height:1.5}
+.toast{position:fixed;bottom:1.5rem;left:50%;transform:translateX(-50%) translateY(100px);background:rgba(86,194,255,.15);border:1px solid #56c2ff;color:#56c2ff;padding:.5rem 1.2rem;border-radius:8px;font-size:.75rem;transition:transform .3s;z-index:99;backdrop-filter:blur(8px)}
+.toast.show{transform:translateX(-50%) translateY(0)}
+.badge{display:inline-block;background:rgba(86,194,255,.1);color:#56c2ff;font-size:.6rem;padding:.15rem .4rem;border-radius:4px;margin-left:.4rem;vertical-align:middle}
+</style>
+</head>
+<body>
+<div class="wrap">
+<h1>Privacy Policy Generator</h1>
+<p class="sub">Generate a professional privacy policy for your website or app &mdash; free, instant, no signup</p>
+
+<div class="grid">
+<div style="display:flex;flex-direction:column;gap:1rem">
+<!-- Basic Info -->
+<div class="panel">
+<div class="panel-head"><strong>Website / App Details</strong></div>
+<div class="panel-body">
+<label for="siteName">Website / App Name *</label>
+<input type="text" id="siteName" placeholder="My Website" oninput="generate()">
+<label for="siteUrl">Website URL</label>
+<input type="url" id="siteUrl" placeholder="https://example.com" oninput="generate()">
+<label for="contactEmail">Contact Email *</label>
+<input type="email" id="contactEmail" placeholder="privacy@example.com" oninput="generate()">
+<label for="companyName">Company / Owner Name</label>
+<input type="text" id="companyName" placeholder="Acme Inc." oninput="generate()">
+<label for="country">Country</label>
+<input type="text" id="country" placeholder="United States" oninput="generate()">
+<label for="effectiveDate">Effective Date</label>
+<input type="date" id="effectiveDate" oninput="generate()">
+</div>
+</div>
+
+<!-- Data Collected -->
+<div class="panel">
+<div class="panel-head"><strong>Data Collected</strong></div>
+<div class="panel-body">
+<div class="chk-group">
+<label class="chk"><input type="checkbox" id="dPersonal" checked onchange="generate()"> Personal Info</label>
+<label class="chk"><input type="checkbox" id="dCookies" checked onchange="generate()"> Cookies</label>
+<label class="chk"><input type="checkbox" id="dAnalytics" checked onchange="generate()"> Analytics</label>
+<label class="chk"><input type="checkbox" id="dPayment" onchange="generate()"> Payment Info</label>
+<label class="chk"><input type="checkbox" id="dLocation" onchange="generate()"> Location</label>
+<label class="chk"><input type="checkbox" id="dSocial" onchange="generate()"> Social Media</label>
+</div>
+</div>
+</div>
+
+<!-- Third-Party Services -->
+<div class="panel">
+<div class="panel-head"><strong>Third-Party Services</strong></div>
+<div class="panel-body">
+<div class="chk-group">
+<label class="chk"><input type="checkbox" id="tpGA" onchange="generate()"> Google Analytics</label>
+<label class="chk"><input type="checkbox" id="tpStripe" onchange="generate()"> Stripe</label>
+<label class="chk"><input type="checkbox" id="tpFirebase" onchange="generate()"> Firebase</label>
+<label class="chk"><input type="checkbox" id="tpMailchimp" onchange="generate()"> Mailchimp</label>
+<label class="chk"><input type="checkbox" id="tpFBPixel" onchange="generate()"> Facebook Pixel</label>
+</div>
+</div>
+</div>
+
+<!-- Compliance Toggles -->
+<div class="panel">
+<div class="panel-head"><strong>Compliance</strong></div>
+<div class="panel-body">
+<div class="toggle-row">
+<div><div class="toggle-label">GDPR Compliance <span class="badge">EU</span></div><div class="toggle-desc">General Data Protection Regulation</div></div>
+<label class="switch"><input type="checkbox" id="cGDPR" onchange="generate()"><span class="slider"></span></label>
+</div>
+<div class="toggle-row">
+<div><div class="toggle-label">CCPA Compliance <span class="badge">California</span></div><div class="toggle-desc">California Consumer Privacy Act</div></div>
+<label class="switch"><input type="checkbox" id="cCCPA" onchange="generate()"><span class="slider"></span></label>
+</div>
+<div class="toggle-row">
+<div><div class="toggle-label">Children's Privacy <span class="badge">COPPA</span></div><div class="toggle-desc">Content directed at children under 13</div></div>
+<label class="switch"><input type="checkbox" id="cChildren" onchange="generate()"><span class="slider"></span></label>
+</div>
+</div>
+</div>
+</div>
+
+<!-- Output -->
+<div style="display:flex;flex-direction:column;gap:0">
+<div class="panel" style="flex:1;display:flex;flex-direction:column">
+<div class="panel-head"><strong>Generated Privacy Policy</strong><span id="charCount" style="font-size:.65rem">0 words</span></div>
+<div class="output" id="output"></div>
+<div class="actions">
+<button class="primary" onclick="copyText()">Copy to Clipboard</button>
+<button onclick="downloadTxt()">Download .txt</button>
+<button onclick="downloadHtml()">Download .html</button>
+</div>
+</div>
+</div>
+</div>
+
+<div class="disclaimer">
+This tool generates a privacy policy template for informational purposes only. It does not constitute legal advice.<br>
+You should consult a qualified attorney to ensure your privacy policy meets all applicable legal requirements.
+</div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const $ = id => document.getElementById(id);
+
+// Set today's date as default
+$('effectiveDate').value = new Date().toISOString().split('T')[0];
+
+function val(id) { return $(id).value.trim(); }
+function chk(id) { return $(id).checked; }
+
+function fmtDate(dateStr) {
+  if (!dateStr) return new Date().toLocaleDateString('en-US', {year:'numeric',month:'long',day:'numeric'});
+  const d = new Date(dateStr + 'T00:00:00');
+  return d.toLocaleDateString('en-US', {year:'numeric',month:'long',day:'numeric'});
+}
+
+function generate() {
+  const name = val('siteName') || '[Website Name]';
+  const url = val('siteUrl') || '[Website URL]';
+  const email = val('contactEmail') || '[Contact Email]';
+  const company = val('companyName') || name;
+  const country = val('country') || '[Country]';
+  const date = fmtDate(val('effectiveDate'));
+
+  let s = '';
+
+  // Title & intro
+  s += `PRIVACY POLICY\n\n`;
+  s += `Last Updated: ${date}\n\n`;
+  s += `This Privacy Policy describes how ${company} ("we," "us," or "our") collects, uses, and shares information in connection with your use of ${name} (${url}) and any related services (collectively, the "Services").\n\n`;
+  s += `By using our Services, you agree to this Privacy Policy. If you do not agree, please do not use the Services.\n\n`;
+
+  // Information We Collect
+  s += `INFORMATION WE COLLECT\n\n`;
+  s += `We collect information in various ways depending on how you interact with our Services.\n\n`;
+
+  if (chk('dPersonal')) {
+    s += `Personal Information: We may collect personally identifiable information you voluntarily provide when you register, express interest in our products and Services, or contact us. This may include names, email addresses, phone numbers, mailing addresses, and similar data.\n\n`;
+  }
+
+  if (chk('dPayment')) {
+    s += `Payment Information: We may collect data necessary to process your payment, such as your payment instrument number and security code. All payment data is stored by our payment processor; you should review their privacy policies directly.\n\n`;
+  }
+
+  if (chk('dLocation')) {
+    s += `Location Data: We may collect information about your approximate or precise location to provide location-based services and content customization. You may disable location services through your device settings, though this may limit certain features.\n\n`;
+  }
+
+  if (chk('dSocial')) {
+    s += `Social Media Information: If you connect or log in using a social media account, we may receive your profile information and publicly available data from that platform, used solely for the purposes described in this Privacy Policy.\n\n`;
+  }
+
+  // Cookies & Tracking
+  if (chk('dCookies') || chk('dAnalytics')) {
+    s += `COOKIES AND TRACKING TECHNOLOGIES\n\n`;
+    if (chk('dCookies')) {
+      s += `We use cookies and similar tracking technologies to access or store information. Cookies are small text files stored on your device when you visit our website. We use session cookies (which expire when you close your browser) and persistent cookies (which remain until they expire or you delete them).\n\n`;
+      s += `Types of cookies we use:\n`;
+      s += `- Essential Cookies: Required for the operation of the Services and cannot be disabled.\n`;
+      s += `- Functionality Cookies: Enable personalized features and remember your preferences.\n`;
+      s += `- Analytics Cookies: Help us understand how visitors interact with the Services.\n`;
+      s += `- Advertising Cookies: Used to deliver relevant advertisements and track campaign performance.\n\n`;
+      s += `You can instruct your browser to refuse all cookies or to indicate when a cookie is being sent. However, if you do not accept cookies, you may not be able to use some portions of our Services.\n\n`;
+    }
+    if (chk('dAnalytics')) {
+      s += `Analytics: We use analytics tools to collect information about your use of the Services, including pages visited, time spent on each page, links clicked, and conversion information. This data helps us improve the Services and understand usage patterns.\n\n`;
+    }
+  }
+
+  // Third-Party Services
+  const tps = [];
+  if (chk('tpGA')) tps.push({n:'Google Analytics',d:'a web analytics service by Google LLC that tracks and reports website traffic. Google may use collected data to personalize ads in its network. You can opt out via the Google Analytics opt-out browser add-on.'});
+  if (chk('tpStripe')) tps.push({n:'Stripe',d:'a payment processing service by Stripe, Inc. Payment data is processed per their privacy policy; we do not store complete credit card information on our servers.'});
+  if (chk('tpFirebase')) tps.push({n:'Firebase',d:'a platform by Google LLC that may collect device identifiers, usage data, and crash reports to improve service reliability.'});
+  if (chk('tpMailchimp')) tps.push({n:'Mailchimp',d:'an email marketing service by Intuit Inc. used to manage subscriber lists and send communications. Your email and related data may be stored by Mailchimp.'});
+  if (chk('tpFBPixel')) tps.push({n:'Facebook Pixel',d:'an analytics tool by Meta Platforms, Inc. that measures advertising effectiveness. Meta may use this data for its own advertising per its Data Policy.'});
+
+  if (tps.length) {
+    s += `THIRD-PARTY SERVICES\n\n`;
+    s += `We employ third-party companies to facilitate our Services and perform tasks on our behalf. These third parties access your information only to perform these tasks and are obligated not to disclose or use it for other purposes.\n\n`;
+    tps.forEach(t => { s += `${t.n}: ${t.n} is ${t.d}\n\n`; });
+  }
+
+  // How We Use Your Information
+  s += `HOW WE USE YOUR INFORMATION\n\n`;
+  s += `We use collected information to:\n`;
+  s += `- Provide, maintain, and improve the Services\n`;
+  s += `- Process transactions and send related information\n`;
+  s += `- Send promotional communications (with consent where required)\n`;
+  s += `- Respond to comments, questions, and support requests\n`;
+  s += `- Monitor and analyze usage trends and activities\n`;
+  s += `- Detect and prevent fraud and illegal activities\n`;
+  s += `- Comply with legal obligations and enforce our policies\n\n`;
+
+  // Data Sharing
+  s += `DISCLOSURE OF YOUR INFORMATION\n\n`;
+  s += `We may share your information in the following situations:\n\n`;
+  s += `- Service Providers: With third-party vendors or agents who perform services on our behalf.\n`;
+  s += `- Business Transfers: In connection with any merger, sale of assets, financing, or acquisition of our business.\n`;
+  s += `- Legal Requirements: Where required by law or in response to valid requests by public authorities.\n`;
+  s += `- Protection of Rights: Where necessary to investigate potential policy violations, suspected fraud, or threats to safety.\n\n`;
+
+  // Data Retention
+  s += `DATA RETENTION\n\n`;
+  s += `We retain your information only as long as necessary for the purposes in this Privacy Policy, including to comply with legal obligations, resolve disputes, and enforce our policies.\n\n`;
+
+  // Security
+  s += `SECURITY OF YOUR INFORMATION\n\n`;
+  s += `We use administrative, technical, and physical security measures to protect your personal information. However, no method of transmission or storage is 100% secure, and we cannot guarantee absolute security.\n\n`;
+
+  // GDPR
+  if (chk('cGDPR')) {
+    s += `YOUR RIGHTS UNDER THE GENERAL DATA PROTECTION REGULATION (GDPR)\n\n`;
+    s += `If you are a resident of the European Economic Area (EEA), you have certain data protection rights under the GDPR:\n\n`;
+    s += `- Right of Access: Request copies of your personal data.\n`;
+    s += `- Right to Rectification: Request correction of inaccurate or incomplete information.\n`;
+    s += `- Right to Erasure: Request deletion of your personal data, under certain conditions.\n`;
+    s += `- Right to Restrict Processing: Request restriction of processing, under certain conditions.\n`;
+    s += `- Right to Data Portability: Request transfer of your data to another organization or to you.\n`;
+    s += `- Right to Object: Object to processing of your personal data, under certain conditions.\n\n`;
+    s += `Legal bases for processing include: consent, contract performance, legal obligation, and legitimate interests.\n\n`;
+    s += `To exercise any of these rights, please contact us at ${email}. We will respond to your request within 30 days.\n\n`;
+  }
+
+  // CCPA
+  if (chk('cCCPA')) {
+    s += `YOUR RIGHTS UNDER THE CALIFORNIA CONSUMER PRIVACY ACT (CCPA)\n\n`;
+    s += `If you are a California resident, you have the following rights under the CCPA:\n\n`;
+    s += `- Right to Know: Request disclosure of what personal information we collect, use, and share.\n`;
+    s += `- Right to Delete: Request deletion of your personal information, subject to certain exceptions.\n`;
+    s += `- Right to Opt-Out: Opt out of the sale of your personal information, if applicable.\n`;
+    s += `- Right to Non-Discrimination: We will not discriminate against you for exercising CCPA rights.\n\n`;
+    s += `To exercise these rights, contact us at ${email}. We will verify your identity and respond within 45 days. In the preceding twelve months, we have not sold consumer personal information as defined under the CCPA.\n\n`;
+  }
+
+  // Children's Privacy
+  if (chk('cChildren')) {
+    s += `CHILDREN'S PRIVACY\n\n`;
+    s += `Our Services are not directed to children under 13. We do not knowingly collect personal information from children under 13. If we learn a child under 13 has provided us with personal information, we will delete it promptly. For children aged 13-16, we obtain verifiable parental consent as required by COPPA. Contact us at ${email} if you believe a child has provided personal data.\n\n`;
+  } else {
+    s += `CHILDREN'S PRIVACY\n\n`;
+    s += `Our Services are not intended for children under 13. We do not knowingly collect personal information from children under 13. If you believe a child has provided us with personal data, please contact us at ${email}.\n\n`;
+  }
+
+  // Links to Other Sites
+  s += `LINKS TO OTHER WEBSITES\n\n`;
+  s += `Our Services may contain links to third-party websites. We strongly advise you to review the privacy policy of every site you visit. We have no control over and assume no responsibility for the content or practices of any third-party sites.\n\n`;
+
+  // Changes
+  s += `CHANGES TO THIS PRIVACY POLICY\n\n`;
+  s += `We may update this Privacy Policy from time to time by posting the revised version on this page and updating the "Last Updated" date. We encourage you to review this Privacy Policy periodically.\n\n`;
+
+  // Contact
+  s += `CONTACT US\n\n`;
+  s += `If you have any questions about this Privacy Policy, please contact us:\n\n`;
+  s += `${company}\n`;
+  if (val('siteUrl')) s += `Website: ${url}\n`;
+  s += `Email: ${email}\n`;
+  if (val('country')) s += `Location: ${country}\n`;
+
+  $('output').textContent = s;
+  const words = s.split(/\s+/).filter(w => w.length > 0).length;
+  $('charCount').textContent = words.toLocaleString() + ' words';
+}
+
+function showToast(msg) {
+  const t = $('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2000);
+}
+
+function getPlainText() {
+  return $('output').textContent;
+}
+
+function copyText() {
+  navigator.clipboard.writeText(getPlainText()).then(() => showToast('Copied to clipboard'));
+}
+
+function dl(blob,name){const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=name;a.click();URL.revokeObjectURL(a.href)}
+
+function downloadTxt() {
+  dl(new Blob([getPlainText()],{type:'text/plain'}),(val('siteName')||'privacy-policy').toLowerCase().replace(/\s+/g,'-')+'-privacy-policy.txt');
+  showToast('Downloaded as .txt');
+}
+
+function downloadHtml() {
+  const n = val('siteName') || 'Privacy Policy';
+  const lines = getPlainText().split('\n');
+  let h = `<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Privacy Policy - ${n}</title><style>body{max-width:800px;margin:2rem auto;padding:0 1.5rem;font-family:system-ui,sans-serif;line-height:1.7;color:#222}h2{margin-top:2rem;color:#111;border-bottom:1px solid #ddd;padding-bottom:.3rem}ul{margin:.5rem 0 .5rem 1.5rem}</style></head><body>\n`;
+  let ul=false;
+  for(const l of lines){const t=l.trim();if(!t){if(ul){h+='</ul>';ul=false}continue}if(t.startsWith('- ')){if(!ul){h+='<ul>';ul=true}h+=`<li>${t.slice(2)}</li>`}else if(t===t.toUpperCase()&&t.length>3&&!t.startsWith('Last')){if(ul){h+='</ul>';ul=false}h+=`<h2>${t}</h2>`}else{if(ul){h+='</ul>';ul=false}h+=`<p>${t}</p>`}}
+  if(ul)h+='</ul>';h+='</body></html>';
+  dl(new Blob([h],{type:'text/html'}),(val('siteName')||'privacy-policy').toLowerCase().replace(/\s+/g,'-')+'-privacy-policy.html');
+  showToast('Downloaded as .html');
+}
+
+// Generate on load
+generate();
+</script>
+</body>
+</html>
