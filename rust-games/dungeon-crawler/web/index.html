@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dungeon Crawler</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html, body { width: 100%; height: 100%; overflow: hidden; background: #0a0a14; }
+        body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Courier New', monospace;
+            color: #e0e0e0;
+        }
+        h1 {
+            font-size: 1.2rem;
+            margin-bottom: 8px;
+            color: #6ca0ff;
+            letter-spacing: 4px;
+            text-transform: uppercase;
+        }
+        .controls {
+            font-size: 0.75rem;
+            color: #888;
+            margin-bottom: 8px;
+        }
+        #bevy-canvas {
+            width: min(960px, 100vw);
+            height: min(640px, 70vh);
+            display: block;
+            border: 1px solid #2a2a4a;
+            border-radius: 4px;
+        }
+        #loading {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 1.5rem;
+            color: #6ca0ff;
+            animation: pulse 1.5s infinite;
+        }
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.3; }
+        }
+    </style>
+</head>
+<body>
+    <h1>⚔ Dungeon Crawler ⚔</h1>
+    <div class="controls">WASD / Arrow Keys to move | Pick up items | Reach the green exit ▼</div>
+    <canvas id="bevy-canvas"></canvas>
+    <div id="loading">Loading WASM...</div>
+    <script type="module">
+        import init from './dungeon_crawler.js';
+        init().then(() => {
+            document.getElementById('loading').style.display = 'none';
+        }).catch(e => {
+            document.getElementById('loading').textContent = 'Failed to load: ' + e;
+        });
+    </script>
+</body>
+</html>
